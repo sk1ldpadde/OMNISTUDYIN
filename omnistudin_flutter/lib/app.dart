@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OmniStudyingApp extends StatelessWidget {
   const OmniStudyingApp({super.key});
@@ -61,9 +63,39 @@ class _OmniStudyingHomepageState extends State<OmniStudyingHomepage> {
   }
 }
 
-class FindFriendsPage extends StatelessWidget {
+class FindFriendsPage extends StatefulWidget {
   final int tabIndex;
   const FindFriendsPage({super.key, required this.tabIndex});
+
+  @override
+  _FindFriendsPageState createState() => _FindFriendsPageState();
+}
+
+class _FindFriendsPageState extends State<FindFriendsPage> {
+  List<dynamic> friendsList = []; // List to hold friends data
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFriends();
+  }
+
+  Future<void> fetchFriends() async {
+    var url =
+        'http://yourdjangoapi.com/api/friends'; // Replace with your API URL
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        setState(() {
+          friendsList = json.decode(response.body);
+        });
+      } else {
+        print('Failed to load friends');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,46 +104,22 @@ class FindFriendsPage extends StatelessWidget {
         middle: Text('Find Friends'),
       ),
       child: SafeArea(
-        // Added SafeArea for better UI layout
         child: Column(
-          // Changed to Column to include both list and button
           children: [
             Expanded(
-              // Wrap the list in Expanded to use available space
-              child: CupertinoListSection(
-                header: const Text("Add Friends"),
-                children: [
-                  CupertinoListTile(
+              child: ListView.builder(
+                itemCount: friendsList.length,
+                itemBuilder: (context, index) {
+                  return CupertinoListTile(
                     leading: const Icon(CupertinoIcons.profile_circled),
-                    title: const Text('John Doe'),
+                    title: Text(friendsList[index]
+                        ['name']), // Adjust based on your data structure
                     trailing: const Icon(CupertinoIcons.add_circled),
                     onTap: () {
-                      showCupertinoModalPopup<void>(
-                        context: context,
-                        builder: (BuildContext context) => CupertinoActionSheet(
-                          title: const Text('Add "John Doe" as a friend?'),
-                          message: const Text(
-                              'Your friend will be able to see your location.'),
-                          actions: <CupertinoActionSheetAction>[
-                            CupertinoActionSheetAction(
-                              child: const Text('Add Friend'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                          cancelButton: CupertinoActionSheetAction(
-                            child: const Text('Cancel'),
-                            isDefaultAction: true,
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
+                      // Your code for adding a friend
                     },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
             Align(
