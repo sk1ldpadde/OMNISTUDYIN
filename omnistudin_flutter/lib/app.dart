@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 
 class OmniStudyingApp extends StatelessWidget {
   const OmniStudyingApp({super.key});
@@ -48,6 +50,7 @@ class _OmniStudyingHomepageState extends State<OmniStudyingHomepage> {
                   onPressed: () {
                     Navigator.of(context).push(
                       CupertinoPageRoute<void>(
+
                         builder: (BuildContext context) =>
                             FindFriendsPage(tabIndex: index),
                       ),
