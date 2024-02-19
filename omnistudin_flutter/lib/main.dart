@@ -9,5 +9,6 @@ void main() {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-  return runApp(OmniStudyingApp());
+
+  return runApp(const OmniStudyingApp());
 }
