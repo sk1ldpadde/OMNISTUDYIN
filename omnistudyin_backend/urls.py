@@ -16,12 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from data_logic import views
+from data_logic.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('login', views.StudentLoginView.as_view(), name='student_login'),
-    path('signup', views.StudentSignupView.as_view(), name='student_signup'),
-    path('logout', views.StudentLogoutView.as_view(), name='student_logout'),
+    path('register/', register_student, name='register_student'),
+    path('login/', login_student, name='login_student')
 ]

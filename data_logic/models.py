@@ -1,32 +1,34 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
+from neomodel import (config, StructuredNode, StringProperty, 
+                      IntegerProperty, UniqueIdProperty, RelationshipTo,
+                      EmailProperty, DateTimeFormatProperty)
+
 
 # Create your models here.
 
+
 # student model
-class Student(AbstractUser):
-    forename =    models.CharField(max_length=25)
-    surname =     models.CharField(max_length=25)
-    native_lang = models.CharField(max_length=25)
-    zip_code =    models.IntegerField()
+class Student(StructuredNode):
+    # student related information
+    student_id = UniqueIdProperty()
+    forename   = StringProperty(required=True)
+    surname    = StringProperty()
+    
+    # date of birth
+    dob        = DateTimeFormatProperty(format="%d-%m-%Y")
+
+    email      = EmailProperty(required=True)
+    password   = StringProperty() # stored as salted argon2i secret hash
+    salt       = StringProperty()
 
     # personal text
-    bio =         models.CharField(max_length=150)
-    
-    # day of birth; current age is computed on demand
-    dob =         models.DateField()
+    bio        = StringProperty()
 
-    # account specific information
-    username =    models.CharField(max_length=25, unique=True)
-    # use EmailField for predefined regex check
-    email =       models.EmailField(max_length=64, unique=True)
-
-    # student specific information
-    uni_name =    models.CharField(max_length=50)
-    degree =      models.CharField(max_length=30)
-    semester =    models.IntegerField()
+    # university information
+    uni_name   = StringProperty()
+    degree     = StringProperty()
+    semester   = IntegerProperty()
 
     def __str__(self):
-        return self.username
+        return (self.student_id, self.email)
     
     
