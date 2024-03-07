@@ -9,7 +9,7 @@ from neomodel import (config, StructuredNode, StringProperty,
 # student model
 class Student(StructuredNode):
     # student related information
-    student_id = UniqueIdProperty()
+    student_id = UniqueIdProperty() # not needed because neomodel creates and id in the back itself
     forename   = StringProperty(required=True)
     surname    = StringProperty()
     
