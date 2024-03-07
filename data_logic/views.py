@@ -8,12 +8,21 @@ import argon2
 
 import jwt
 
+import os
+
+import hashlib
+
 from datetime import datetime, timedelta
 
-from models import Student
+from data_logic.models import Student
 
 # Create your views here.
 
+# easy test view for debugging
+@api_view(['GET'])
+def get_value(request):
+    matching = Student.nodes.filter(email='inf22111@lehre.dhbw-stuttgart.de').first()
+    return Response({'value': matching.semester})
 
 @api_view(['POST'])
 def register_student(request):
@@ -24,26 +33,33 @@ def register_student(request):
     # check if user does not already exist
     # note: email is the unique property
 
-    node = Student.nodes.get(email=student_data)
+    matching_node = Student.nodes.filter(email=student_data)
 
-    if node is not None:
+    if matching_node:
         return Response({'info': 'student with given email already exists.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     # generate a random salt
-    salt = argon2.low_level.ffi.new(
-        "uint8_t[]", argon2.low_level.TypeID.Argon2i.SALTBYTES)
-    argon2.low_level.fill_random_bytes(
-        salt, argon2.low_level.TypeID.Argon2i.SALTBYTES)
+    salt = os.urandom(32)
 
     # assign salt to student data
     student_data['salt'] = salt.hex()
+    
+    hash_object = hashlib.sha256()
+    hash_object.update(student_data['password'].encode())
+
+    # Get the hexadecimal representation of the hash
+    student_data['password'] = hash_object.hexdigest()
+    
+    # convert dob from string back to datetime object
+    student_data['dob'] = datetime.strptime(student_data['dob'], "%d-%m-%Y")
 
     # replace the given "easy" hash with the random salted argon2i hash
-    student_data['password'] = compute_argon2i_hash(student_data['password'], student_data['salt'])
+    # student_data['password'] = compute_argon2i_hash(student_data['password'], student_data['salt'])
 
     # create new user and save
-    new_student_node = Student.create(**student_data)
+    new_student_node = Student(**student_data)
+    new_student_node.save()
 
     # return success
     return Response({'info': 'successfully registered new student.'},
