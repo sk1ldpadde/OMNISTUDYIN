@@ -10,6 +10,7 @@ import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 // Create a MockClient using the Mock class provided by Mockito.
 class MockClient extends Mock implements http.Client {}
 
+// does not work yet...
 void main() {
   group('FrontendToBackendConnection', () {
     // Mock HTTP client
