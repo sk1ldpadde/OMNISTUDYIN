@@ -7,10 +7,14 @@ class FrontendToBackendConnection {
 
   // method to get data from the server
   // urlPattern is the backend endpoint url pattern
-  static Future<dynamic> getData(String urlPattern) async {
+  static Future<dynamic> getData(String urlPattern,
+      {client = "default"}) async {
     try {
+      if (client == "default") {
+        client = http.Client();
+      }
       String fullUrl = baseURL + urlPattern;
-      final response = await http.get(Uri.parse(fullUrl));
+      final response = await client.get(Uri.parse(fullUrl));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
@@ -25,10 +29,14 @@ class FrontendToBackendConnection {
   // Method to send post request to the server
   // urlPattern is the backend endpoint url pattern
   // data is the data to be sent to the server in a Map, which is basically a JSON object / Python-dictionary
-  static Future<dynamic> postData(String url, Map<String, dynamic> data) async {
+  static Future<dynamic> postData(String url, Map<String, dynamic> data,
+      {client = "default"}) async {
     try {
+      if (client == "default") {
+        client = http.Client();
+      }
       String fullUrl = baseURL + url;
-      final response = await http.post(
+      final response = await client.post(
         Uri.parse(fullUrl),
         headers: {"Content-Type": "application/json"},
         body: json.encode(data),
@@ -47,10 +55,14 @@ class FrontendToBackendConnection {
   // Method to send put request to the server
   // urlPattern is the backend endpoint url pattern
   // data is the data to be sent to the server in a Map, which is basically a JSON object / Python-dictionary
-  static Future<dynamic> putData(String url, Map<String, dynamic> data) async {
+  static Future<dynamic> putData(String url, Map<String, dynamic> data,
+      {client = "default"}) async {
     try {
+      if (client == "default") {
+        client = http.Client();
+      }
       String fullUrl = baseURL + url;
-      final response = await http.put(
+      final response = await client.put(
         Uri.parse(fullUrl),
         headers: {"Content-Type": "application/json"},
         body: json.encode(data),
@@ -68,10 +80,13 @@ class FrontendToBackendConnection {
 
   // Method to send delete request to the server
   // urlPattern is the backend endpoint url pattern
-  static Future<dynamic> deleteData(String url) async {
+  static Future<dynamic> deleteData(String url, {client = "default"}) async {
     try {
+      if (client == "default") {
+        client = http.Client();
+      }
       String fullUrl = baseURL + url;
-      final response = await http.delete(Uri.parse(fullUrl));
+      final response = await client.delete(Uri.parse(fullUrl));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
