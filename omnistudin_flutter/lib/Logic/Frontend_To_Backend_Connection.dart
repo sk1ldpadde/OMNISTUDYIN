@@ -24,6 +24,7 @@ class FrontendToBackendConnection {
 
   // Method to send post request to the server
   // urlPattern is the backend endpoint url pattern
+  // data is the data to be sent to the server in a Map, which is basically a JSON object / Python-dictionary
   static Future<dynamic> postData(String url, Map<String, dynamic> data) async {
     try {
       String fullUrl = baseURL + url;
@@ -44,6 +45,8 @@ class FrontendToBackendConnection {
   }
 
   // Method to send put request to the server
+  // urlPattern is the backend endpoint url pattern
+  // data is the data to be sent to the server in a Map, which is basically a JSON object / Python-dictionary
   static Future<dynamic> putData(String url, Map<String, dynamic> data) async {
     try {
       String fullUrl = baseURL + url;
@@ -60,6 +63,23 @@ class FrontendToBackendConnection {
       }
     } catch (e) {
       throw Exception('Network error while trying to put data: $e');
+    }
+  }
+
+  // Method to send delete request to the server
+  // urlPattern is the backend endpoint url pattern
+  static Future<dynamic> deleteData(String url) async {
+    try {
+      String fullUrl = baseURL + url;
+      final response = await http.delete(Uri.parse(fullUrl));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception(
+            'Failed to delete data: HTTP status ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error while trying to delete data: $e');
     }
   }
 }
