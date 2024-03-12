@@ -1,14 +1,11 @@
 import 'package:flutter/cupertino.dart';
-
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
+import 'pages/findfriends_page.dart';
 
 class OmniStudyingApp extends StatelessWidget {
   const OmniStudyingApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
+    return const CupertinoApp(
       home: OmniStudyingHomepage(),
     );
   }
@@ -50,9 +47,7 @@ class _OmniStudyingHomepageState extends State<OmniStudyingHomepage> {
                   onPressed: () {
                     Navigator.of(context).push(
                       CupertinoPageRoute<void>(
-
-                        builder: (BuildContext context) =>
-                            FindFriendsPage(tabIndex: index),
+                        builder: (BuildContext context) => FindFriendsPage(),
                       ),
                     );
                   },
@@ -62,81 +57,6 @@ class _OmniStudyingHomepageState extends State<OmniStudyingHomepage> {
           },
         );
       },
-    );
-  }
-}
-
-class FindFriendsPage extends StatefulWidget {
-  final int tabIndex;
-  const FindFriendsPage({super.key, required this.tabIndex});
-
-  @override
-  _FindFriendsPageState createState() => _FindFriendsPageState();
-}
-
-class _FindFriendsPageState extends State<FindFriendsPage> {
-  List<dynamic> friendsList = []; // List to hold friends data
-
-  @override
-  void initState() {
-    super.initState();
-    fetchFriends();
-  }
-
-  Future<void> fetchFriends() async {
-    var url =
-        'http://yourdjangoapi.com/api/friends'; // Replace with your API URL
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        setState(() {
-          friendsList = json.decode(response.body);
-        });
-      } else {
-        print('Failed to load friends');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Find Friends'),
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: friendsList.length,
-                itemBuilder: (context, index) {
-                  return CupertinoListTile(
-                    leading: const Icon(CupertinoIcons.profile_circled),
-                    title: Text(friendsList[index]
-                        ['name']), // Adjust based on your data structure
-                    trailing: const Icon(CupertinoIcons.add_circled),
-                    onTap: () {
-                      // Your code for adding a friend
-                    },
-                  );
-                },
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: CupertinoButton(
-                child: const Text('Back'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
