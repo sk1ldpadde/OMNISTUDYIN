@@ -19,10 +19,20 @@ from data_logic.models import Student
 # Create your views here.
 
 # easy test view for debugging
+
+
 @api_view(['GET'])
 def get_value(request):
-    matching = Student.nodes.filter(email='inf22111@lehre.dhbw-stuttgart.de').first()
+    matching = Student.nodes.filter(
+        email='inf22111@lehre.dhbw-stuttgart.de').first()
     return Response({'value': matching.semester})
+
+
+@api_view(['GET'])
+def test(request):
+    return Response({'info': 'test successful.'},
+                    status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 def register_student(request):
@@ -44,13 +54,13 @@ def register_student(request):
 
     # assign salt to student data
     student_data['salt'] = salt.hex()
-    
+
     hash_object = hashlib.sha256()
     hash_object.update(student_data['password'].encode())
 
     # Get the hexadecimal representation of the hash
     student_data['password'] = hash_object.hexdigest()
-    
+
     # convert dob from string back to datetime object
     student_data['dob'] = datetime.strptime(student_data['dob'], "%d-%m-%Y")
 
