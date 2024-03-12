@@ -1,8 +1,18 @@
 version: "3.9"
 
 services:
+  neo4j:
+    image: neo4j:latest
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/123456789
+
   backend:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
+    depends_on:
+      - neo4j

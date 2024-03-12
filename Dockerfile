@@ -21,5 +21,5 @@ COPY . /app
 RUN python3 manage.py makemigrations
 RUN python3 manage.py migrate
 
-
-
+# Expose ports (if needed, although the official image already exposes default Neo4j ports)
+EXPOSE 7474 7473 7687 8000

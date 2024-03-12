@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'pages/findfriends_page.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'Logic/Frontend_To_Backend_Connection.dart';
 
 class OmniStudyingApp extends StatelessWidget {
   const OmniStudyingApp({super.key});
@@ -44,12 +47,8 @@ class _OmniStudyingHomepageState extends State<OmniStudyingHomepage> {
               child: Center(
                 child: CupertinoButton(
                   child: const Text('Next page'),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute<void>(
-                        builder: (BuildContext context) => FindFriendsPage(),
-                      ),
-                    );
+                  onPressed: () async {
+                    await FrontendToBackendConnection.getData('test');
                   },
                 ),
               ),
