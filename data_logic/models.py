@@ -41,7 +41,26 @@ class Student(StructuredNode):
     
     # Profile picture - neomodel does not support file fields (blobs) 
     # so we store it as a base64 string
-    profile_picture = StringProperty() 
+    profile_picture = StringProperty()
+    
+    # Additional information
+    # TODO Use Google Geolocation API to get the location from the zip code
+    zip_code   = StringProperty()
+    
+    """
+    Interests and goals are stored as JSON objects
+    
+    Example:
+    {
+        "interests": ["Python", "Django", "Neo4j"],
+        "goals": ["Learn more about Django", "Get better at Python"]
+    }
+    """
+    interests_and_goals  = JSONProperty()
+    
+    # --------------------------
+    # END OF STUDENT INFORMATION
+    # --------------------------
     
     # Relationships
     # Bidirectional friendship relationship

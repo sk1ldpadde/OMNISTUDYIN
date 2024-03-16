@@ -49,7 +49,7 @@ def register_student(request):
     ph = PasswordHasher()
     student_data['password'] = ph.hash(student_data['password'])
 
-    # convert dob from string back to datetime object
+    # convert dob from string back a datetime object
     student_data['dob'] = datetime.strptime(student_data['dob'], "%d-%m-%Y")
 
     # Create new user and save
