@@ -1,9 +1,21 @@
 from neomodel import *
 
-import base64
-
 
 # Create your models here.
+
+
+# Friend relationship model
+class FriendRel(StructuredRel):
+    # When was the friendship created
+    since = DateTimeFormatProperty(format="%d-%m-%Y",
+                                   default_now=True)
+    
+    # Is the friendship bidirectional
+    bidrectional = BooleanProperty(default=False)
+    
+    def set_bidrectional(self, value):
+        self.bidrectional = value
+        self.save()    
 
 
 # Student model
@@ -18,7 +30,6 @@ class Student(StructuredNode):
     # Use email as unique identifier
     email      = EmailProperty(required=True)
     password   = StringProperty() # stored as salted argon2i secret hash
-    salt       = StringProperty()
 
     # Personal text
     bio        = StringProperty()
@@ -36,7 +47,7 @@ class Student(StructuredNode):
     # Bidirectional friendship relationship
     friends = RelationshipTo('Student', 
                              'FRIEND', 
-                             model='FriendRel', 
+                             model=FriendRel, 
                              cardinality=ZeroOrMore)
     
     def delete(self):
@@ -48,17 +59,3 @@ class Student(StructuredNode):
 
     def __str__(self):
         return (self.student_id, self.email)
-
-
-# Friend relationship model
-class FriendRel(StructuredNode):
-    # When was the friendship created
-    since = DateTimeFormatProperty(format="%d-%m-%Y",
-                                   default_now=True)
-    
-    # Is the friendship bidirectional
-    bidrectional = BooleanProperty(default=False)
-    
-    def set_bidrectional(self, value):
-        self.bidrectional = value
-        self.save()    

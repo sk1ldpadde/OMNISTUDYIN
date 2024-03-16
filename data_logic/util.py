@@ -1,5 +1,9 @@
-from models import *
+from data_logic.models import *
+
 from datetime import date
+
+from argon2 import PasswordHasher, exceptions
+
 
 # TODO write tests to validate function
 
@@ -14,3 +18,14 @@ def compute_current_age(student: Student):
             age -= 1
     
     return age
+
+
+# Check if the given password matches the stored salted hash
+def check_credentials(stored_pwd, request_pwd):
+    ph = PasswordHasher()
+    try:
+        ph.verify(stored_pwd, request_pwd)
+        return True
+    except exceptions.VerifyMismatchError:
+        # The password does not match the hash
+        return False
