@@ -1,6 +1,7 @@
 from data_logic.models import *
 
 from datetime import date
+from datetime import datetime
 
 from argon2 import PasswordHasher, exceptions
 
@@ -9,14 +10,14 @@ from argon2 import PasswordHasher, exceptions
 
 def compute_current_age(student: Student):
     today = date.today()
+    student_dob = datetime.strptime(student.dob, "%d-%m-%Y")
 
-    age = today.year - student.year
+    age = today.year - student_dob.year
 
     # check if birthday already happend this year
-    if today.month <= student.dob.month:
-        if today.month == student.dob.month and today.day < student.dob.day:
-            age -= 1
-    
+    if (today.month, today.day) < (student_dob.month, student_dob.day):
+        age -= 1
+
     return age
 
 
