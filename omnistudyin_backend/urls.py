@@ -24,5 +24,11 @@ urlpatterns = [
     path('register/', register_student, name='register_student'),
     path('login/', login_student, name='login_student'),
     path('value/', get_value, name='get_value'),
-    path('test', test, name='test')
+    path('test', test, name='test'),
+    path('create_adgroup/', create_ad_group, name='adgroup'),
+    path('get_adgroups/', get_ad_groups, name='get_adgroups'),
+    # get_ads_of_group is a POST request! --> needs to get the name of the ad group (ad_group_name) as a parameter in the request!
+    path('get_ads_of_group/', get_ads_of_group, name='get_ads'),
+    # create_ads_in_group is a POST request! --> needs to get the name of the ad group (ad_group_name) as a parameter in the request!
+    path('create_ads_in_group/', create_ads_in_group, name='create_ads'),
 ]
