@@ -88,30 +88,30 @@ class Student(StructuredNode):
 
 # Ad_group model: Ad group is a collection of ads kind of like a "subreddit"
 
-    class Ad_Group(StructuredNode):
-        # Ad group information
-        name = StringProperty()
-        description = StringProperty()
+class Ad_Group(StructuredNode):
+    # Ad group information
+    name = StringProperty()
+    description = StringProperty()
 
-    # TODO: please review if the following relationships are correct
-        # Relationships
-        # Ad group has many ads
-        ads = RelationshipTo('Ad', 'AD_IN', cardinality=ZeroOrMore)
+# TODO: please review if the following relationships are correct
+    # Relationships
+    # Ad group has many ads
+    ads = RelationshipTo('Ad', 'AD_IN', cardinality=ZeroOrMore)
 
-        # Ad group is created by a student --> Admin of the ad group
-        # cardinality is ZeroOrMore because a student can create multiple ad groups,
-        # but we also want to have the possibility to have "standard groups" which are created by the system
-        admin = RelationshipFrom('Student', 'ADMIN', cardinality=ZeroOrMore)
+    # Ad group is created by a student --> Admin of the ad group
+    # cardinality is ZeroOrMore because a student can create multiple ad groups,
+    # but we also want to have the possibility to have "standard groups" which are created by the system
+    admin = RelationshipFrom('Student', 'ADMIN', cardinality=ZeroOrMore)
 
-        def __str__(self):
-            return self.name
+    def __str__(self):
+        return self.name
 
-        def delete(self):
-            # Delete all ads in the group
-            for ad in self.ads.all():
-                ad.delete()
-            # Delete the ad group
-            super().delete()
+    def delete(self):
+        # Delete all ads in the group
+        for ad in self.ads.all():
+            ad.delete()
+        # Delete the ad group
+        super().delete()
 
 
 class Ad(StructuredNode):
