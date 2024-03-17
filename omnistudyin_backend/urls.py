@@ -29,6 +29,6 @@ urlpatterns = [
     path('get_adgroups/', get_ad_groups, name='get_adgroups'),
     # get_ads_of_group is a POST request! --> needs to get the name of the ad group (ad_group_name) as a parameter in the request!
     path('get_ads_of_group/', get_ads_of_group, name='get_ads'),
-    # create_ads_in_group is a POST request! --> needs to get the name of the ad group (ad_group_name) as a parameter in the request!
+    # create_ads_in_group needs to get the name of the ad group (ad_group_name) as a parameter in the request (additionally to the standard params)!
     path('create_ads_in_group/', create_ads_in_group, name='create_ads'),
 ]

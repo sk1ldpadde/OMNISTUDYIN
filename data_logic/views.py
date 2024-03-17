@@ -106,7 +106,7 @@ def login_student(request):
 
 @api_view(['GET'])
 def get_ad_groups(request):
-    ad_groups = Ad_Group.objects.all()
+    ad_groups = Ad_Group.nodes.all()
     serializer = AdGroupSerializer(ad_groups, many=True)
     return Response(serializer.data)
 
@@ -114,6 +114,12 @@ def get_ad_groups(request):
 @api_view(['POST'])
 def create_ad_group(request):
     data = request.data
+
+    # Check if an ad group with the provided name already exists
+    existing_ad_group = Ad_Group.nodes.filter(name=data['name']).first()
+    if existing_ad_group:
+        return Response({'error': 'An ad group with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
     # Create a new ad group
     # TODO: validate payload!
     # TODO: connect the session holder student as the creator of the ad group
@@ -143,7 +149,7 @@ def get_ads_of_group(request):
         # Serialize the queryset
         serializer = AdSerializer(ads, many=True)
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Ad_Group.DoesNotExist:
         return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
