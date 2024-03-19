@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:omnistudin_flutter/pages/profilesettings_page.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -6,84 +7,56 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String profileName = "John Doe";
-  String email = "johndoe@example.com";
-  String major = "Computer Science";
+  String profileName = "Profile Name"; // Replace with actual profile name
+  String email = "Email"; // Replace with actual email
+  String major = "Selected Major"; // Replace with actual major
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            expandedHeight: 200.0,
-            floating: false,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text("Profile"),
-              background: Image.network(
-                "https://via.placeholder.com/150",
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Container(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Profile Name: $profileName',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Email: $email',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Major: $major',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Profile Settings',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
-                      ListTile(
-                        title: Text('Modify Profile Name'),
-                        trailing: Icon(Icons.edit),
-                        onTap: () {
-                          // Implement your functionality here
-                        },
-                      ),
-                      ListTile(
-                        title: Text('Modify Email'),
-                        trailing: Icon(Icons.edit),
-                        onTap: () {
-                          // Implement your functionality here
-                        },
-                      ),
-                      ListTile(
-                        title: Text('Modify Major'),
-                        trailing: Icon(Icons.edit),
-                        onTap: () {
-                          // Implement your functionality here
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+      appBar: AppBar(
+        title: Text('Profile'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              // Navigate to the settings page
+              // Replace 'SettingsPage()' with your actual settings page
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()));
+            },
           ),
         ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 80,
+                backgroundImage: AssetImage(
+                    'path_to_profile_picture'), // Replace with actual path or use a placeholder image
+              ),
+              SizedBox(height: 20),
+              Text(
+                profileName,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                email,
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              Text(
+                major,
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
