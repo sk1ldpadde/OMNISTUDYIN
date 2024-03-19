@@ -103,6 +103,13 @@ def login_student(request):
 
 
 @api_view(['GET'])
+def get_all_students(request):
+    students = Student.nodes.all()
+    serializer = StudentSerializer(students, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
 def get_session_student(request):
     data = request.data
     try:
@@ -112,13 +119,6 @@ def get_session_student(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Student.DoesNotExist:
         return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['GET'])
-def get_all_students(request):
-    students = Student.nodes.all()
-    serializer = StudentSerializer(students, many=True)
-    return Response(serializer.data)
 
 
 @api_view(['PUT'])
@@ -156,6 +156,18 @@ def change_session_student(request):
 
     student.save()
     return Response({'info': 'successfully changed student.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def delete_session_student(request):
+    request_data = request.data
+    # TODO: Delete Sessionholder!
+    try:
+        student = Student.nodes.get(email=request_data.get('email'))
+        student.delete()
+        return Response({'info': 'successfully deleted student.'}, status=status.HTTP_200_OK)
+    except Student.DoesNotExist:
+        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 # TODO define a view for simple student matching algorithm
@@ -222,6 +234,18 @@ def change_ad_group(request):
         ad_group.description = data.get('description')
     ad_group.save()
     return Response({'info': 'successfully changed ad group.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def delete_ad_group(request):
+    data = request.data
+    # TODO: Check if sessionHolder is the admin of the ad group
+    try:
+        ad_group = Ad_Group.nodes.get(name=data.get('name'))
+        ad_group.delete()
+        return Response({'info': 'successfully deleted ad group and all of its ads.'}, status=status.HTTP_200_OK)
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'An ad group with this name does not exist. (please provide a name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # needs to get the name of the ad group (ad_group_name) as a parameter in the request!
@@ -308,5 +332,28 @@ def change_ad_in_group(request):
             ad.image = data.get('image')
         ad.save()
         return Response({'info': 'successfully changed ad.'}, status=status.HTTP_200_OK)
+    except Ad.DoesNotExist:
+        return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+def delete_ad_in_group(request):
+    data = request.data
+    # extract the ad group name from the request
+    # TODO: Check if sessionHolder is the admin of the ad
+    ad_group_name = data.get('ad_group_name')
+    if ad_group_name is None:
+        return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        # get the ad group
+        ad_group = Ad_Group.nodes.get(name=ad_group_name)
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # get the ad
+        ad = ad_group.ads.get(title=data.get('title'))
+        ad.delete()
+        return Response({'info': 'successfully deleted ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
         return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
