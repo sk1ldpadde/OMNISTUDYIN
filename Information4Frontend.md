@@ -4,8 +4,11 @@ Here are the endpoints that you can access (for reference see omnistudyin_backen
 
     `path('register/', register_student, name='register_student'), #POST
     path('login/', login_student, name='login_student'), #Hier bekommt man den JWT für die Session zurück #POST
+    
     path('get_all_students/', get_all_students, name='get_all_students'), #GET
     path('get_adgroups/', get_ad_groups, name='get_adgroups'), #GET
+
+    
     # Ab hier sind die SESSION paths, dh den folgenden Methoden muss der JWT Token mitgegeben werden (als Parameter "JWT")
     path('create_adgroup/', create_ad_group, name='adgroup'), #POST
     # get_ads_of_group is a POST request! --> needs to get the name of the ad group (ad_group_name) as a parameter in the request!
