@@ -31,4 +31,11 @@ urlpatterns = [
     path('get_ads_of_group/', get_ads_of_group, name='get_ads'),
     # create_ads_in_group needs to get the name of the ad group (ad_group_name) as a parameter in the request (additionally to the standard params)!
     path('create_ads_in_group/', create_ads_in_group, name='create_ads'),
+    # path('delete_adgroup/', delete_ad_group, name='delete_adgroup'),
+    # path('delete_ad/', delete_ad, name='delete_ad'),
+    path('change_adgroup/', change_ad_group, name='change_adgroup'),
+    path('change_ad_in_group/', change_ad_in_group, name='change_ad'),
+    path('get_session_student/', get_session_student, name='get_student'),
+    path('get_all_students/', get_all_students, name='get_all_students'),
+    path('change_student/', change_session_student, name='change_student'),
 ]

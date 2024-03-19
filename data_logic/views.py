@@ -101,6 +101,62 @@ def login_student(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+def get_session_student(request):
+    data = request.data
+    try:
+        # TODO: Just get the student of the session!!!
+        student = Student.nodes.get(email=data['email'])
+        serializer = StudentSerializer(student)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Student.DoesNotExist:
+        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def get_all_students(request):
+    students = Student.nodes.all()
+    serializer = StudentSerializer(students, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def change_session_student(request):
+    data = request.data
+    try:
+        # TODO: Just get the student of the session!!!
+        student = Student.nodes.get(email=data['old_email'])
+    except Student.DoesNotExist:
+        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # huge if block to check which attributes are requested to be changed:
+    if data["forename"] is not None and data["surname"] is not None:
+        student.forename = data['forename']
+        student.surname = data['surname']
+    if data["dob"] is not None:
+        student.dob = data['dob']
+    if data["new_email"] is not None:
+        student.email = data['new_email']
+    if data["password"] is not None:
+        student.password = data['password']
+    if data["bio"] is not None:
+        student.bio = data['bio']
+    # TODO: when the uniname changes, the zipcode should be updated as well @daniel
+    if data["uni_name"] is not None and data["degree"] is not None and data["semester"] is not None:
+        student.uni_name = data['uni_name']
+        student.degree = data['degree']
+        student.semester = data['semester']
+    if data["profile_picture"] is not None:
+        student.profile_picture = data['profile_picture']
+    # if data["zip_code"] is not None:
+    #     student.zip_code = data['zip_code']
+    if data["interests_and_goals"] is not None:
+        student.interests_and_goals = data['interests_and_goals']
+
+    student.save()
+    return Response({'info': 'successfully changed student.'}, status=status.HTTP_200_OK)
+
+
 # TODO define a view for simple student matching algorithm
 
 
@@ -138,6 +194,32 @@ def create_ad_group(request):
     # Serialize the new ad group
     serializer = AdGroupSerializer(ad_group)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['PUT'])
+def change_ad_group(request):
+    data = request.data
+    # Check if an ad group with the provided name already exists
+    # try catch block to handle the case where the ad group does not exist
+    try:
+        ad_group = Ad_Group.nodes.get(name=data['old_name'])
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'An ad group with this name does not exist. (please provide an old_name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # TODO: check if session holder is the admin of the ad group!!
+
+    if data['new_name'] is None and data['description'] is None:
+        return Response({'error': 'Please provide a name or a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
+    if check_profanity(data['new_name']) or check_profanity(data['description']):
+        return Response({'error': 'Please provide a name and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # if block to check which attributes are requested to be changed:
+    if data["new_name"] is not None:
+        ad_group.name = data['new_name']
+    if data["description"] is not None:
+        ad_group.description = data['description']
+    ad_group.save()
+    return Response({'info': 'successfully changed ad group.'}, status=status.HTTP_200_OK)
 
 
 # needs to get the name of the ad group (ad_group_name) as a parameter in the request!
@@ -191,3 +273,38 @@ def create_ads_in_group(request):
 
     except Ad_Group.DoesNotExist:
         return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def change_ad_in_group(request):
+    data = request.data
+    # extract the ad group name from the request
+    ad_group_name = data['ad_group_name']
+    if ad_group_name is None:
+        return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
+    if data.get("new_title") is None and data.get("description") is None:
+        return Response({"info": "please provide a title or description for the ad"}, status=status.HTTP_400_BAD_REQUEST)
+    if check_profanity(data['title']) or check_profanity(data['description']):
+        return Response({'error': 'Please provide a title and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        # get the ad group
+        ad_group = Ad_Group.nodes.get(name=ad_group_name)
+
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # get the ad
+        ad = ad_group.ads.get(title=data['old_title'])
+        # change the ad
+        # if block to check which attributes are requested to be changed:
+        if data["new_title"] is not None:
+            ad.title = data['new_title']
+        if data["description"] is not None:
+            ad.description = data['description']
+        if data["image"] is not None:
+            ad.image = data['image']
+        ad.save()
+        return Response({'info': 'successfully changed ad.'}, status=status.HTTP_200_OK)
+    except Ad.DoesNotExist:
+        return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
