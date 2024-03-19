@@ -22,6 +22,8 @@ from data_logic.serializers import StudentSerializer, AdGroupSerializer, AdSeria
 
 # easy test view for debugging
 
+# ------------------TEST------------------#
+
 
 @api_view(['GET'])
 def get_value(request):
@@ -34,6 +36,10 @@ def get_value(request):
 def test(request):
     return Response({'info': 'test successful.'},
                     status=status.HTTP_200_OK)
+
+# ------------------TEST-END------------------#
+
+# ------------------STUDENT------------------#
 
 
 @api_view(['POST'])
@@ -172,6 +178,8 @@ def delete_session_student(request):
 
 # TODO define a view for simple student matching algorithm
 
+# ------------------STUDENT-END------------------#
+# ------------------ADGROUP------------------#
 
 @api_view(['GET'])
 def get_ad_groups(request):
@@ -247,6 +255,9 @@ def delete_ad_group(request):
     except Ad_Group.DoesNotExist:
         return Response({'error': 'An ad group with this name does not exist. (please provide a name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
 
+# ------------------ADGROUP-END------------------#
+
+# ------------------AD------------------#
 
 # needs to get the name of the ad group (ad_group_name) as a parameter in the request!
 
@@ -357,3 +368,5 @@ def delete_ad_in_group(request):
         return Response({'info': 'successfully deleted ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
         return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
+
+# ------------------AD-END------------------#
