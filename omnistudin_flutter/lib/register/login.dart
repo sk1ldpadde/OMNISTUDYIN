@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -64,33 +65,34 @@ class RegistrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(middle: Text('Willkommen'),),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Willkommen!',
-                style: TextStyle(fontSize: 24.0),
-              ),
-              const SizedBox(height: 16.0),
-              const Text(
-                'Du bist bald bereit durchzustarten',
-                style: TextStyle(fontSize: 22.0),
-              ),
-              const SizedBox(height: 24.0),
-              CupertinoButton.filled(
-                child: const Text('Weiter'),
-                onPressed: () {
-                  // Hier navigieren Sie zur Seite für die Dateneingabe
-                  Navigator.push(context, CupertinoPageRoute(builder: (context) => DataEntryPage()));
-                },
-              ),
-            ],
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Willkommen!',
+                  style: TextStyle(fontSize: 24.0),
+                ),
+                const SizedBox(height: 16.0),
+                const Text(
+                  'Du bist bald bereit durchzustarten',
+                  style: TextStyle(fontSize: 22.0),
+                ),
+                const SizedBox(height: 24.0),
+                CupertinoButton.filled(
+                  child: const Text('Weiter'),
+                  onPressed: () {
+                    // Hier navigieren Sie zur Seite für die Dateneingabe
+                    Navigator.push(context, CupertinoPageRoute(builder: (context) => DataEntryPage()));
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -182,14 +184,14 @@ class _DataEntryPageState extends State<DataEntryPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Registrierung'),),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            children: [
+        navigationBar: const CupertinoNavigationBar(middle: Text('Registrierung'),),
+    child: Scaffold(
+    body: Center(
+    child: SingleChildScrollView(
+    child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+    children: [
               const Text('Gib deinen Vornamen ein:', style: TextStyle(fontSize: 16.0),),
               SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
               CupertinoTextField(
@@ -348,11 +350,12 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   }
                 },
               ),
-            ],
-          ),
-
-        ),
-      ),
+    ],
+    ),
+    ),
+    ),
+    ),
+    ),
     );
   }
 }
