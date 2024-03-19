@@ -5,6 +5,8 @@ from datetime import datetime
 
 from argon2 import PasswordHasher, exceptions
 
+from better_profanity import profanity
+
 
 # TODO write tests to validate function
 
@@ -30,3 +32,7 @@ def check_credentials(stored_pwd, request_pwd):
     except exceptions.VerifyMismatchError:
         # The password does not match the hash
         return False
+
+
+def check_profanity(string: str):
+    return profanity.contains_profanity(string)
