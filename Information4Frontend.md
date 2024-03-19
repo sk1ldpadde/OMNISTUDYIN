@@ -29,5 +29,5 @@ Here are the endpoints that you can access (for reference see omnistudyin_backen
 
 Einfach die Paths im Frontend an den get,put... Methoden übergeben als String.
 
-Beachtet bitte, dass ihr (sobald es steht) bei den Markierten Session paths immer den JWT mitgeben müsst.
-Ebenso muss man bei 
+Beachtet bitte, dass ihr (sobald es steht) bei den Markierten Session paths immer den JWT mitgeben müsst.  
+Ebenso muss man bei den Ads an sich (dadurch, dass ein ad nur innerhalb einer Gruppe existieren kann), bei ALLEN Operationen den ad_group_name in der JSON übergeben muss.
