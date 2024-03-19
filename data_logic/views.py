@@ -8,7 +8,7 @@ import json
 
 from argon2 import PasswordHasher, exceptions
 
-from data_logic.util import check_credentials
+from data_logic.util import check_credentials, check_profanity
 
 import jwt
 
@@ -116,10 +116,19 @@ def create_ad_group(request):
     data = request.data
 
     # Check if an ad group with the provided name already exists
-    existing_ad_group = Ad_Group.nodes.filter(name=data['name']).first()
+    # try catch block to handle the case where the ad group does not exist
+    try:
+        existing_ad_group = Ad_Group.nodes.get(name=data['name'])
+    except Ad_Group.DoesNotExist:
+        existing_ad_group = None
+
     if existing_ad_group:
         return Response({'error': 'An ad group with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
+    if data['name'] is None or data['description'] is None:
+        return Response({'error': 'Please provide a name and a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
+    if check_profanity(data['name']) or check_profanity(data['description']):
+        return Response({'error': 'Please provide a name and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
     # Create a new ad group
     # TODO: validate payload!
     # TODO: connect the session holder student as the creator of the ad group
@@ -162,6 +171,10 @@ def create_ads_in_group(request):
     ad_group_name = data['ad_group_name']
     if ad_group_name is None:
         return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
+    if data["title"] is None or data["description"] is None:
+        return Response({"info": "please provide title and description for the ad"}, status=status.HTTP_400_BAD_REQUEST)
+    if check_profanity(data['title']) or check_profanity(data['description']):
+        return Response({'error': 'Please provide a title and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         # get the ad group
         ad_group = Ad_Group.nodes.get(name=ad_group_name)
