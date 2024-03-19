@@ -1,15 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:omnistudin_flutter/app.dart';
 import 'package:omnistudin_flutter/pages/home_page.dart';
-import 'app.dart';
-import 'pages/home_page.dart';
-import 'pages/profile_page.dart';
-import 'pages/findfriends_page.dart';
+import 'package:omnistudin_flutter/pages/profile_page.dart';
+import 'package:omnistudin_flutter/pages/findfriends_page.dart';
+import 'package:omnistudin_flutter/register/login.dart';
+import 'package:omnistudin_flutter/register/registration.dart';
 
 void main() {
-  // This app is designed only to work vertically, so we limit
-  // orientations to portrait up and down.
   runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -23,6 +22,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   int _currentIndex = 0;
+  bool _isLoggedIn = false; // Set this value based on your login status
 
   final List<Widget> _pages = [
     HomePage(),
@@ -34,8 +34,8 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: _pages[_currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
+        body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(),
+        bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
             setState(() {
@@ -58,7 +58,7 @@ class _LandingPageState extends State<LandingPage> {
           ],
           selectedItemColor: Colors.amber,
           unselectedItemColor: Colors.blue,
-        ),
+        ) : null,
       ),
     );
   }
