@@ -6,7 +6,6 @@ import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/findfriends_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
-import 'package:omnistudin_flutter/register/registration.dart';
 
 void main() {
   runApp(OmniStudyingApp());
