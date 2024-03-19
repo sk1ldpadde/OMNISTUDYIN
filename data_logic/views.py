@@ -44,7 +44,7 @@ def register_student(request):
 
     # Check if user does not already exist
     # Note: email is the unique property
-    matching_node = Student.nodes.filter(email=student_data['email'])
+    matching_node = Student.nodes.filter(email=student_data.get('email'))
 
     if matching_node:
         return Response({'info': 'student with given email already exists.'},
@@ -52,10 +52,11 @@ def register_student(request):
 
     # Create and store a salted hash of the given password
     ph = PasswordHasher()
-    student_data['password'] = ph.hash(student_data['password'])
+    student_data['password'] = ph.hash(student_data.get('password'))
 
     # convert dob from string back a datetime object
-    student_data['dob'] = datetime.strptime(student_data['dob'], "%d-%m-%Y")
+    student_data['dob'] = datetime.strptime(
+        student_data.get('dob'), "%d-%m-%Y")
 
     # Create new user and save
     new_student_node = Student(**student_data)
@@ -72,7 +73,7 @@ def login_student(request):
 
     # TODO: Check if payload is valid
 
-    student_node = Student.nodes.get(email=login_data['email'])
+    student_node = Student.nodes.get(email=login_data.get('email'))
 
     # Check if student node exists
     if student_node is None:
@@ -80,7 +81,7 @@ def login_student(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
     # Check credentials
-    if check_credentials(student_node.password, login_data['password']):
+    if check_credentials(student_node.password, login_data.get('password')):
         # Credentials are correct, generate JWT
         jwt_payload = {
             'sub': student_node.email,
@@ -106,7 +107,7 @@ def get_session_student(request):
     data = request.data
     try:
         # TODO: Just get the student of the session!!!
-        student = Student.nodes.get(email=data['email'])
+        student = Student.nodes.get(email=data.get('email'))
         serializer = StudentSerializer(student)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Student.DoesNotExist:
@@ -125,33 +126,33 @@ def change_session_student(request):
     data = request.data
     try:
         # TODO: Just get the student of the session!!!
-        student = Student.nodes.get(email=data['old_email'])
+        student = Student.nodes.get(email=data.get('old_email'))
     except Student.DoesNotExist:
         return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
     # huge if block to check which attributes are requested to be changed:
-    if data["forename"] is not None and data["surname"] is not None:
-        student.forename = data['forename']
-        student.surname = data['surname']
-    if data["dob"] is not None:
-        student.dob = data['dob']
-    if data["new_email"] is not None:
-        student.email = data['new_email']
-    if data["password"] is not None:
-        student.password = data['password']
-    if data["bio"] is not None:
-        student.bio = data['bio']
+    if data.get("forename") is not None and data.get("surname") is not None:
+        student.forename = data.get('forename')
+        student.surname = data.get('surname')
+    if data.get("dob") is not None:
+        student.dob = data.get('dob')
+    if data.get("new_email") is not None:
+        student.email = data.get('new_email')
+    if data.get("password") is not None:
+        student.password = data.get('password')
+    if data.get("bio") is not None:
+        student.bio = data.get('bio')
     # TODO: when the uniname changes, the zipcode should be updated as well @daniel
-    if data["uni_name"] is not None and data["degree"] is not None and data["semester"] is not None:
-        student.uni_name = data['uni_name']
-        student.degree = data['degree']
-        student.semester = data['semester']
-    if data["profile_picture"] is not None:
-        student.profile_picture = data['profile_picture']
-    # if data["zip_code"] is not None:
-    #     student.zip_code = data['zip_code']
-    if data["interests_and_goals"] is not None:
-        student.interests_and_goals = data['interests_and_goals']
+    if data.get("uni_name") is not None and data.get("degree") is not None and data.get("semester") is not None:
+        student.uni_name = data.get('uni_name')
+        student.degree = data.get('degree')
+        student.semester = data.get('semester')
+    if data.get("profile_picture") is not None:
+        student.profile_picture = data.get('profile_picture')
+    # if data.get("zip_code") is not None:
+    #     student.zip_code = data.get('zip_code')
+    if data.get("interests_and_goals") is not None:
+        student.interests_and_goals = data.get('interests_and_goals')
 
     student.save()
     return Response({'info': 'successfully changed student.'}, status=status.HTTP_200_OK)
@@ -174,22 +175,23 @@ def create_ad_group(request):
     # Check if an ad group with the provided name already exists
     # try catch block to handle the case where the ad group does not exist
     try:
-        existing_ad_group = Ad_Group.nodes.get(name=data['name'])
+        existing_ad_group = Ad_Group.nodes.get(name=data.get('name'))
     except Ad_Group.DoesNotExist:
         existing_ad_group = None
 
     if existing_ad_group:
         return Response({'error': 'An ad group with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if data['name'] is None or data['description'] is None:
+    if data.get('name') is None or data.get('description') is None:
         return Response({'error': 'Please provide a name and a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
-    if check_profanity(data['name']) or check_profanity(data['description']):
+    if check_profanity(data.get('name')) or check_profanity(data.get('description')):
         return Response({'error': 'Please provide a name and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
     # Create a new ad group
     # TODO: validate payload!
     # TODO: connect the session holder student as the creator of the ad group
     # admin= Student.nodes.get(data['sessionholder']))?? bzw TODO: decode den Sessiontoken!
-    ad_group = Ad_Group(name=data['name'], description=data['description'])
+    ad_group = Ad_Group(name=data.get('name'),
+                        description=data.get('description'))
     ad_group.save()
     # Serialize the new ad group
     serializer = AdGroupSerializer(ad_group)
@@ -202,22 +204,22 @@ def change_ad_group(request):
     # Check if an ad group with the provided name already exists
     # try catch block to handle the case where the ad group does not exist
     try:
-        ad_group = Ad_Group.nodes.get(name=data['old_name'])
+        ad_group = Ad_Group.nodes.get(name=data.get('old_name'))
     except Ad_Group.DoesNotExist:
         return Response({'error': 'An ad group with this name does not exist. (please provide an old_name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
 
     # TODO: check if session holder is the admin of the ad group!!
 
-    if data['new_name'] is None and data['description'] is None:
+    if data.get('new_name') is None and data.get('description') is None:
         return Response({'error': 'Please provide a name or a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
-    if check_profanity(data['new_name']) or check_profanity(data['description']):
+    if check_profanity(data.get('new_name')) or check_profanity(data.get('description')):
         return Response({'error': 'Please provide a name and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # if block to check which attributes are requested to be changed:
-    if data["new_name"] is not None:
-        ad_group.name = data['new_name']
-    if data["description"] is not None:
-        ad_group.description = data['description']
+    if data.get("new_name") is not None:
+        ad_group.name = data.get('new_name')
+    if data.get("description") is not None:
+        ad_group.description = data.get('description')
     ad_group.save()
     return Response({'info': 'successfully changed ad group.'}, status=status.HTTP_200_OK)
 
@@ -229,7 +231,7 @@ def change_ad_group(request):
 def get_ads_of_group(request):
     data = request.data
     # extract the ad group name from the request
-    ad_group_name = data['ad_group_name']
+    ad_group_name = data.get('ad_group_name')
     if ad_group_name is None:
         return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
     try:
@@ -250,20 +252,20 @@ def get_ads_of_group(request):
 def create_ads_in_group(request):
     data = request.data
     # extract the ad group name from the request
-    ad_group_name = data['ad_group_name']
+    ad_group_name = data.get('ad_group_name')
     if ad_group_name is None:
         return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
-    if data["title"] is None or data["description"] is None:
+    if data.get("title") is None or data.get("description") is None:
         return Response({"info": "please provide title and description for the ad"}, status=status.HTTP_400_BAD_REQUEST)
-    if check_profanity(data['title']) or check_profanity(data['description']):
+    if check_profanity(data.get('title')) or check_profanity(data.get('description')):
         return Response({'error': 'Please provide a title and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         # get the ad group
         ad_group = Ad_Group.nodes.get(name=ad_group_name)
         # create and save the ad
         # TODO: connect the session holder student as the admin of the ad group
-        ad = Ad(title=data["title"],
-                description=data["description"], image=data["image"])
+        ad = Ad(title=data.get("title"),
+                description=data.get("description"), image=data.get("image"))
         ad.save()
         # connect the ad to the ad group
         ad_group.ads.connect(ad)
@@ -279,12 +281,12 @@ def create_ads_in_group(request):
 def change_ad_in_group(request):
     data = request.data
     # extract the ad group name from the request
-    ad_group_name = data['ad_group_name']
+    ad_group_name = data.get('ad_group_name')
     if ad_group_name is None:
         return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
     if data.get("new_title") is None and data.get("description") is None:
         return Response({"info": "please provide a title or description for the ad"}, status=status.HTTP_400_BAD_REQUEST)
-    if check_profanity(data['title']) or check_profanity(data['description']):
+    if check_profanity(data.get('title')) or check_profanity(data.get('description')):
         return Response({'error': 'Please provide a title and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         # get the ad group
@@ -295,15 +297,15 @@ def change_ad_in_group(request):
 
     try:
         # get the ad
-        ad = ad_group.ads.get(title=data['old_title'])
+        ad = ad_group.ads.get(title=data.get('old_title'))
         # change the ad
         # if block to check which attributes are requested to be changed:
-        if data["new_title"] is not None:
-            ad.title = data['new_title']
-        if data["description"] is not None:
-            ad.description = data['description']
-        if data["image"] is not None:
-            ad.image = data['image']
+        if data.get("new_title") is not None:
+            ad.title = data.get('new_title')
+        if data.get("description") is not None:
+            ad.description = data.get('description')
+        if data.get("image") is not None:
+            ad.image = data.get('image')
         ad.save()
         return Response({'info': 'successfully changed ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
