@@ -68,6 +68,7 @@ class TestProfanityCheck(unittest.TestCase):
         check_string_2 = check_profanity(test_string_2)
 
         self.assertFalse(None)
+
         self.assertFalse(check_string_1)
         self.assertTrue(check_string_2)
 
