@@ -1,4 +1,4 @@
-from models import *
+from data_logic.models import *
 
 from datetime import date
 from datetime import datetime

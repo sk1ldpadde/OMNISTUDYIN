@@ -2,11 +2,11 @@ import unittest
 
 from datetime import date
 
-from util import compute_current_age, check_credentials, check_profanity
+from data_logic.util import compute_current_age, check_credentials, check_profanity
 
 from datetime import timedelta
 
-from models import Student
+from data_logic.models import Student
 
 from argon2 import PasswordHasher
 
