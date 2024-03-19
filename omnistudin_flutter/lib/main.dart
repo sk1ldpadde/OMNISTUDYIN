@@ -56,8 +56,8 @@ class _LandingPageState extends State<LandingPage> {
               label: 'Profile',
             ),
           ],
-          selectedItemColor: Colors.amber,
-          unselectedItemColor: Colors.blue,
+          selectedItemColor: Color(0xFFf46139),
+          unselectedItemColor: Color(0xFFf7b29f),
         ),
       ),
     );

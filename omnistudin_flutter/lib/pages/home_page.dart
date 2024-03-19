@@ -28,7 +28,22 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _showSearchBar ? TextField() : Text('Home'),
+        centerTitle: true,
+        title: _showSearchBar
+            ? TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  contentPadding: EdgeInsets.all(10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                ),
+              )
+            : Container(
+                width: 280, // Adjust as needed
+                height: 400, // Adjust as needed
+                child: Image.asset('lib/images/logo_name.png'),
+              ),
         leading: IconButton(
           icon: Icon(Icons.add),
           onPressed: () async {
