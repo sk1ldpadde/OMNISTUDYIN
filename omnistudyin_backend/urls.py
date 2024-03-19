@@ -37,5 +37,4 @@ urlpatterns = [
     path('change_ad_in_group/', change_ad_in_group, name='change_ad'),
     path('get_session_student/', get_session_student, name='get_student'),
     path('get_all_students/', get_all_students, name='get_all_students'),
-    path('change_student/', change_session_student, name='change_student'),
 ]
