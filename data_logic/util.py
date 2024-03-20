@@ -35,4 +35,6 @@ def check_credentials(stored_pwd, request_pwd):
 
 
 def check_profanity(string: str):
+    if string is None:
+        return False
     return profanity.contains_profanity(string)

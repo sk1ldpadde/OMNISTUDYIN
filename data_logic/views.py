@@ -22,6 +22,8 @@ from data_logic.serializers import StudentSerializer, AdGroupSerializer, AdSeria
 
 # easy test view for debugging
 
+# ------------------TEST------------------#
+
 
 @api_view(['GET'])
 def get_value(request):
@@ -35,6 +37,10 @@ def test(request):
     return Response({'info': 'test successful.'},
                     status=status.HTTP_200_OK)
 
+# ------------------TEST-END------------------#
+
+# ------------------STUDENT------------------#
+
 
 @api_view(['POST'])
 def register_student(request):
@@ -44,7 +50,7 @@ def register_student(request):
 
     # Check if user does not already exist
     # Note: email is the unique property
-    matching_node = Student.nodes.filter(email=student_data['email'])
+    matching_node = Student.nodes.filter(email=student_data.get('email'))
 
     if matching_node:
         return Response({'info': 'student with given email already exists.'},
@@ -52,10 +58,11 @@ def register_student(request):
 
     # Create and store a salted hash of the given password
     ph = PasswordHasher()
-    student_data['password'] = ph.hash(student_data['password'])
+    student_data['password'] = ph.hash(student_data.get('password'))
 
     # convert dob from string back a datetime object
-    student_data['dob'] = datetime.strptime(student_data['dob'], "%d-%m-%Y")
+    student_data['dob'] = datetime.strptime(
+        student_data.get('dob'), "%d-%m-%Y")
 
     # Create new user and save
     new_student_node = Student(**student_data)
@@ -72,7 +79,7 @@ def login_student(request):
 
     # TODO: Check if payload is valid
 
-    student_node = Student.nodes.get(email=login_data['email'])
+    student_node = Student.nodes.get(email=login_data.get('email'))
 
     # Check if student node exists
     if student_node is None:
@@ -80,7 +87,7 @@ def login_student(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
     # Check credentials
-    if check_credentials(student_node.password, login_data['password']):
+    if check_credentials(student_node.password, login_data.get('password')):
         # Credentials are correct, generate JWT
         jwt_payload = {
             'sub': student_node.email,
@@ -101,8 +108,56 @@ def login_student(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+def get_all_students(request):
+    students = Student.nodes.all()
+    serializer = StudentSerializer(students, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_session_student(request):
+    data = request.data
+    try:
+        # TODO: Just get the student of the session!!!
+        student = Student.nodes.get(email=data.get('email'))
+        serializer = StudentSerializer(student)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Student.DoesNotExist:
+        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def change_session_student(request):
+    data = request.data
+    try:
+        # TODO: Just get the student of the session!!!
+        student = Student.nodes.get(email=data.get('old_email'))
+    except Student.DoesNotExist:
+        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+    for key, value in data.items():
+        if hasattr(student, key):
+            setattr(student, key, value)
+    student.save()
+    return Response({'info': 'successfully changed student.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def delete_session_student(request):
+    request_data = request.data
+    # TODO: Delete Sessionholder!
+    try:
+        student = Student.nodes.get(email=request_data.get('email'))
+        student.delete()
+        return Response({'info': 'successfully deleted student.'}, status=status.HTTP_200_OK)
+    except Student.DoesNotExist:
+        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 # TODO define a view for simple student matching algorithm
 
+# ------------------STUDENT-END------------------#
+# ------------------ADGROUP------------------#
 
 @api_view(['GET'])
 def get_ad_groups(request):
@@ -118,27 +173,70 @@ def create_ad_group(request):
     # Check if an ad group with the provided name already exists
     # try catch block to handle the case where the ad group does not exist
     try:
-        existing_ad_group = Ad_Group.nodes.get(name=data['name'])
+        existing_ad_group = Ad_Group.nodes.get(name=data.get('name'))
     except Ad_Group.DoesNotExist:
         existing_ad_group = None
 
     if existing_ad_group:
         return Response({'error': 'An ad group with this name already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if data['name'] is None or data['description'] is None:
+    if data.get('name') is None or data.get('description') is None:
         return Response({'error': 'Please provide a name and a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
-    if check_profanity(data['name']) or check_profanity(data['description']):
+    if check_profanity(data.get('name')) or check_profanity(data.get('description')):
         return Response({'error': 'Please provide a name and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
     # Create a new ad group
     # TODO: validate payload!
     # TODO: connect the session holder student as the creator of the ad group
     # admin= Student.nodes.get(data['sessionholder']))?? bzw TODO: decode den Sessiontoken!
-    ad_group = Ad_Group(name=data['name'], description=data['description'])
+    ad_group = Ad_Group(name=data.get('name'),
+                        description=data.get('description'))
     ad_group.save()
     # Serialize the new ad group
     serializer = AdGroupSerializer(ad_group)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+@api_view(['PUT'])
+def change_ad_group(request):
+    data = request.data
+    # Check if an ad group with the provided name already exists
+    # try catch block to handle the case where the ad group does not exist
+    try:
+        ad_group = Ad_Group.nodes.get(name=data.get('old_name'))
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'An ad group with this name does not exist. (please provide an old_name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # TODO: check if session holder is the admin of the ad group!!
+
+    if data.get('new_name') is None and data.get('description') is None:
+        return Response({'error': 'Please provide a name or a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
+    if check_profanity(data.get('new_name')) or check_profanity(data.get('description')):
+        return Response({'error': 'Please provide a name and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # if block to check which attributes are requested to be changed:
+    if data.get("new_name") is not None:
+        ad_group.name = data.get('new_name')
+    for key, value in data.items():
+        if hasattr(ad_group, key):
+            setattr(ad_group, key, value)
+    ad_group.save()
+    return Response({'info': 'successfully changed ad group.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def delete_ad_group(request):
+    data = request.data
+    # TODO: Check if sessionHolder is the admin of the ad group
+    try:
+        ad_group = Ad_Group.nodes.get(name=data.get('name'))
+        ad_group.delete()
+        return Response({'info': 'successfully deleted ad group and all of its ads.'}, status=status.HTTP_200_OK)
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'An ad group with this name does not exist. (please provide a name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
+
+# ------------------ADGROUP-END------------------#
+
+# ------------------AD------------------#
 
 # needs to get the name of the ad group (ad_group_name) as a parameter in the request!
 
@@ -147,7 +245,7 @@ def create_ad_group(request):
 def get_ads_of_group(request):
     data = request.data
     # extract the ad group name from the request
-    ad_group_name = data['ad_group_name']
+    ad_group_name = data.get('ad_group_name')
     if ad_group_name is None:
         return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
     try:
@@ -168,20 +266,20 @@ def get_ads_of_group(request):
 def create_ads_in_group(request):
     data = request.data
     # extract the ad group name from the request
-    ad_group_name = data['ad_group_name']
+    ad_group_name = data.get('ad_group_name')
     if ad_group_name is None:
         return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
-    if data["title"] is None or data["description"] is None:
+    if data.get("title") is None or data.get("description") is None:
         return Response({"info": "please provide title and description for the ad"}, status=status.HTTP_400_BAD_REQUEST)
-    if check_profanity(data['title']) or check_profanity(data['description']):
+    if check_profanity(data.get('title')) or check_profanity(data.get('description')):
         return Response({'error': 'Please provide a title and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         # get the ad group
         ad_group = Ad_Group.nodes.get(name=ad_group_name)
         # create and save the ad
         # TODO: connect the session holder student as the admin of the ad group
-        ad = Ad(title=data["title"],
-                description=data["description"], image=data["image"])
+        ad = Ad(title=data.get("title"),
+                description=data.get("description"), image=data.get("image"))
         ad.save()
         # connect the ad to the ad group
         ad_group.ads.connect(ad)
@@ -191,3 +289,61 @@ def create_ads_in_group(request):
 
     except Ad_Group.DoesNotExist:
         return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def change_ad_in_group(request):
+    data = request.data
+    # extract the ad group name from the request
+    ad_group_name = data.get('ad_group_name')
+    if ad_group_name is None:
+        return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
+    if check_profanity(data.get('title')) or check_profanity(data.get('description')):
+        return Response({'error': 'Please provide a title and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        # get the ad group
+        ad_group = Ad_Group.nodes.get(name=ad_group_name)
+
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # get the ad
+        ad = ad_group.ads.get(title=data.get('old_title'))
+        # change the ad
+        # if block to change the title if requested (the new_title is not an standard attribute of the ad model, so it needs to be handled separately)
+        if data.get("new_title") is not None:
+            ad.title = data.get('new_title')
+        # change all of the other attributes, which are requested
+        for key, value in data.items():
+            if hasattr(ad, key):
+                setattr(ad, key, value)
+        ad.save()
+        return Response({'info': 'successfully changed ad.'}, status=status.HTTP_200_OK)
+    except Ad.DoesNotExist:
+        return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+def delete_ad_in_group(request):
+    data = request.data
+    # extract the ad group name from the request
+    # TODO: Check if sessionHolder is the admin of the ad
+    ad_group_name = data.get('ad_group_name')
+    if ad_group_name is None:
+        return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        # get the ad group
+        ad_group = Ad_Group.nodes.get(name=ad_group_name)
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # get the ad
+        ad = ad_group.ads.get(title=data.get('title'))
+        ad.delete()
+        return Response({'info': 'successfully deleted ad.'}, status=status.HTTP_200_OK)
+    except Ad.DoesNotExist:
+        return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
+
+# ------------------AD-END------------------#

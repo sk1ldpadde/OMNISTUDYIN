@@ -10,7 +10,6 @@ ADD . /app
 COPY ./requirements.txt /app/requirements.txt
 
 RUN apt-get update && \
-    apt-get install -y python3-dev default-libmysqlclient-dev && \
     apt-get install -y build-essential && \
     apt-get clean
 
