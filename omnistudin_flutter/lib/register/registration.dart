@@ -4,6 +4,36 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+bool isPasswordStrong(String password) {
+  // Mindestlänge von 8 Zeichen
+  if (password.length < 8) {
+    return false;
+  }
+
+  // Überprüfen auf mindestens einen Großbuchstaben
+  if (!password.contains(RegExp(r'[A-Z]'))) {
+    return false;
+  }
+
+  // Überprüfen auf mindestens einen Kleinbuchstaben
+  if (!password.contains(RegExp(r'[a-z]'))) {
+    return false;
+  }
+
+  // Überprüfen auf mindestens eine Zahl
+  if (!password.contains(RegExp(r'[0-9]'))) {
+    return false;
+  }
+
+  // Überprüfen auf mindestens ein Sonderzeichen
+  if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+    return false;
+  }
+
+  // Wenn alle Kriterien erfüllt sind, ist das Passwort stark
+  return true;
+}
+
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});
 
@@ -83,35 +113,6 @@ class _DataEntryPageState extends State<DataEntryPage> {
     );
   }
 
-  bool isPasswordStrong(String password) {
-    // Mindestlänge von 8 Zeichen
-    if (password.length < 8) {
-      return false;
-    }
-
-    // Überprüfen auf mindestens einen Großbuchstaben
-    if (!password.contains(RegExp(r'[A-Z]'))) {
-      return false;
-    }
-
-    // Überprüfen auf mindestens einen Kleinbuchstaben
-    if (!password.contains(RegExp(r'[a-z]'))) {
-      return false;
-    }
-
-    // Überprüfen auf mindestens eine Zahl
-    if (!password.contains(RegExp(r'[0-9]'))) {
-      return false;
-    }
-
-    // Überprüfen auf mindestens ein Sonderzeichen
-    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-      return false;
-    }
-
-    // Wenn alle Kriterien erfüllt sind, ist das Passwort stark
-    return true;
-  }
 
   Future getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
