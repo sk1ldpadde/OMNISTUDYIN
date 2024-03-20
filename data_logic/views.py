@@ -153,11 +153,12 @@ def delete_session_student(request):
     except Student.DoesNotExist:
         return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
-
+# TODO: define a view for session password or email changes
 # TODO define a view for simple student matching algorithm
 
 # ------------------STUDENT-END------------------#
 # ------------------ADGROUP------------------#
+
 
 @api_view(['GET'])
 def get_ad_groups(request):
@@ -347,3 +348,115 @@ def delete_ad_in_group(request):
         return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
 
 # ------------------AD-END------------------#
+
+# -------------------Search------------------#
+
+
+@api_view(['POST'])
+def search_ads(request):
+    data = request.data
+    search_string = data.get('search_string')
+    if search_string is None:
+        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
+    # get all ads
+    ads = Ad.nodes.all()
+    # filter the ads by the search string
+    filtered_ads = [
+        ad for ad in ads if search_string in ad.title or search_string in ad.description]
+    # Serialize the queryset
+    serializer = AdSerializer(filtered_ads, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def search_ads_by_group(request):
+    data = request.data
+    search_string = data.get('search_string')
+    ad_group_name = data.get('ad_group_name')
+    if search_string is None or ad_group_name is None:
+        return Response({"info": "please post the search string as the parameter search_string and the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        # get the ad group
+        ad_group = Ad_Group.nodes.get(name=ad_group_name)
+        # get all ads of the ad group
+        ads = ad_group.ads.all()
+        # filter the ads by the search string
+        filtered_ads = [
+            ad for ad in ads if search_string in ad.title or search_string in ad.description]
+        # Serialize the queryset
+        serializer = AdSerializer(filtered_ads, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def search_ad_groups(request):
+    data = request.data
+    search_string = data.get('search_string')
+    if search_string is None:
+        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
+    # get all ad groups
+    ad_groups = Ad_Group.nodes.all()
+    # filter the ad groups by the search string
+    filtered_ad_groups = [
+        ad_group for ad_group in ad_groups if search_string in ad_group.name or search_string in ad_group.description]
+    # Serialize the queryset
+    serializer = AdGroupSerializer(filtered_ad_groups, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def search_students(request):
+    data = request.data
+    search_string = data.get('search_string')
+    if search_string is None:
+        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
+    # get all students
+    students = Student.nodes.all()
+    # filter the students by the search string
+    filtered_students = [
+        student for student in students if search_string in student.name or search_string in student.email or search_string in student.semester]
+    # Serialize the queryset
+    serializer = StudentSerializer(filtered_students, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def search_all(request):
+    data = request.data
+    search_string = data.get('search_string')
+    if search_string is None:
+        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
+    # get all students
+    students = Student.nodes.all()
+    # filter the students by the search string
+    filtered_students = [
+        student for student in students if search_string in student.name or search_string in student.email or search_string in student.semester]
+    # Serialize the queryset
+    student_serializer = StudentSerializer(filtered_students, many=True)
+
+    # get all ad groups
+    ad_groups = Ad_Group.nodes.all()
+    # filter the ad groups by the search string
+    filtered_ad_groups = [
+        ad_group for ad_group in ad_groups if search_string in ad_group.name or search_string in ad_group.description]
+    # Serialize the queryset
+    ad_group_serializer = AdGroupSerializer(filtered_ad_groups, many=True)
+
+    # get all ads
+    ads = Ad.nodes.all()
+    # filter the ads by the search string
+    filtered_ads = [
+        ad for ad in ads if search_string in ad.title or search_string in ad.description]
+    # Serialize the queryset
+    ad_serializer = AdSerializer(filtered_ads, many=True)
+
+    return Response({'students': student_serializer.data, 'ad_groups': ad_group_serializer.data, 'ads': ad_serializer.data}, status=status.HTTP_200_OK)
+
+# -------------------Search-END------------------#
