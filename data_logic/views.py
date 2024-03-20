@@ -112,7 +112,7 @@ def login_student(request):
 def get_all_students(request):
     students = Student.nodes.all()
     serializer = StudentSerializer(students, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -164,7 +164,7 @@ def delete_session_student(request):
 def get_ad_groups(request):
     ad_groups = Ad_Group.nodes.all()
     serializer = AdGroupSerializer(ad_groups, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
