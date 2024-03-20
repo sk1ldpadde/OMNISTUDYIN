@@ -5,10 +5,10 @@ Here are the endpoints that you can access (for reference see omnistudyin_backen
 
 
     `# Login/Register = Student
-    path('register/', register_student, name='register_student'),
-    path('login/', login_student, name='login_student'),
-    path('get_all_students/', get_all_students, name='get_all_students'),
-    path('get_session_student/', get_session_student, name='get_student'),
+    path('register/', register_student, name='register_student'), #POST
+    path('login/', login_student, name='login_student'), #POST
+    path('get_all_students/', get_all_students, name='get_all_students'), #GET
+    path('get_session_student/', get_session_student, name='get_student'), # GET
     #AB HIER MUSS MAN FAST IMMER EINEN JWT MITSENDEN --> Session bedingt
     path('delete_session_student/', delete_session_student, name='delete_student'),
     # Ad_group
