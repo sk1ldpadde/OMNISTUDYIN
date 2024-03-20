@@ -137,21 +137,21 @@ class _DataEntryPageState extends State<DataEntryPage> {
               child: Column(
                 children: [
                   const Text('Gib deinen Vornamen ein:', style: TextStyle(fontSize: 16.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
+                  const SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
                   CupertinoTextField(
                     controller: _firstName,
                     placeholder: 'Vorname',
                     padding: EdgeInsets.all(12.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand
+                  const SizedBox(height: 16.0), // 16 Pixel Abstand
                   const Text('Gib deinen Nachnamen ein:', style: TextStyle(fontSize: 16.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
+                  const SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
                   CupertinoTextField(
                     controller: _lastName,
                     placeholder: 'Nachname',
                     padding: EdgeInsets.all(12.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand
+                  const SizedBox(height: 16.0), // 16 Pixel Abstand
                   const Text('Gib dein Geburtsdatum ein:', style: TextStyle(fontSize: 16.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand
+                  const SizedBox(height: 16.0), // 16 Pixel Abstand
                   CupertinoButton(
                     child: Text(
                       _dateOfBirth == DateTime.now() ? 'Datum auswählen' : DateFormat('dd.MM.yyyy').format(_dateOfBirth),
@@ -167,6 +167,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
                     padding: EdgeInsets.all(12.0),
                     maxLines: 5, // Erlaubt bis zu 5 Zeilen Text
                   ),// 16 Pixel Abstand
+                  const SizedBox(height: 16.0),
                   const Text('Welche Universität besuchst du?', style: TextStyle(fontSize: 16.0),),
                   SizedBox(height: 16.0), // 16 Pixel Abstand
                   CupertinoTextField(
@@ -174,6 +175,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
                     placeholder: 'Universität',
                     padding: EdgeInsets.all(12.0),
                   ),
+                  const SizedBox(height: 16.0), // 16 Pixel Abstand
                   const Text('Welches Studienfach belegst du?', style: TextStyle(fontSize: 16.0),),
                   const SizedBox(height: 16.0), // 16 Pixel Abstand
                   CupertinoTextField(
@@ -181,6 +183,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
                     placeholder: 'Studienfach',
                     padding: EdgeInsets.all(12.0),
                   ),
+                  const SizedBox(height: 16.0), // 16 Pixel Abstand
                   const Text('Welches Semester belegst du?', style: TextStyle(fontSize: 16.0),),
                   const SizedBox(height: 16.0), // 16 Pixel Abstand
                   CupertinoTextField(
