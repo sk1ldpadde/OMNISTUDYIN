@@ -437,7 +437,7 @@ def search_all(request):
     students = Student.nodes.all()
     # filter the students by the search string
     filtered_students = [
-        student for student in students if search_string in student.name or search_string in student.email or search_string in student.semester]
+        student for student in students if search_string in student.forename or search_string in student.email or search_string in student.surname]
     # Serialize the queryset
     student_serializer = StudentSerializer(filtered_students, many=True)
 
