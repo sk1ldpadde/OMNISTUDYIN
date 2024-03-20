@@ -20,15 +20,25 @@ from data_logic.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    path('register/', register_student, name='register_student'),
-    path('login/', login_student, name='login_student'),
+    # Testings
     path('value/', get_value, name='get_value'),
     path('test', test, name='test'),
+    # Login/Register = Student
+    path('register/', register_student, name='register_student'),
+    path('login/', login_student, name='login_student'),
+    path('get_session_student/', get_session_student, name='get_student'),
+    path('get_all_students/', get_all_students, name='get_all_students'),
+    path('delete_session_student/', delete_session_student, name='delete_student'),
+    # Ad_group
     path('create_adgroup/', create_ad_group, name='adgroup'),
     path('get_adgroups/', get_ad_groups, name='get_adgroups'),
+    path('change_adgroup/', change_ad_group, name='change_adgroup'),
+    path('delete_adgroup/', delete_ad_group, name='delete_adgroup'),
+    # Ad
     # get_ads_of_group is a POST request! --> needs to get the name of the ad group (ad_group_name) as a parameter in the request!
     path('get_ads_of_group/', get_ads_of_group, name='get_ads'),
     # create_ads_in_group needs to get the name of the ad group (ad_group_name) as a parameter in the request (additionally to the standard params)!
     path('create_ads_in_group/', create_ads_in_group, name='create_ads'),
+    path('change_ad_in_group/', change_ad_in_group, name='change_ad'),
+    path('delete_ad_in_group/', delete_ad_in_group, name='delete_ad'),
 ]
