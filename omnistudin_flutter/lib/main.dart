@@ -41,7 +41,7 @@ class _LandingPageState extends State<LandingPage> {
               _currentIndex = index;
             });
           },
-          items: [
+          items: const[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
