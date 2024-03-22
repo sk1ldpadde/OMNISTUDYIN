@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:omnistudin_flutter/register/login.dart';
+import '../Logic/Frontend_To_Backend_Connection.dart';
+
 
 bool isPasswordStrong(String password) {
   // Mindestlänge von 8 Zeichen
@@ -112,7 +117,33 @@ class _DataEntryPageState extends State<DataEntryPage> {
       ),
     );
   }
-
+  Map<String, dynamic> getRegistrationData() {
+    String? base64Image;
+    if (_image != null) {
+      List<int> imageBytes = _image!.readAsBytesSync();
+      base64Image = base64Encode(imageBytes);
+    }
+    return {
+      'email': _email.text,
+      'password': _firstPassword.text,
+      'forename': _firstName.text,
+      'surname': _lastName.text,
+      'dob': DateFormat('dd-MM-yyyy').format(_dateOfBirth),
+      'bio': _bio.text,
+      'uni_name': _university.text,
+      'degree': _course.text,
+      'semester': _semester.text,
+      'profile_picture': base64Image, // Pfad zur Bilddatei
+    };
+  }
+  void _register() {
+    Map<String, dynamic> registerData = getRegistrationData();
+    try {
+      FrontendToBackendConnection.postData("register/", registerData);
+    } catch (e) {
+      print('Error while trying to register: $e');
+    }
+  }
 
   Future getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -257,7 +288,8 @@ class _DataEntryPageState extends State<DataEntryPage> {
                     onPressed: () {
                       if (_firstPassword.text == _secondPassword.text) {
                         if (isPasswordStrong(_firstPassword.text)) {
-                          // Hier kannst du die Registrierungslogik implementieren
+                         _register();
+                         Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginPage()));
                         } else {
                           showCupertinoDialog(
                             context: context,
