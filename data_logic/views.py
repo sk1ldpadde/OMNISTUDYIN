@@ -19,9 +19,11 @@ from data_logic.models import Student, Ad_Group, Ad
 
 from data_logic.serializers import StudentSerializer, AdGroupSerializer, AdSerializer
 
-from data_logic.util import create_jwt
+from data_logic.util import create_jwt, decode_jwt
 
 # Create your views here.
+
+SESSION_SECRET = "12345"
 
 # easy test view for debugging
 
@@ -33,7 +35,7 @@ def get_value(request):
     token = request.headers.get('Authorization')
 
     try:
-        payload = jwt.decode(token, "12345", algorithms=['HS256'])
+        payload = jwt.decode(token, SESSION_SECRET, algorithms=['HS256'])
         print(payload)
     except jwt.ExpiredSignatureError:
         raise AuthenticationFailed('Token expired')
@@ -148,24 +150,23 @@ def get_all_students(request):
 
 @api_view(['GET'])
 def get_session_student(request):
-    data = request.data
     try:
-        # TODO: Just get the student of the session!!!
-        student = Student.nodes.get(email=data.get('email'))
+        student = decode_jwt(request)
         serializer = StudentSerializer(student)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Student.DoesNotExist:
-        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])
 def change_session_student(request):
     data = request.data
+
     try:
-        # TODO: Just get the student of the session!!!
-        student = Student.nodes.get(email=data.get('old_email'))
+        student = decode_jwt(request)
     except Student.DoesNotExist:
-        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
     for key, value in data.items():
         if hasattr(student, key):
             setattr(student, key, value)
@@ -175,14 +176,12 @@ def change_session_student(request):
 
 @api_view(['DELETE'])
 def delete_session_student(request):
-    request_data = request.data
-    # TODO: Delete Sessionholder!
     try:
-        student = Student.nodes.get(email=request_data.get('email'))
+        student = decode_jwt(request)
         student.delete()
         return Response({'info': 'successfully deleted student.'}, status=status.HTTP_200_OK)
     except Student.DoesNotExist:
-        return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
 # TODO: define a view for session password or email changes
 # TODO define a view for simple student matching algorithm
@@ -216,13 +215,17 @@ def create_ad_group(request):
         return Response({'error': 'Please provide a name and a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
     if check_profanity(data.get('name')) or check_profanity(data.get('description')):
         return Response({'error': 'Please provide a name and a description without profanity.'}, status=status.HTTP_400_BAD_REQUEST)
+    # get the student from the jwt token
+    try:
+        student = decode_jwt(request)
+    except Student.DoesNotExist:
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
     # Create a new ad group
-    # TODO: validate payload!
-    # TODO: connect the session holder student as the creator of the ad group
-    # admin= Student.nodes.get(data['sessionholder']))?? bzw TODO: decode den Sessiontoken!
     ad_group = Ad_Group(name=data.get('name'),
                         description=data.get('description'))
     ad_group.save()
+    # connect sessionholder as admin of the ad group
+    ad_group.admin.connect(student)
     # Serialize the new ad group
     serializer = AdGroupSerializer(ad_group)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -238,7 +241,13 @@ def change_ad_group(request):
     except Ad_Group.DoesNotExist:
         return Response({'error': 'An ad group with this name does not exist. (please provide an old_name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # TODO: check if session holder is the admin of the ad group!!
+    # check if session holder is the admin of the ad group
+    try:
+        student = decode_jwt(request)
+        if not ad_group.admin.is_connected(student):
+            return Response({'error': 'You are not the admin of this ad group.'}, status=status.HTTP_403_FORBIDDEN)
+    except Student.DoesNotExist:
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
     if data.get('new_name') is None and data.get('description') is None:
         return Response({'error': 'Please provide a name or a description for the ad group.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -248,6 +257,7 @@ def change_ad_group(request):
     # if block to check which attributes are requested to be changed:
     if data.get("new_name") is not None:
         ad_group.name = data.get('new_name')
+    # change all of the other attributes, which are requested
     for key, value in data.items():
         if hasattr(ad_group, key):
             setattr(ad_group, key, value)
@@ -258,7 +268,13 @@ def change_ad_group(request):
 @api_view(['DELETE'])
 def delete_ad_group(request):
     data = request.data
-    # TODO: Check if sessionHolder is the admin of the ad group
+    # Check if sessionHolder is the admin of the ad group
+    try:
+        student = decode_jwt(request)
+        if not ad_group.admin.is_connected(student):
+            return Response({'error': 'You are not the admin of this ad group.'}, status=status.HTTP_403_FORBIDDEN)
+    except Student.DoesNotExist:
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
     try:
         ad_group = Ad_Group.nodes.get(name=data.get('name'))
         ad_group.delete()
@@ -308,13 +324,20 @@ def create_ads_in_group(request):
     try:
         # get the ad group
         ad_group = Ad_Group.nodes.get(name=ad_group_name)
+
+        try:
+            student = decode_jwt(request)
+        except Student.DoesNotExist:
+            return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
         # create and save the ad
-        # TODO: connect the session holder student as the admin of the ad group
         ad = Ad(title=data.get("title"),
                 description=data.get("description"), image=data.get("image"))
         ad.save()
         # connect the ad to the ad group
         ad_group.ads.connect(ad)
+        # connect the session holder student as the admin of the ad group
+        ad.admin.connect(student)
 
         return Response({'info': f'successfully created ad in {ad_group_name}.'},
                         status=status.HTTP_200_OK)
@@ -342,6 +365,14 @@ def change_ad_in_group(request):
     try:
         # get the ad
         ad = ad_group.ads.get(title=data.get('old_title'))
+
+        # Check if sessionHolder is the admin of the ad
+        try:
+            student = decode_jwt(request)
+            if not ad.admin.is_connected(student):
+                return Response({'error': 'You are not the admin of this ad.'}, status=status.HTTP_403_FORBIDDEN)
+        except Student.DoesNotExist:
+            return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
         # change the ad
         # if block to change the title if requested (the new_title is not an standard attribute of the ad model, so it needs to be handled separately)
         if data.get("new_title") is not None:
@@ -373,6 +404,14 @@ def delete_ad_in_group(request):
     try:
         # get the ad
         ad = ad_group.ads.get(title=data.get('title'))
+        # Check if sessionHolder is the admin of the ad
+        try:
+            student = decode_jwt(request)
+            if not ad.admin.is_connected(student):
+                return Response({'error': 'You are not the admin of this ad.'}, status=status.HTTP_403_FORBIDDEN)
+        except Student.DoesNotExist:
+            return Response({'error': ' Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
         ad.delete()
         return Response({'info': 'successfully deleted ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
