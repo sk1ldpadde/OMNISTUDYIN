@@ -53,6 +53,7 @@ User Authentication and Registration
     register_student
         Method: POST
         JSON Attributes Required: email, password, forename, dob (Date of Birth in "dd-mm-yyyy" format)
+        Optional Attributes: surname, uni_name, semester, degree, interests_and_goals
         Description: Registers a new student. Email must be unique.
 
     login_student
