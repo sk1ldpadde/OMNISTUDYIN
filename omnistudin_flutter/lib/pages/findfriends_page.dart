@@ -41,12 +41,13 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          centerTitle: true,
-          title: Container(
-            width: 280,
-            height: 400,
-            child: Image.asset('lib/images/logo_name.png'),
-          )),
+        centerTitle: true,
+        title: Container(
+          width: 280,
+          height: 400,
+          child: Image.asset('lib/images/logo_name.png'),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
