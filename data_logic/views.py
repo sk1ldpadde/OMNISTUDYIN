@@ -3,6 +3,7 @@ from .models import Ad
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 
 import json
 
@@ -18,6 +19,8 @@ from data_logic.models import Student, Ad_Group, Ad
 
 from data_logic.serializers import StudentSerializer, AdGroupSerializer, AdSerializer
 
+from data_logic.util import create_jwt
+
 # Create your views here.
 
 # easy test view for debugging
@@ -27,9 +30,19 @@ from data_logic.serializers import StudentSerializer, AdGroupSerializer, AdSeria
 
 @api_view(['GET'])
 def get_value(request):
+    token = request.headers.get('Authorization')
+
+    try:
+        payload = jwt.decode(token, "12345", algorithms=['HS256'])
+        print(payload)
+    except jwt.ExpiredSignatureError:
+        raise AuthenticationFailed('Token expired')
+    except jwt.InvalidTokenError:
+        raise AuthenticationFailed('Invalid token')
+
     matching = Student.nodes.filter(
-        email='inf22111@lehre.dhbw-stuttgart.de').first()
-    return Response({'value': matching.semester})
+        email=payload['sub']).first()
+    return Response({'forename': matching.forename, 'semester': matching.semester})
 
 
 @api_view(['GET'])
@@ -38,6 +51,34 @@ def test(request):
                     status=status.HTTP_200_OK)
 
 # ------------------TEST-END------------------#
+
+# ------------------JWT-----------------------#
+
+
+@api_view(['GET'])
+def update_jwt(request):
+    # use given token to authorize the user
+    token = request.headers.get('Authorization')
+    # which user to create the token for
+    email = request.data.get('email')
+
+    try:
+        payload = jwt.decode(token, "12345", algorithms=['HS256'])
+    except jwt.ExpiredSignatureError:
+        # if the token is expired, the student needs to log in again
+        raise AuthenticationFailed('Token expired')
+    except jwt.InvalidTokenError:
+        raise AuthenticationFailed('Invalid token')
+
+    if payload['sub'] != email or not Student.nodes.filter(email=email):
+        raise AuthenticationFailed('Invalid token or email.')
+
+    # generate a new token
+    jwt_token = create_jwt(Student.nodes.get(email=email))
+
+    return Response({'jwt': jwt_token}, status=status.HTTP_200_OK)
+
+# ------------------JWT-END-------------------#
 
 # ------------------STUDENT------------------#
 
@@ -89,20 +130,10 @@ def login_student(request):
     # Check credentials
     if check_credentials(student_node.password, login_data.get('password')):
         # Credentials are correct, generate JWT
-        jwt_payload = {
-            'sub': student_node.email,
-            'exp': datetime.now() + timedelta(days=1)  # Token expiration time
-        }
+        jwt_token = create_jwt(student_node)
 
-        # TODO Find a way to store the secret key
-        secret_key = "12345"
-        # TODO: module has not attribute encode error ???
-        jwt_token = secret_key
-        # jwt_token = jwt.encode(jwt_payload, secret_key, algorithm='HS256')
-
-        return Response({'info': 'login successfull.', 'jwt': jwt_token},
+        return Response({'info': 'login successful.', 'jwt': jwt_token},
                         status=status.HTTP_200_OK)
-
     else:
         return Response({'info': 'login attempt failed. wrong credentials.'},
                         status=status.HTTP_400_BAD_REQUEST)
