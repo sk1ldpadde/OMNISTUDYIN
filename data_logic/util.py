@@ -9,6 +9,7 @@ from better_profanity import profanity
 
 import jwt
 
+from rest_framework.exceptions import AuthenticationFailed
 
 # TODO Find a way to store the secret key
 SECRET_KEY = "12345"
@@ -53,3 +54,23 @@ def create_jwt(student: Student):
         'exp': datetime.now() + timedelta(hours=10)  # Token expiration time
     }
     return jwt.encode(jwt_payload, SECRET_KEY, algorithm='HS256')
+
+# decode the jwt and return the student object
+
+
+def decode_jwt(request):
+    token = request.headers.get('Authorization')
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        print(payload)
+    except jwt.ExpiredSignatureError:
+        raise AuthenticationFailed('Token expired')
+    except jwt.InvalidTokenError:
+        raise AuthenticationFailed('Invalid token')
+
+    try:
+        return Student.nodes.get(
+            email=payload['sub'])
+    except Student.DoesNotExist:
+        raise Student.DoesNotExist
