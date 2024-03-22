@@ -22,7 +22,13 @@ Here are the endpoints that you can access (for reference see omnistudyin_backen
     # create_ads_in_group needs to get the name of the ad group (ad_group_name) as a parameter in the request (additionally to the standard params)!
     path('create_ads_in_group/', create_ads_in_group, name='create_ads'), #POST
     path('change_ad_in_group/', change_ad_in_group, name='change_ad'), #PUT
-    path('delete_ad_in_group/', delete_ad_in_group, name='delete_ad') # DELETE`
+    path('delete_ad_in_group/', delete_ad_in_group, name='delete_ad') # DELETE
+    # search
+    path('search_ads/', search_ads, name='search'),
+    path('search_students/', search_students, name='search_students'),
+    path('search_adgroups/', search_ad_groups, name='search_adgroups'),
+    path('search_all/', search_all, name='search_all'),
+    path('search_ads_by_group/', search_ads_by_group, name='search_ad_in_group'),`
 
     
 
