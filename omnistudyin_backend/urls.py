@@ -43,4 +43,10 @@ urlpatterns = [
     path('create_ads_in_group/', create_ads_in_group, name='create_ads'),
     path('change_ad_in_group/', change_ad_in_group, name='change_ad'),
     path('delete_ad_in_group/', delete_ad_in_group, name='delete_ad'),
+    # search
+    path('search_ads/', search_ads, name='search'),
+    path('search_students/', search_students, name='search_students'),
+    path('search_adgroups/', search_ad_groups, name='search_adgroups'),
+    path('search_all/', search_all, name='search_all'),
+    path('search_ads_by_group/', search_ads_by_group, name='search_ad_in_group'),
 ]
