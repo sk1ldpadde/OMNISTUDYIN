@@ -70,7 +70,6 @@ def decode_jwt(request):
         raise AuthenticationFailed('Invalid token')
 
     try:
-        return Student.nodes.get(
-            email=payload['sub'])
+        return Student.nodes.get(email=payload['sub'])
     except Student.DoesNotExist:
         raise Student.DoesNotExist
