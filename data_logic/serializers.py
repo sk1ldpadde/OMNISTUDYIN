@@ -44,10 +44,7 @@ class AdSerializer(serializers.Serializer):
 class StudentSerializer(serializers.Serializer):
     forename = serializers.CharField(max_length=100)
     surname = serializers.CharField(max_length=100)
-    dob = serializers.DateField()  # Adjust the field type if needed
-    email = serializers.EmailField()
-    # Ensure this is write-only for security
-    password = serializers.CharField(write_only=True)
+    dob = serializers.DateTimeField()  # Adjust the field type if needed
     bio = serializers.CharField(allow_blank=True, required=False)
     uni_name = serializers.CharField(
         max_length=200, allow_blank=True, required=False)
@@ -67,8 +64,6 @@ class StudentSerializer(serializers.Serializer):
         instance.forename = validated_data.get('forename', instance.forename)
         instance.surname = validated_data.get('surname', instance.surname)
         instance.dob = validated_data.get('dob', instance.dob)
-        instance.email = validated_data.get('email', instance.email)
-        instance.password = validated_data.get('password', instance.password)
         instance.bio = validated_data.get('bio', instance.bio)
         instance.uni_name = validated_data.get('uni_name', instance.uni_name)
         instance.degree = validated_data.get('degree', instance.degree)
