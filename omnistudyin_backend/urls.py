@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from data_logic.views import *
+from data_logic.views.views_ad import *
+from data_logic.views.views_student import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,7 +47,7 @@ urlpatterns = [
     path('delete_ad_in_group/', delete_ad_in_group, name='delete_ad'),
     # search
     path('query_ads/', query_ads, name='query_ads'),
-    path('search_adgroups/', search_ad_groups, name='search_adgroups'),
-    path('search_all/', search_all, name='search_all'),
-    path('search_ads_by_group/', search_ads_by_group, name='search_ad_in_group'),
+    path('query_adgroups/', query_ad_groups, name='search_adgroups'),
+    path('query_all/', query_all, name='search_all'),
+    path('query_ads_by_group/', query_ads_by_group, name='search_ad_in_group'),
 ]
