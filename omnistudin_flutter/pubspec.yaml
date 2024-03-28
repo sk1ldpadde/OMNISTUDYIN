@@ -40,6 +40,7 @@ dependencies:
   http: ^1.1.0
   mockito: ^5.4.4
   path_provider: ^2.1.2
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:

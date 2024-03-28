@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_session_jwt/flutter_session_jwt.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 
 class FrontendToBackendConnection {
   // baseURL for the backend server running on the PC!
@@ -32,7 +34,6 @@ class FrontendToBackendConnection {
   // data is the data to be sent to the server in a Map, which is basically a JSON object / Python-dictionary
   static Future<dynamic> postData(String url, Map<String, dynamic> data,
       {client = "default"}) async {
-    print(data);
     try {
       if (client == "default") {
         client = http.Client();
@@ -101,30 +102,90 @@ class FrontendToBackendConnection {
     }
   }
 
-  static Future<http.Response> login(String userName, String password) async {
+  // Erstellen Sie eine Instanz von FlutterSecureStorage
+  static final storage = new FlutterSecureStorage();
+
+  static Future<http.Response> loginStudent(String email, String password) async {
     try {
+      String fullUrl = baseURL + "login/";
       var response = await http.post(
-        Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+        Uri.parse(fullUrl),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          'userName': userName,
-          'password': password
+          'email': email,
+          'password': password,
         }),
       );
 
       if (response.statusCode == 200) {
-        var token = jsonDecode(response.body)['token']; // Korrigiert, um den Token aus der Antwort zu extrahieren
-        await FlutterSessionJwt.saveToken(token);
-        return response; // Gibt die Antwort zurück, wenn die Anmeldung erfolgreich ist
+        var token = jsonDecode(response.body)['jwt'];
+        // Speichern Sie den Token mit FlutterSecureStorage
+        print('Tokennnnnn:');
+        print(token);
+        print('Info:');
+        print(jsonDecode(response.body)['info']);
+        await storage.write(key: 'token', value: token);
+
+        // Ausgabe des gespeicherten Tokens
+        String? savedToken = await storage.read(key: 'token');
+        print('Saved token:');
+        print(savedToken);
+
+
+        return response;
       } else {
         throw Exception(
-            'Failed to login: HTTP status ${response.statusCode}, ${response
-                .body}');
+            'Failed to login: HTTP status ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
       throw Exception('Network error while trying to login: $e');
     }
   }
-}
+
+  static Future<String?> getToken() async {
+    // Lesen Sie den Token mit FlutterSecureStorage
+    String? token = await storage.read(key: 'token');
+
+    // Ausgabe des abgerufenen Tokens
+    print('Retrieved token:');
+    print(token);
+
+    if (token != null) {
+      await FlutterSessionJwt.saveToken(token);
+    }
+    print(await FlutterSessionJwt.getPayload());
+    print(await FlutterSessionJwt.getExpirationDateTime());
+    // Überprüfen Sie, ob der Token abgelaufen is
+
+    if (await FlutterSessionJwt.isTokenExpired()) {
+      token = await updateToken();
+    }
+
+    return token;
+  }
+  static Future<String?> updateToken() async {
+    print("Updating token");
+    try {
+      String fullUrl = baseURL + "update_jwt/";
+      var response = await http.get(
+        Uri.parse(fullUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var token = jsonDecode(response.body)['jwt'];
+        await storage.write(key: 'token', value: token);
+        return token;
+      } else {
+        throw Exception(
+            'Failed to update token: HTTP status ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Network error while trying to update token: $e');
+    }
+  }
+  }
