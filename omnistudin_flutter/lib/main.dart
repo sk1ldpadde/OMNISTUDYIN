@@ -49,6 +49,7 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+
         body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(onLoginSuccess: _checkLoginStatus),
         bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -74,7 +75,36 @@ class _LandingPageState extends State<LandingPage> {
           selectedItemColor: Colors.amber,
           unselectedItemColor: Colors.blue,
         ) : null,
+
+        body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(),
+        bottomNavigationBar: _isLoggedIn
+            ? BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.people),
+                    label: 'Find Friends',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person),
+                    label: 'Profile',
+                  ),
+                ],
+                selectedItemColor: Color(0xFFf46139),
+                unselectedItemColor: Color(0xFFf7b29f),
+              )
+            : null,
+
       ),
     );
-  }//build
+  } //build
 }
