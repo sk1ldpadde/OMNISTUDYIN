@@ -96,7 +96,7 @@ class Ad_Group(StructuredNode):
 # TODO: please review if the following relationships are correct
     # Relationships
     # Ad group has many ads
-    ads = RelationshipTo('Ad', 'AD_IN', cardinality=ZeroOrMore)
+    ads = RelationshipFrom('Ad', 'AD_IN', cardinality=ZeroOrMore)
 
     # Ad group is created by a student --> Admin of the ad group
     # cardinality is ZeroOrMore because a student can create multiple ad groups,
