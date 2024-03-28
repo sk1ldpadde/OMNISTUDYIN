@@ -24,6 +24,7 @@ urlpatterns = [
     # Testings
     path('value/', get_value, name='get_value'),
     path('test', test, name='test'),
+    path('test_relationship/', test_relationship, name='test_relationship'),
     # JWT
     path('update_jwt/', update_jwt, name='update_jwt'),
     # Login/Register = Student
