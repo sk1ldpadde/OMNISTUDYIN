@@ -1,9 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/register/registration.dart';
+import '../Logic/Frontend_To_Backend_Connection.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+
+  final VoidCallback? onLoginSuccess;
+
+  LoginPage({this.onLoginSuccess});
+
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+
+  void _login(String email, String password) async {
+    try {
+      var response = await FrontendToBackendConnection.loginStudent(email, password);
+      print('Login successful');
+      if (response.statusCode == 200) {
+        onLoginSuccess?.call();
+      }
+    } catch (e) {
+      print('Error while trying to register: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +44,18 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20.0), // 20 Pixel Abstand
-              const CupertinoTextField(placeholder: 'Benutzername', padding: EdgeInsets.all(12.0),),
-              const SizedBox(height: 16.0),
-              const CupertinoTextField(
+              CupertinoTextField(
+                controller: _email,
+                placeholder: 'E-Mail',
+                padding: EdgeInsets.all(12.0),),
+              SizedBox(height: 16.0),
+              CupertinoTextField(
+                controller: _password,
                 placeholder: 'Passwort',
                 padding: EdgeInsets.all(12.0),
                 obscureText: true,
               ),
-              const SizedBox(height: 24.0),
+              SizedBox(height: 24.0),
               GestureDetector(
                 onTap: () {
                   // Hier navigieren Sie zur Registrierungsseite
@@ -43,11 +66,15 @@ class LoginPage extends StatelessWidget {
                   style: TextStyle(color: CupertinoColors.activeBlue),
                 ),
               ),
-              const SizedBox(height: 24.0),
+              SizedBox(height: 24.0),
               CupertinoButton.filled(
                 child: const Text('Anmelden'),
                 onPressed: () {
-                  // Hier kannst du die Anmeldelogik implementieren
+                  try {
+                    _login(_email.text, _password.text);
+                  } catch (e) {
+                    print('Error while trying to login: $e');
+                  }
                 },
               ),
             ],
