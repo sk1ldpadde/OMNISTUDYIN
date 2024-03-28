@@ -1,6 +1,8 @@
 from collections.abc import MutableMapping
 from pytrie import StringTrie
 
+from data_logic.models import Ad, Ad_Group, Student
+
 
 class StudentPTrie:
     """
@@ -43,8 +45,7 @@ class StudentPTrie:
         Removes a student from the trie.
 
         Parameters:
-        forename (str): The forename of the student.
-        lastname (str): The lastname of the student.
+        student (obj): The student object.
         """
         del self.trie[student.forename.lower()]
         del self.trie[student.surname.lower()]
@@ -77,9 +78,9 @@ class AdsPTrie:
 
     Methods
     -------
-    add_ad(title, ad):
+    add_ad(ad):
         Adds an ad to the trie.
-    remove_ad(title):
+    remove_ad(ad):
         Removes an ad from the trie.
     search(string):
         Returns a list of ads whose title matches the search string.
@@ -89,7 +90,7 @@ class AdsPTrie:
         """Initializes the AdsTrie with an empty Patricia Trie."""
         self.trie = StringTrie()
 
-    def add_ad(self, title, ad):
+    def add_ad(self, ad):
         """
         Adds an ad to the trie.
 
@@ -97,28 +98,70 @@ class AdsPTrie:
         title (str): The title of the ad.
         ad (obj): The ad object.
         """
-        self.trie[title.lower()] = ad
+        self.trie[ad.title.lower()] = ad
 
-    def remove_ad(self, title):
+    def add_ad_group(self, ad_group):
+        """
+        Adds an ad group to the trie.
+
+        Parameters:
+        title (str): The name of the ad group.
+        ad_group (obj): The ad group object.
+        """
+        self.trie[ad_group.name.lower()] = ad_group
+
+    def remove_ad(self, ad):
         """
         Removes an ad from the trie.
 
         Parameters:
         title (str): The title of the ad.
         """
-        del self.trie[title.lower()]
+        del self.trie[ad.title.lower()]
 
-    def search(self, string):
+    def remove_ad_group(self, ad_group):
+        """
+        Removes an ad group from the trie.
+
+        Parameters:
+        title (str): The name of the ad group.
+        """
+        del self.trie[ad_group.name.lower()]
+
+    def search(self, string, ad_group=None):
         """
         Returns a list of ads whose title matches the search string.
 
         Parameters:
         string (str): The search string.
+        ad_group (str): The ad group to search in.
 
         Returns:
-        list: A list of ads whose title matches the search string.
+        list: A list of ads or ad groups whose title matches the search string.
         """
-        return list(self.trie.values(prefix=string.lower()))[:10]
+        
+        result_list = list(self.trie.values(prefix=string.lower()))
+        
+        print("--------- Test -----------------")
+        
+        for ad in result_list:
+            if type(ad) is Ad:
+                print(ad.title)
+                print(ad.ad_group.name)
+                print(ad.ad_group.description)
+            else:
+                print("Nix")
+                
+        print("--------- End Test -----------------")
+        
+        
+        if ad_group is not None:
+            ad_group_node = Ad_Group.nodes.get(name=ad_group)
+            if ad_group_node is None:
+                return []
+            return list(ad for ad in result_list if type(ad) is Ad and ad.ad_group.name is ad_group)[:10]
+        else:   
+            return result_list[:10]
 
 
 """ 
