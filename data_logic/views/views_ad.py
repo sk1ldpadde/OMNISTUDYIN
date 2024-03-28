@@ -1,5 +1,5 @@
-from .serializers import AdSerializer  # You need to create this serializer
-from .models import Ad
+from data_logic.serializers import AdSerializer  # You need to create this serializer
+from data_logic.models import Ad
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -21,172 +21,10 @@ from data_logic.serializers import StudentSerializer, AdGroupSerializer, AdSeria
 
 from data_logic.util import create_jwt, decode_jwt
 
+from data_logic.ptrie_structures import student_ptrie, ads_ptrie
+
 # Create your views here.
 
-SESSION_SECRET = "12345"
-
-# easy test view for debugging
-
-# ------------------TEST------------------#
-
-
-@api_view(['GET'])
-def get_value(request):
-    token = request.headers.get('Authorization')
-
-    try:
-        payload = jwt.decode(token, SESSION_SECRET, algorithms=['HS256'])
-        print(payload)
-    except jwt.ExpiredSignatureError:
-        raise AuthenticationFailed('Token expired')
-    except jwt.InvalidTokenError:
-        raise AuthenticationFailed('Invalid token')
-
-    matching = Student.nodes.filter(
-        email=payload['sub']).first()
-    return Response({'forename': matching.forename, 'semester': matching.semester})
-
-
-@api_view(['GET'])
-def test(request):
-    return Response({'info': 'test successful.'},
-                    status=status.HTTP_200_OK)
-
-# ------------------TEST-END------------------#
-
-# ------------------JWT-----------------------#
-
-
-@api_view(['GET'])
-def update_jwt(request):
-    # use given token to authorize the user
-    token = request.headers.get('Authorization')
-    # which user to create the token for
-    email = request.data.get('email')
-
-    try:
-        payload = jwt.decode(token, "12345", algorithms=['HS256'])
-    except jwt.ExpiredSignatureError:
-        # if the token is expired, the student needs to log in again
-        raise AuthenticationFailed('Token expired')
-    except jwt.InvalidTokenError:
-        raise AuthenticationFailed('Invalid token')
-
-    if payload['sub'] != email or not Student.nodes.filter(email=email):
-        raise AuthenticationFailed('Invalid token or email.')
-
-    # generate a new token
-    jwt_token = create_jwt(Student.nodes.get(email=email))
-
-    return Response({'jwt': jwt_token}, status=status.HTTP_200_OK)
-
-# ------------------JWT-END-------------------#
-
-# ------------------STUDENT------------------#
-
-
-@api_view(['POST'])
-def register_student(request):
-    student_data = json.loads(request.body)
-
-    # Check if payload is valid
-
-    # Check if user does not already exist
-    # Note: email is the unique property
-    matching_node = Student.nodes.filter(email=student_data.get('email'))
-
-    if matching_node:
-        return Response({'info': 'student with given email already exists.'},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    # Create and store a salted hash of the given password
-    ph = PasswordHasher()
-    student_data['password'] = ph.hash(student_data.get('password'))
-
-    # convert dob from string back a datetime object
-    student_data['dob'] = datetime.strptime(
-        student_data.get('dob'), "%d-%m-%Y")
-
-    # Create new user and save
-    new_student_node = Student(**student_data)
-    new_student_node.save()
-
-    # Return success
-    return Response({'info': 'successfully registered new student.'},
-                    status=status.HTTP_200_OK)
-
-
-@api_view(['POST'])
-def login_student(request):
-    login_data = json.loads(request.body)
-
-    # TODO: Check if payload is valid
-
-    student_node = Student.nodes.get(email=login_data.get('email'))
-
-    # Check if student node exists
-    if student_node is None:
-        return Response({'info': 'student with given email doesnt not exist.'},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    # Check credentials
-    if check_credentials(student_node.password, login_data.get('password')):
-        # Credentials are correct, generate JWT
-        jwt_token = create_jwt(student_node)
-
-        return Response({'info': 'login successful.', 'jwt': jwt_token},
-                        status=status.HTTP_200_OK)
-    else:
-        return Response({'info': 'login attempt failed. wrong credentials.'},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def get_all_students(request):
-    students = Student.nodes.all()
-    serializer = StudentSerializer(students, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def get_session_student(request):
-    try:
-        student = decode_jwt(request)
-        serializer = StudentSerializer(student)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Student.DoesNotExist:
-        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['PUT'])
-def change_session_student(request):
-    data = request.data
-
-    try:
-        student = decode_jwt(request)
-    except Student.DoesNotExist:
-        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    for key, value in data.items():
-        if hasattr(student, key):
-            setattr(student, key, value)
-    student.save()
-    return Response({'info': 'successfully changed student.'}, status=status.HTTP_200_OK)
-
-
-@api_view(['DELETE'])
-def delete_session_student(request):
-    try:
-        student = decode_jwt(request)
-        student.delete()
-        return Response({'info': 'successfully deleted student.'}, status=status.HTTP_200_OK)
-    except Student.DoesNotExist:
-        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
-
-# TODO: define a view for session password or email changes
-# TODO define a view for simple student matching algorithm
-
-# ------------------STUDENT-END------------------#
 # ------------------ADGROUP------------------#
 
 
@@ -224,6 +62,10 @@ def create_ad_group(request):
     ad_group = Ad_Group(name=data.get('name'),
                         description=data.get('description'))
     ad_group.save()
+    
+    # Save Ad Group to the ptrie for efficient lookup
+    ads_ptrie.add_ad_group(ad_group)
+    
     # connect sessionholder as admin of the ad group
     ad_group.admin.connect(student)
     # Serialize the new ad group
@@ -240,6 +82,9 @@ def change_ad_group(request):
         ad_group = Ad_Group.nodes.get(name=data.get('old_name'))
     except Ad_Group.DoesNotExist:
         return Response({'error': 'An ad group with this name does not exist. (please provide an old_name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Remove the old ad group from the ptrie
+    ads_ptrie.remove_ad_group(ad_group)
 
     # check if session holder is the admin of the ad group
     try:
@@ -262,6 +107,10 @@ def change_ad_group(request):
         if hasattr(ad_group, key):
             setattr(ad_group, key, value)
     ad_group.save()
+    
+    # Re add the ad group to the ptrie
+    ads_ptrie.add_ad_group(ad_group)
+    
     return Response({'info': 'successfully changed ad group.'}, status=status.HTTP_200_OK)
 
 
@@ -278,6 +127,10 @@ def delete_ad_group(request):
     try:
         ad_group = Ad_Group.nodes.get(name=data.get('name'))
         ad_group.delete()
+        
+        # Remove the ad group from the ptrie
+        ads_ptrie.remove_ad_group(ad_group)
+        
         return Response({'info': 'successfully deleted ad group and all of its ads.'}, status=status.HTTP_200_OK)
     except Ad_Group.DoesNotExist:
         return Response({'error': 'An ad group with this name does not exist. (please provide a name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
@@ -334,6 +187,10 @@ def create_ads_in_group(request):
         ad = Ad(title=data.get("title"),
                 description=data.get("description"), image=data.get("image"))
         ad.save()
+
+        # Add new ad to the ptrie for efficient lookup
+        ads_ptrie.add_ad(ad)
+
         # connect the ad to the ad group
         ad_group.ads.connect(ad)
         # connect the session holder student as the admin of the ad group
@@ -365,6 +222,9 @@ def change_ad_in_group(request):
     try:
         # get the ad
         ad = ad_group.ads.get(title=data.get('old_title'))
+        
+        # Remove the old ad from the ptrie
+        ads_ptrie.remove_ad(ad)
 
         # Check if sessionHolder is the admin of the ad
         try:
@@ -374,7 +234,8 @@ def change_ad_in_group(request):
         except Student.DoesNotExist:
             return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
         # change the ad
-        # if block to change the title if requested (the new_title is not an standard attribute of the ad model, so it needs to be handled separately)
+        # if block to change the title if requested 
+        # (the new_title is not an standard attribute of the ad model, so it needs to be handled separately)
         if data.get("new_title") is not None:
             ad.title = data.get('new_title')
         # change all of the other attributes, which are requested
@@ -382,6 +243,10 @@ def change_ad_in_group(request):
             if hasattr(ad, key):
                 setattr(ad, key, value)
         ad.save()
+        
+        # Re add the ad to the ptrie
+        ads_ptrie.add_ad(ad)
+        
         return Response({'info': 'successfully changed ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
         return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
@@ -413,6 +278,10 @@ def delete_ad_in_group(request):
             return Response({'error': ' Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
         ad.delete()
+        
+        # Delete the ad from the ptrie
+        ads_ptrie.remove_ad(ad)
+        
         return Response({'info': 'successfully deleted ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
         return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
@@ -423,39 +292,44 @@ def delete_ad_in_group(request):
 
 
 @api_view(['POST'])
-def search_ads(request):
-    data = request.data
-    search_string = data.get('search_string')
-    if search_string is None:
-        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
-    # get all ads
-    ads = Ad.nodes.all()
-    # filter the ads by the search string
-    filtered_ads = [
-        ad for ad in ads if search_string in ad.title or search_string in ad.description]
+def query_ads(request):
+    # Check if the session student exists
+    if decode_jwt(request) is None:
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Extract the query string from the request
+    query = request.data.get('query')
+
+    if query is None:
+        return Response({"info": "Please provide a query string as the query parameter"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    # Search matches in the ads ptrie
+    matching_ads = ads_ptrie.search(query)
+    # Extract the ads from the ptrie (ptrie also contains ad groups, so we need to filter the ads out)
+    matching_ads = [ad for ad in matching_ads if type(ad) is Ad]
+
     # Serialize the queryset
-    serializer = AdSerializer(filtered_ads, many=True)
+    serializer = AdSerializer(matching_ads, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
-def search_ads_by_group(request):
+def query_ads_by_group(request):
     data = request.data
-    search_string = data.get('search_string')
+    query = data.get('query')
     ad_group_name = data.get('ad_group_name')
-    if search_string is None or ad_group_name is None:
-        return Response({"info": "please post the search string as the parameter search_string and the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if query is None or ad_group_name is None:
+        return Response({"info": "please post the search string as the parameter query and the ad group name as the parameter ad_group_name"}, 
+                        status=status.HTTP_400_BAD_REQUEST)
     try:
-        # get the ad group
-        ad_group = Ad_Group.nodes.get(name=ad_group_name)
-        # get all ads of the ad group
-        ads = ad_group.ads.all()
-        # filter the ads by the search string
-        filtered_ads = [
-            ad for ad in ads if search_string in ad.title or search_string in ad.description]
+        # Search matches in the ads ptrie
+        matching_ads = ads_ptrie.search(query, ad_group_name)
+    
         # Serialize the queryset
-        serializer = AdSerializer(filtered_ads, many=True)
+        serializer = AdSerializer(matching_ads, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -464,68 +338,41 @@ def search_ads_by_group(request):
 
 
 @api_view(['POST'])
-def search_ad_groups(request):
+def query_ad_groups(request):
     data = request.data
-    search_string = data.get('search_string')
-    if search_string is None:
-        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
-    # get all ad groups
-    ad_groups = Ad_Group.nodes.all()
-    # filter the ad groups by the search string
-    filtered_ad_groups = [
-        ad_group for ad_group in ad_groups if search_string in ad_group.name or search_string in ad_group.description]
-    # Serialize the queryset
-    serializer = AdGroupSerializer(filtered_ad_groups, many=True)
+    query = data.get('query')
+    
+    if query is None:
+        return Response({"info": "please post the search string as the parameter query"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Search matches in the ads ptrie
+    matching_ad_groups = ads_ptrie.search(query)
+    # Extract the ad groups from the ptrie (ptrie also contains ads, so we need to filter the ad groups out)
+    matching_ad_groups = [ad_group for ad_group in matching_ad_groups if type(ad_group) is Ad_Group]
+    
+    serializer = AdGroupSerializer(matching_ad_groups, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
-def search_students(request):
-    data = request.data
-    search_string = data.get('search_string')
-    if search_string is None:
-        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
-    # get all students
-    students = Student.nodes.all()
-    # filter the students by the search string
-    filtered_students = [
-        student for student in students if search_string in student.name or search_string in student.email or search_string in student.semester]
+def query_all(request):
+    query = request.data.get('query')
+    
+    if query is None:
+        return Response({"info": "please post the search string as the parameter query"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    matching_students = student_ptrie.search(query)
+    matching_ads_and_grops = ads_ptrie.search(query)
+    
+    # Extract ads and ad groups
+    matching_ads = [ad for ad in matching_ads_and_grops if type(ad) is Ad]
+    matching_ad_groups = [ad_group for ad_group in matching_ads_and_grops if type(ad_group) is Ad_Group]
+    
     # Serialize the queryset
-    serializer = StudentSerializer(filtered_students, many=True)
-
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['POST'])
-def search_all(request):
-    data = request.data
-    search_string = data.get('search_string')
-    if search_string is None:
-        return Response({"info": "please post the search string as the parameter search_string"}, status=status.HTTP_400_BAD_REQUEST)
-    # get all students
-    students = Student.nodes.all()
-    # filter the students by the search string
-    filtered_students = [
-        student for student in students if search_string in student.forename or search_string in student.email or search_string in student.surname]
-    # Serialize the queryset
-    student_serializer = StudentSerializer(filtered_students, many=True)
-
-    # get all ad groups
-    ad_groups = Ad_Group.nodes.all()
-    # filter the ad groups by the search string
-    filtered_ad_groups = [
-        ad_group for ad_group in ad_groups if search_string in ad_group.name or search_string in ad_group.description]
-    # Serialize the queryset
-    ad_group_serializer = AdGroupSerializer(filtered_ad_groups, many=True)
-
-    # get all ads
-    ads = Ad.nodes.all()
-    # filter the ads by the search string
-    filtered_ads = [
-        ad for ad in ads if search_string in ad.title or search_string in ad.description]
-    # Serialize the queryset
-    ad_serializer = AdSerializer(filtered_ads, many=True)
+    student_serializer = StudentSerializer(matching_students, many=True)
+    ad_serializer = AdSerializer(matching_ads, many=True)
+    ad_group_serializer = AdGroupSerializer(matching_ad_groups, many=True)
 
     return Response({'students': student_serializer.data, 'ad_groups': ad_group_serializer.data, 'ads': ad_serializer.data}, status=status.HTTP_200_OK)
 

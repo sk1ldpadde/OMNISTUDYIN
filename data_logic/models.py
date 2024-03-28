@@ -125,7 +125,7 @@ class Ad(StructuredNode):
 
     # Relationships
     # Ad belongs to an ad group
-    ad_group = RelationshipFrom('Ad_Group', 'AD_IN', cardinality=One)
+    ad_group = RelationshipTo('Ad_Group', 'AD_IN', cardinality=One)
 
     # Ad is created by a student --> Admin of the ad
     # cardinality is ZeroOrMore because of the possible implementation of "standard ads"
