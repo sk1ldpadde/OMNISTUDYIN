@@ -4,7 +4,6 @@ import 'package:omnistudin_flutter/register/registration.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 
 class LoginPage extends StatelessWidget {
-
   final VoidCallback? onLoginSuccess;
 
   LoginPage({this.onLoginSuccess});
@@ -14,7 +13,8 @@ class LoginPage extends StatelessWidget {
 
   void _login(String email, String password) async {
     try {
-      var response = await FrontendToBackendConnection.loginStudent(email, password);
+      var response =
+          await FrontendToBackendConnection.loginStudent(email, password);
       print('Login successful');
       if (response.statusCode == 200) {
         onLoginSuccess?.call();
@@ -29,7 +29,9 @@ class LoginPage extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Login'),),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Login'),
+      ),
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -37,17 +39,16 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                height: screenHeight * 0.1, // 10% der Bildschirmlänge
                 child: Image.asset(
-                  'assets/images/line.png',
-                  fit: BoxFit.scaleDown, // behält das Seitenverhältnis des Bildes bei
+                  'assets/images/full_logo.png',
                 ),
               ),
               SizedBox(height: 20.0), // 20 Pixel Abstand
               CupertinoTextField(
                 controller: _email,
                 placeholder: 'E-Mail',
-                padding: EdgeInsets.all(12.0),),
+                padding: EdgeInsets.all(12.0),
+              ),
               SizedBox(height: 16.0),
               CupertinoTextField(
                 controller: _password,
@@ -59,7 +60,10 @@ class LoginPage extends StatelessWidget {
               GestureDetector(
                 onTap: () {
                   // Hier navigieren Sie zur Registrierungsseite
-                  Navigator.push(context, CupertinoPageRoute(builder: (context) => RegistrationPage()));
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => RegistrationPage()));
                 },
                 child: const Text(
                   'Noch kein Konto?  Hier kannst du dich registrieren',
@@ -67,8 +71,7 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 24.0),
-              CupertinoButton.filled(
-                child: const Text('Anmelden'),
+              ElevatedButton(
                 onPressed: () {
                   try {
                     _login(_email.text, _password.text);
@@ -76,6 +79,23 @@ class LoginPage extends StatelessWidget {
                     print('Error while trying to login: $e');
                   }
                 },
+                child: const Text('Anmelden'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.pressed))
+                      return Color(
+                          0xFFf46139); // The color when the button is pressed
+                    return Color(0xFFf7b29f); // The default color
+                  }),
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6.5),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
