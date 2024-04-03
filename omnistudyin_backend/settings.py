@@ -87,6 +87,7 @@ DATABASES = {
 }
 
 # Neomodel settings
+# username neo4j, password 123456789, port 7687 / web 7474
 config.DATABASE_URL = 'bolt://neo4j:123456789@neo4j:7687'
 NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:123456789@neo4j:7687'
 NEOMODEL_SIGNALS = True

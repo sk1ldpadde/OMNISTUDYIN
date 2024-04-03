@@ -6,6 +6,7 @@ import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/findfriends_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
+import '../Logic/Frontend_To_Backend_Connection.dart';
 
 void main() {
   runApp(OmniStudyingApp());
@@ -30,9 +31,51 @@ class _LandingPageState extends State<LandingPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  void _checkLoginStatus() async {
+    var token = await FrontendToBackendConnection.getToken();
+    print("Token:");
+    print(token);
+    setState(() {
+      _isLoggedIn = token != null;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+
+        body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(onLoginSuccess: _checkLoginStatus),
+        bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people),
+              label: 'Find Friends',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Colors.amber,
+          unselectedItemColor: Colors.blue,
+        ) : null,
+
         body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(),
         bottomNavigationBar: _isLoggedIn
             ? BottomNavigationBar(
@@ -60,6 +103,7 @@ class _LandingPageState extends State<LandingPage> {
                 unselectedItemColor: Color(0xFFf7b29f),
               )
             : null,
+
       ),
     );
   } //build

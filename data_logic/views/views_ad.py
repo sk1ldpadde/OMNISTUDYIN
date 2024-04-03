@@ -1,4 +1,5 @@
-from data_logic.serializers import AdSerializer  # You need to create this serializer
+# You need to create this serializer
+from data_logic.serializers import AdSerializer
 from data_logic.models import Ad
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -25,6 +26,17 @@ from data_logic.ptrie_structures import student_ptrie, ads_ptrie
 
 # Create your views here.
 
+
+@api_view(['POST'])
+def test_relationship(request):
+    ad_name = request.data.get('ad_name')
+    try:
+        ad = Ad.nodes.get(title=ad_name)
+        # ad_group1 = ad.ad_group
+        string1 = ad.ad_group[0].name
+        return (Response({'info': 'test successful.', 'ad_group': string1}, status=status.HTTP_200_OK))
+    except Ad_Group.DoesNotExist:
+        return Response({'error': 'Ad group not found'}, status=status.HTTP_404_NOT_FOUND)
 # ------------------ADGROUP------------------#
 
 
@@ -62,10 +74,10 @@ def create_ad_group(request):
     ad_group = Ad_Group(name=data.get('name'),
                         description=data.get('description'))
     ad_group.save()
-    
+
     # Save Ad Group to the ptrie for efficient lookup
     ads_ptrie.add_ad_group(ad_group)
-    
+
     # connect sessionholder as admin of the ad group
     ad_group.admin.connect(student)
     # Serialize the new ad group
@@ -107,10 +119,10 @@ def change_ad_group(request):
         if hasattr(ad_group, key):
             setattr(ad_group, key, value)
     ad_group.save()
-    
+
     # Re add the ad group to the ptrie
     ads_ptrie.add_ad_group(ad_group)
-    
+
     return Response({'info': 'successfully changed ad group.'}, status=status.HTTP_200_OK)
 
 
@@ -127,10 +139,10 @@ def delete_ad_group(request):
     try:
         ad_group = Ad_Group.nodes.get(name=data.get('name'))
         ad_group.delete()
-        
+
         # Remove the ad group from the ptrie
         ads_ptrie.remove_ad_group(ad_group)
-        
+
         return Response({'info': 'successfully deleted ad group and all of its ads.'}, status=status.HTTP_200_OK)
     except Ad_Group.DoesNotExist:
         return Response({'error': 'An ad group with this name does not exist. (please provide a name parameter)'}, status=status.HTTP_400_BAD_REQUEST)
@@ -222,7 +234,7 @@ def change_ad_in_group(request):
     try:
         # get the ad
         ad = ad_group.ads.get(title=data.get('old_title'))
-        
+
         # Remove the old ad from the ptrie
         ads_ptrie.remove_ad(ad)
 
@@ -234,7 +246,7 @@ def change_ad_in_group(request):
         except Student.DoesNotExist:
             return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
         # change the ad
-        # if block to change the title if requested 
+        # if block to change the title if requested
         # (the new_title is not an standard attribute of the ad model, so it needs to be handled separately)
         if data.get("new_title") is not None:
             ad.title = data.get('new_title')
@@ -243,10 +255,10 @@ def change_ad_in_group(request):
             if hasattr(ad, key):
                 setattr(ad, key, value)
         ad.save()
-        
+
         # Re add the ad to the ptrie
         ads_ptrie.add_ad(ad)
-        
+
         return Response({'info': 'successfully changed ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
         return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
@@ -278,10 +290,10 @@ def delete_ad_in_group(request):
             return Response({'error': ' Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
         ad.delete()
-        
+
         # Delete the ad from the ptrie
         ads_ptrie.remove_ad(ad)
-        
+
         return Response({'info': 'successfully deleted ad.'}, status=status.HTTP_200_OK)
     except Ad.DoesNotExist:
         return Response({'error': 'Ad not found in the given group'}, status=status.HTTP_404_NOT_FOUND)
@@ -320,14 +332,14 @@ def query_ads_by_group(request):
     data = request.data
     query = data.get('query')
     ad_group_name = data.get('ad_group_name')
-    
+
     if query is None or ad_group_name is None:
-        return Response({"info": "please post the search string as the parameter query and the ad group name as the parameter ad_group_name"}, 
+        return Response({"info": "please post the search string as the parameter query and the ad group name as the parameter ad_group_name"},
                         status=status.HTTP_400_BAD_REQUEST)
     try:
         # Search matches in the ads ptrie
         matching_ads = ads_ptrie.search(query, ad_group_name)
-    
+
         # Serialize the queryset
         serializer = AdSerializer(matching_ads, many=True)
 
@@ -341,15 +353,16 @@ def query_ads_by_group(request):
 def query_ad_groups(request):
     data = request.data
     query = data.get('query')
-    
+
     if query is None:
         return Response({"info": "please post the search string as the parameter query"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Search matches in the ads ptrie
     matching_ad_groups = ads_ptrie.search(query)
     # Extract the ad groups from the ptrie (ptrie also contains ads, so we need to filter the ad groups out)
-    matching_ad_groups = [ad_group for ad_group in matching_ad_groups if type(ad_group) is Ad_Group]
-    
+    matching_ad_groups = [
+        ad_group for ad_group in matching_ad_groups if type(ad_group) is Ad_Group]
+
     serializer = AdGroupSerializer(matching_ad_groups, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -358,17 +371,18 @@ def query_ad_groups(request):
 @api_view(['POST'])
 def query_all(request):
     query = request.data.get('query')
-    
+
     if query is None:
         return Response({"info": "please post the search string as the parameter query"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     matching_students = student_ptrie.search(query)
     matching_ads_and_grops = ads_ptrie.search(query)
-    
+
     # Extract ads and ad groups
     matching_ads = [ad for ad in matching_ads_and_grops if type(ad) is Ad]
-    matching_ad_groups = [ad_group for ad_group in matching_ads_and_grops if type(ad_group) is Ad_Group]
-    
+    matching_ad_groups = [
+        ad_group for ad_group in matching_ads_and_grops if type(ad_group) is Ad_Group]
+
     # Serialize the queryset
     student_serializer = StudentSerializer(matching_students, many=True)
     ad_serializer = AdSerializer(matching_ads, many=True)

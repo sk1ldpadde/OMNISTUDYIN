@@ -52,6 +52,7 @@ def test(request):
     return Response({'info': 'test successful.'},
                     status=status.HTTP_200_OK)
 
+
 # ------------------TEST-END------------------#
 
 # ------------------JWT-----------------------#
@@ -169,7 +170,7 @@ def change_session_student(request):
         student = decode_jwt(request)
     except Student.DoesNotExist:
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
-    
+
     # Remove student from the ptrie during the update
     student_ptrie.remove_student(student)
 
@@ -177,10 +178,10 @@ def change_session_student(request):
         if hasattr(student, key):
             setattr(student, key, value)
     student.save()
-    
+
     # Re add student to the ptrie
     student_ptrie.add_student(student)
-    
+
     return Response({'info': 'successfully changed student.'}, status=status.HTTP_200_OK)
 
 
