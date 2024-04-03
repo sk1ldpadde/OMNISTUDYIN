@@ -23,6 +23,7 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   int _currentIndex = 0;
   bool _isLoggedIn = false; // Set this value based on your login status
+  late bool _showSearchBar;
 
   final List<Widget> _pages = [
     HomePage(),
@@ -33,48 +34,61 @@ class _LandingPageState extends State<LandingPage> {
   @override
   void initState() {
     super.initState();
+    _showSearchBar = false;
     _checkLoginStatus();
   }
 
   void _checkLoginStatus() async {
     var token = await FrontendToBackendConnection.getToken();
-    print("Token:");
-    print(token);
     setState(() {
       _isLoggedIn = token != null;
     });
   }
 
+  void checkLoginStatus() {
+    _checkLoginStatus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(onLoginSuccess: _checkLoginStatus),
-        bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          items: const[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: 'Find Friends',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          selectedItemColor: Colors.amber,
-          unselectedItemColor: Colors.blue,
-        ) : null,
+      home: FutureBuilder(
+        future: FrontendToBackendConnection.getToken(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
+          } else {
+            _isLoggedIn = snapshot.data != null;
+            return Scaffold(
+              body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(onLoginSuccess: _checkLoginStatus),
+              bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                items: const[
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.people),
+                    label: 'Find Friends',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person),
+                    label: 'Profile',
+                  ),
+                ],
+                selectedItemColor: Colors.amber,
+                unselectedItemColor: Colors.blue,
+              ) : null,
+            );
+          }
+        },
       ),
     );
-  }//build
+  }
 }

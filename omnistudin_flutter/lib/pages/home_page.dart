@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
+import '../register/login.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -7,6 +9,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _showSearchBar = false;
+
+  void clearLocalStorage() async {
+    await FrontendToBackendConnection.clearStorage();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +29,14 @@ class _HomePageState extends State<HomePage> {
             // Add your create post logic here
           },
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.audiotrack),
+            onPressed: () {
+              clearLocalStorage();
+            },
+          ),
+        ],
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (scrollNotification) {
