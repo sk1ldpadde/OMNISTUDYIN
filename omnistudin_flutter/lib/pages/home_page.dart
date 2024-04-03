@@ -1,6 +1,23 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+
+Future<List<Post>> fetchPosts() async {
+  final response =
+      await http.get(Uri.parse('http://localhost:8000/get_adgroups/'));
+
+  if (response.statusCode == 200) {
+    // If the server returns a 200 OK response, parse the JSON.
+    Iterable l = json.decode(response.body);
+    List<Post> posts = List<Post>.from(l.map((model) => Post.fromJson(model)));
+    return posts;
+  } else {
+    // If the server did not return a 200 OK response, throw an exception.
+    throw Exception('Failed to load posts');
+  }
+}
 
 class Post {
   final String description;
@@ -13,6 +30,15 @@ class Post {
       this.imagePath,
       this.starred = false,
       required this.originalIndex});
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      description: json['description'],
+      imagePath: json['image_path'],
+      starred: json['starred'],
+      originalIndex: json['original_index'],
+    );
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -22,9 +48,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _showSearchBar = false;
-  final List<Post> _posts = [];
+  List<Post> _posts = [];
 
   @override
+  void initState() {
+    super.initState();
+    fetchPosts().then((value) => setState(() {
+          _posts = value;
+        }));
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
