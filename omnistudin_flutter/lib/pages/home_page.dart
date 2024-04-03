@@ -1,45 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-
-Future<List<Post>> fetchPosts() async {
-  final response =
-      await http.get(Uri.parse('http://localhost:8000/get_adgroups/'));
-
-  if (response.statusCode == 200) {
-    // If the server returns a 200 OK response, parse the JSON.
-    Iterable l = json.decode(response.body);
-    List<Post> posts = List<Post>.from(l.map((model) => Post.fromJson(model)));
-    return posts;
-  } else {
-    // If the server did not return a 200 OK response, throw an exception.
-    throw Exception('Failed to load posts');
-  }
-}
-
-class Post {
-  final String description;
-  final String? imagePath;
-  bool starred;
-  final int originalIndex;
-
-  Post(
-      {required this.description,
-      this.imagePath,
-      this.starred = false,
-      required this.originalIndex});
-
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      description: json['description'],
-      imagePath: json['image_path'],
-      starred: json['starred'],
-      originalIndex: json['original_index'],
-    );
-  }
-}
+import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
+import '../register/login.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -48,49 +9,34 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _showSearchBar = false;
-  List<Post> _posts = [];
 
-  @override
-  void initState() {
-    super.initState();
-    fetchPosts().then((value) => setState(() {
-          _posts = value;
-        }));
+  void clearLocalStorage() async {
+    await FrontendToBackendConnection.clearStorage();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: _showSearchBar
-            ? TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  contentPadding: EdgeInsets.all(10.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                ),
-              )
-            : Container(
-                width: 280, // Adjust as needed
-                height: 400, // Adjust as needed
-                child: Image.asset('lib/images/logo_name.png'),
-              ),
+        title: _showSearchBar ? TextField() : Text('Home'),
         leading: IconButton(
           icon: Icon(Icons.add),
-          onPressed: () async {
-            final newPost = await showDialog<Post>(
-              context: context,
-              builder: (context) => CreatePostDialog(postCount: _posts.length),
-            );
-            if (newPost != null) {
-              setState(() {
-                _posts.insert(0, newPost);
-              });
-            }
+          onPressed: () {
+            // Add your create post logic here
           },
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.audiotrack),
+            onPressed: () {
+              clearLocalStorage();
+            },
+          ),
+        ],
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (scrollNotification) {
@@ -102,154 +48,14 @@ class _HomePageState extends State<HomePage> {
           return true;
         },
         child: ListView.builder(
-          itemCount: _posts.length,
+          itemCount: 100, // Replace with your actual item count
           itemBuilder: (context, index) {
-            final post = _posts[index];
-            return Card(
-              child: ListTile(
-                leading: post.imagePath != null
-                    ? Image.file(File(post.imagePath!))
-                    : null,
-                title: Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: post.starred ? Colors.amber : Colors.transparent,
-                    ),
-                    SizedBox(width: 8),
-                    Text(post.description),
-                  ],
-                ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (value) async {
-                    if (value == 'Star') {
-                      // Handle star action
-                      setState(() {
-                        post.starred = !post.starred;
-                        _posts.remove(post);
-                        if (post.starred) {
-                          _posts.insert(0, post);
-                        } else {
-                          _posts.insert(post.originalIndex, post);
-                        }
-                      });
-                    } else if (value == 'Change') {
-                      // Handle change action
-                      final updatedPost = await showDialog<Post>(
-                        context: context,
-                        builder: (context) => CreatePostDialog(
-                          initialDescription: post.description,
-                          initialImagePath: post.imagePath,
-                          postCount: _posts.length,
-                        ),
-                      );
-                      if (updatedPost != null) {
-                        setState(() {
-                          _posts[index] = updatedPost;
-                        });
-                      }
-                    } else if (value == 'Delete') {
-                      // Handle delete action
-                      setState(() {
-                        _posts.removeAt(index);
-                      });
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'Star',
-                      child: Text('Star'),
-                    ),
-                    PopupMenuItem(
-                      value: 'Change',
-                      child: Text('Change'),
-                    ),
-                    PopupMenuItem(
-                      value: 'Delete',
-                      child: Text('Delete'),
-                    ),
-                  ],
-                ),
-              ),
+            return ListTile(
+              title: Text('Item $index'),
             );
           },
         ),
       ),
-    );
-  }
-}
-
-class CreatePostDialog extends StatefulWidget {
-  final String? initialDescription;
-  final String? initialImagePath;
-  final int postCount;
-
-  CreatePostDialog(
-      {this.initialDescription,
-      this.initialImagePath,
-      required this.postCount});
-
-  @override
-  _CreatePostDialogState createState() => _CreatePostDialogState();
-}
-
-class _CreatePostDialogState extends State<CreatePostDialog> {
-  late TextEditingController _descriptionController;
-  String? _imagePath;
-
-  @override
-  void initState() {
-    super.initState();
-    _descriptionController =
-        TextEditingController(text: widget.initialDescription);
-    _imagePath = widget.initialImagePath;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Create Post'),
-      content: Container(
-        height: MediaQuery.of(context).size.height *
-            0.4, // Adjust this value as needed
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: _descriptionController,
-                decoration: InputDecoration(hintText: 'Description'),
-              ),
-              ElevatedButton(
-                child: Text('Select Image'),
-                onPressed: () async {
-                  final pickedFile = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery);
-                  if (pickedFile != null) {
-                    setState(() {
-                      _imagePath = pickedFile.path;
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          child: Text('Publish'),
-          onPressed: () {
-            if (_descriptionController.text.isNotEmpty) {
-              Navigator.of(context).pop(
-                Post(
-                    description: _descriptionController.text,
-                    imagePath: _imagePath,
-                    originalIndex: widget.postCount),
-              );
-            }
-          },
-        ),
-      ],
     );
   }
 }

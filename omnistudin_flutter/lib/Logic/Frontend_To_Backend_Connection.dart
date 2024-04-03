@@ -188,4 +188,8 @@ class FrontendToBackendConnection {
       throw Exception('Network error while trying to update token: $e');
     }
   }
+  static Future<void> clearStorage() async {
+    await storage.deleteAll();
+    print('Storage cleared');
+  }
   }
