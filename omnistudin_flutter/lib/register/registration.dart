@@ -159,27 +159,35 @@ class _DataEntryPageState extends State<DataEntryPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Registrierung'),),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Registrierung'),
+      ),
       child: Scaffold(
-        body: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Text('Gib deinen Vornamen ein:', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
-                  CupertinoTextField(
-                    controller: _firstName,
-                    placeholder: 'Vorname',
-                    padding: EdgeInsets.all(12.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  const Text('Gib deinen Nachnamen ein:', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
-                  CupertinoTextField(
-                    controller: _lastName,
-                    placeholder: 'Nachname',
-                    padding: EdgeInsets.all(12.0),),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView(
+            children: [
+              const Text(
+                'Gib deinen Vornamen ein:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 8.0),
+              CupertinoTextField(
+                controller: _firstName,
+                placeholder: 'Vorname',
+                padding: EdgeInsets.all(8.0),
+              ),
+              const SizedBox(height: 16.0),
+              const Text(
+                'Gib deinen Nachnamen ein:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0),
+              CupertinoTextField(
+                controller: _lastName,
+                placeholder: 'Nachname',
+                padding: EdgeInsets.all(12.0),
+              ),
                   const SizedBox(height: 16.0), // 16 Pixel Abstand
                   const Text('Gib dein Geburtsdatum ein:', style: TextStyle(fontSize: 16.0),),
                   const SizedBox(height: 16.0), // 16 Pixel Abstand
@@ -282,56 +290,54 @@ class _DataEntryPageState extends State<DataEntryPage> {
                     ],
                   ),
                   const SizedBox(height: 24.0),
-                  CupertinoButton.filled(
-                    child: const Text('Registrieren'),
-                    onPressed: () {
-                      if (_firstPassword.text == _secondPassword.text) {
-                        if (isPasswordStrong(_firstPassword.text)) {
-                         _register();
-                         Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginPage()));
-                        } else {
-                          showCupertinoDialog(
-                            context: context,
-                            builder: (context) {
-                              return CupertinoAlertDialog(
-                                title: const Text('Fehler'),
-                                content: const Text('Das Passwort ist nicht sicher genug. Wähle mindestens 8 Zeichen, mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen.'),
-                                actions: [
-                                  CupertinoDialogAction(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
+              CupertinoButton.filled(
+                child: const Text('Registrieren'),
+                onPressed: () {
+                  if (_firstPassword.text == _secondPassword.text) {
+                    if (isPasswordStrong(_firstPassword.text)) {
+                      _register();
+                      Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginPage()));
+                    } else {
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(
+                            title: const Text('Fehler'),
+                            content: const Text('Das Passwort ist nicht sicher genug. Wähle mindestens 8 Zeichen, mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen.'),
+                            actions: [
+                              CupertinoDialogAction(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
                           );
-                        }
-                      } else {
-                        showCupertinoDialog(
-                          context: context,
-                          builder: (context) {
-                            return CupertinoAlertDialog(
-                              title: const Text('Fehler'),
-                              content: const Text('Die Passwörter stimmen nicht überein'),
-                              actions: [
-                                CupertinoDialogAction(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            );
-                          },
+                        },
+                      );
+                    }
+                  } else {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (context) {
+                        return CupertinoAlertDialog(
+                          title: const Text('Fehler'),
+                          content: const Text('Die Passwörter stimmen nicht überein'),
+                          actions: [
+                            CupertinoDialogAction(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
                         );
-                      }
-                    },
-                  ),
-                ],
+                      },
+                    );
+                  }
+                },
               ),
-            ),
+            ], // Diese schließende Klammer fehlte
           ),
         ),
       ),
