@@ -45,7 +45,7 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
         title: Container(
           width: 280,
           height: 400,
-          child: Image.asset('lib/images/logo_name.png'),
+          child: Image.asset('assets/images/logo_name.png'),
         ),
       ),
       body: SafeArea(
