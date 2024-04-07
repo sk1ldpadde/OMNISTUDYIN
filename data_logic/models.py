@@ -18,6 +18,24 @@ class FriendRel(StructuredRel):
         self.save()
 
 
+# Message model
+class Message(StructuredNode):
+    from_student = StringProperty(required=True)
+    content = StringProperty(required=True)
+    timestamp = DateTimeFormatProperty(format="%d-%m-%Y %H:%M:%S")
+    isRead = BooleanProperty(default=False)
+    own_msg = BooleanProperty(default=False)
+
+    def to_dict(self):
+        return {
+            'from_student': self.from_student,
+            'content': self.content,
+            'timestamp': self.timestamp.strftime("%d-%m-%Y %H:%M:%S") if self.timestamp else None,
+            'isRead': self.isRead,
+            'own_msg': self.own_msg,
+        }
+
+
 # Student model
 class Student(StructuredNode):
     # Student related information
@@ -68,6 +86,10 @@ class Student(StructuredNode):
                              'FRIEND',
                              model=FriendRel,
                              cardinality=ZeroOrMore)
+
+    # Relationship for incoming chat messages
+    incoming_chat_messages = RelationshipFrom(
+        'Message', 'TO', cardinality=ZeroOrMore)
 
     # TODO: please review if the following relationships are correct
     creator_of_ad_group = RelationshipTo(

@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +9,28 @@ import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/findfriends_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
+import 'Logic/chat_message_service/message_polling_isolate.dart';
+import 'Logic/chat_message_service/message_persistence_isolate.dart';
 
-void main() {
+void main() async{
   runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(LandingPage());
+
+  /************************
+  // CHAT MESSAGING SERVICES
+  *************************/
+  ReceivePort mainReceivePort = ReceivePort();
+
+  // Start the message database service as an isolate
+  startMessagePersistenceService(mainReceivePort);
+
+  // Get the send port of the message persistence service
+  SendPort dbIsolatePort = await mainReceivePort.first;
+
+  // Start the message polling service as an isolate
+  startMessagePollingService(dbIsolatePort, 'inf21111@gmail.com');
 }
 
 class LandingPage extends StatefulWidget {
