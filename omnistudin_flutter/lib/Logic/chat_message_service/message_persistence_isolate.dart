@@ -1,4 +1,12 @@
 import 'package:sqflite/sqflite.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:isolate';
+import 'package:http/http.dart' as http;
+import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:omnistudin_flutter/Logic/chat_message_service/message.dart';
 
@@ -21,7 +29,6 @@ void messagePersistenceService(SendPort sendPort) async {
   // Importing 'package:flutter/widgets.dart' is required.
   WidgetsFlutterBinding.ensureInitialized();
 
-  
   // Open the database and store the reference.
   final database = openDatabase(
     // Set the path to the database. Note: Using the `join` function from the
@@ -95,6 +102,9 @@ void messagePersistenceService(SendPort sendPort) async {
     if (message is List) {
       if (message[0] == 'i') {
         insertMessage(message[1]);
+      }
+      if (message[0] == 'g') {
+        getMessages().then((value) => sendPort.send(value));
       }
     }
   });

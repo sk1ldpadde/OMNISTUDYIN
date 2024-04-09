@@ -21,7 +21,8 @@ void messagePollingService(Map initialData) async {
 
   Timer.periodic(const Duration(seconds: 2), (Timer t) async {
     // Poll new messages from the server
-    var response = await http.get(Uri.parse('http://localhost:8000/pull_new_chat_msg/?email=$email'));
+    var response = await http
+        .get(Uri.parse('http://10.0.2.2:8000/pull_new_chat_msg/?email=$email'));
 
     // Check response status code
     if (response.statusCode != 200) {
@@ -29,9 +30,9 @@ void messagePollingService(Map initialData) async {
     }
 
     // Parse the response body
-    List<dynamic> responseData = jsonDecode(response.body);
+    Map<String, dynamic> responseData = jsonDecode(response.body);
 
-    for (var data in responseData) {
+    for (var data in responseData["messages"]) {
       // Create a new message object
       Message msg = Message(
         fromStudent: data['from_student'],

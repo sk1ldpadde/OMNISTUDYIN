@@ -12,7 +12,7 @@ import '../Logic/Frontend_To_Backend_Connection.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
 import 'Logic/chat_message_service/message_persistence_isolate.dart';
 
-void main() async{
+void main() async {
   runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -31,6 +31,14 @@ void main() async{
 
   // Start the message polling service as an isolate
   startMessagePollingService(dbIsolatePort, 'inf21111@gmail.com');
+
+  ReceivePort responsePort = ReceivePort();
+  dbIsolatePort.send(responsePort.sendPort);
+
+  responsePort.listen((message) {
+    print('Received answer from isolate: $message');
+    // Log or process the answer received from the isolate
+  });
 }
 
 class LandingPage extends StatefulWidget {
@@ -78,31 +86,35 @@ class _LandingPageState extends State<LandingPage> {
           } else {
             _isLoggedIn = snapshot.data != null;
             return Scaffold(
-              body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(onLoginSuccess: _checkLoginStatus),
-              bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                items: const[
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.people),
-                    label: 'Find Friends',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person),
-                    label: 'Profile',
-                  ),
-                ],
-                selectedItemColor: Colors.amber,
-                unselectedItemColor: Colors.blue,
-              ) : null,
+              body: _isLoggedIn
+                  ? _pages[_currentIndex]
+                  : LoginPage(onLoginSuccess: _checkLoginStatus),
+              bottomNavigationBar: _isLoggedIn
+                  ? BottomNavigationBar(
+                      currentIndex: _currentIndex,
+                      onTap: (index) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      items: const [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.home),
+                          label: 'Home',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.people),
+                          label: 'Find Friends',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.person),
+                          label: 'Profile',
+                        ),
+                      ],
+                      selectedItemColor: Colors.amber,
+                      unselectedItemColor: Colors.blue,
+                    )
+                  : null,
             );
           }
         },

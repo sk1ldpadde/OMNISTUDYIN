@@ -48,7 +48,7 @@ class _OmniStudyingHomepageState extends State<OmniStudyingHomepage> {
                 child: CupertinoButton(
                   child: const Text('Next page'),
                   onPressed: () async {
-                    await FrontendToBackendConnection.getData('test');
+                    await FrontendToBackendConnection.getData('test/');
                   },
                 ),
               ),

@@ -45,6 +45,8 @@ dependencies:
   # Add the sqflite dependency
   sqflite: ^2.3.3
 
+  path: ^1.9.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
