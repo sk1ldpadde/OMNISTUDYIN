@@ -35,13 +35,13 @@ void messagePollingService(Map initialData) async {
     for (var data in responseData["messages"]) {
       // Create a new message object
       Message msg = Message(
-        fromStudent: data['from_student'],
+        fromStudent: data['fromStudent'],
         content: data['content'],
         timestamp: DateTime.parse(data['timestamp']),
         isRead: data['isRead'] == 1,
         ownMsg: data['own_msg'] == 1,
       );
-
+      print(msg.toString());
       // Insert the message into the database
       sendPort.send(['i', msg]);
     }

@@ -56,6 +56,7 @@ void messagePersistenceService(SendPort sendPort) async {
 
   // Define a function that inserts messages into the database
   Future<void> insertMessage(Message msg) async {
+    print("inserting message into db");
     // Get a reference to the database.
     final db = await database;
 
@@ -72,11 +73,14 @@ void messagePersistenceService(SendPort sendPort) async {
 
   // A method that retrieves all the messages from the messages table.
   Future<List<Message>> getMessages() async {
+    print("getting messages");
     // Get a reference to the database.
     final db = await database;
 
     // Query the table for all the messages.
     final List<Map<String, Object?>> messageMap = await db.query('messages');
+
+    print(messageMap);
 
     // Convert the list of each message's fields into a list of `Message` objects.
     return [
@@ -99,13 +103,14 @@ void messagePersistenceService(SendPort sendPort) async {
 
   // Process incoming messages
   receivePort.listen((message) {
-    if (message is List) {
-      if (message[0] == 'i') {
-        insertMessage(message[1]);
-      }
-      if (message[0] == 'g') {
-        getMessages().then((value) => sendPort.send(value));
-      }
+    if (message[0] == 'i') {
+      print("hallo ");
+      insertMessage(message[1]);
+      getMessages();
+    }
+    if (message[0] == 'g') {
+      print("getting messages");
+      getMessages().then((value) => sendPort.send(value));
     }
   });
 }

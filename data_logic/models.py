@@ -20,17 +20,17 @@ class FriendRel(StructuredRel):
 
 # Message model
 class Message(StructuredNode):
-    from_student = StringProperty(required=True)
+    fromStudent = StringProperty(required=True)
     content = StringProperty(required=True)
-    timestamp = DateTimeFormatProperty(format="%d-%m-%Y %H:%M:%S")
+    timestamp = DateTimeFormatProperty(format="%Y-%m-%d %H:%M:%S")
     isRead = BooleanProperty(default=False)
     own_msg = BooleanProperty(default=False)
 
     def to_dict(self):
         return {
-            'from_student': self.from_student,
+            'fromStudent': self.fromStudent,
             'content': self.content,
-            'timestamp': self.timestamp.strftime("%d-%m-%Y %H:%M:%S") if self.timestamp else None,
+            'timestamp': self.timestamp.strftime("%Y-%m-%d %H:%M:%S") if self.timestamp else None,
             'isRead': self.isRead,
             'own_msg': self.own_msg,
         }

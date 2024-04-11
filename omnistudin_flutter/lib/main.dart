@@ -11,6 +11,8 @@ import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
 import 'Logic/chat_message_service/message_persistence_isolate.dart';
+import 'Logic/chat_message_service/message.dart';
+import 'package:intl/intl.dart';
 
 void main() async {
   runApp(OmniStudyingApp());
@@ -21,6 +23,7 @@ void main() async {
   /************************
   // CHAT MESSAGING SERVICES
   *************************/
+  List MessageList = [];
   ReceivePort mainReceivePort = ReceivePort();
 
   // Start the message database service as an isolate
@@ -30,15 +33,38 @@ void main() async {
   SendPort dbIsolatePort = await mainReceivePort.first;
 
   // Start the message polling service as an isolate
-  startMessagePollingService(dbIsolatePort, 'inf21111@gmail.com');
+  startMessagePollingService(dbIsolatePort, 'ma@gmail.com');
 
+  // Create a response port and immediately set up a listener.
   ReceivePort responsePort = ReceivePort();
-  dbIsolatePort.send(responsePort.sendPort);
-
   responsePort.listen((message) {
-    print('Received answer from isolate: $message');
+    MessageList.add(message);
     // Log or process the answer received from the isolate
   });
+
+  // Inform the database isolate about where to send responses.
+  // Assuming the database service is expecting a "setupResponsePort" message with a SendPort.
+  dbIsolatePort.send(["setupResponsePort", responsePort.sendPort]);
+
+  // Now send a message to the database isolate asking for data.
+  dbIsolatePort.send(["g"]);
+
+  Message msg = Message(
+      fromStudent: "ma@gmail.com",
+      content: "Hello",
+      timestamp: DateTime.now(),
+      isRead: false,
+      ownMsg: true);
+  Map<String, dynamic> msgMap = msg.toMap();
+  msgMap["to"] = "ma@gmail.com";
+  msgMap["timestamp"] = DateFormat('dd-MM-yyyy HH:mm:ss').format(msg.timestamp);
+  FrontendToBackendConnection.postData("send_chat_msg/", msgMap);
+  while (true) {
+    // Now send a message to the database isolate asking for data.
+    dbIsolatePort.send(["g"]);
+    await Future.delayed(Duration(seconds: 5));
+    print(MessageList);
+  }
 }
 
 class LandingPage extends StatefulWidget {

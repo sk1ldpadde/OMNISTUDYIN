@@ -55,6 +55,7 @@ urlpatterns = [
     path('query_adgroups/', query_ad_groups, name='search_adgroups'),
     path('query_all/', query_all, name='search_all'),
     path('query_ads_by_group/', query_ads_by_group, name='search_ad_in_group'),
+    #chat
     path('send_chat_msg/', send_chat_msg, name='send_chat_msg'),
     path('pull_new_chat_msg/', pull_new_chat_msg, name='pull_new_chat_msg'),
 ]

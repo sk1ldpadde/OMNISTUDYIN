@@ -17,11 +17,11 @@ class Message {
   // columns in the database.
   Map<String, Object?> toMap() {
     return {
-      'from': fromStudent,
+      'fromStudent': fromStudent,
       'content': content,
       'timestamp': timestamp.toIso8601String(),
-      'isRead': isRead ? 1 : 0,
-      'self': ownMsg ? 1 : 0,
+      'isRead': isRead,
+      'own_msg': ownMsg,
     };
   }
 

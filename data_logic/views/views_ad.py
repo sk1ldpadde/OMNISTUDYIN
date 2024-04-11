@@ -132,12 +132,12 @@ def delete_ad_group(request):
     # Check if sessionHolder is the admin of the ad group
     try:
         student = decode_jwt(request)
-        if not ad_group.admin.is_connected(student):
-            return Response({'error': 'You are not the admin of this ad group.'}, status=status.HTTP_403_FORBIDDEN)
     except Student.DoesNotExist:
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
     try:
         ad_group = Ad_Group.nodes.get(name=data.get('name'))
+        if not ad_group.admin.is_connected(student):
+            return Response({'error': 'You are not the admin of this ad group.'}, status=status.HTTP_403_FORBIDDEN)
         ad_group.delete()
 
         # Remove the ad group from the ptrie
