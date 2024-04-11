@@ -1,10 +1,45 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_session_jwt/flutter_session_jwt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 
+class AdGroup {
+  String name;
+  String description;
 
-class FrontendToBackendConnection {
+  AdGroup({
+    required this.name,
+    required this.description,
+  });
+
+  factory AdGroup.fromJson(Map<String, dynamic> json) {
+    return AdGroup(
+      name: json['name'],
+      description: json['description'],
+    );
+  }
+}
+
+class AdGroupProvider with ChangeNotifier {
+  List<AdGroup> _adGroups = [];
+
+  List<AdGroup> get adGroups => _adGroups;
+
+  void removeAdGroup(int index) {
+    _adGroups.removeAt(index);
+    notifyListeners();
+  }
+
+  void setAdGroups(List<AdGroup> adGroups) {
+    _adGroups = adGroups;
+    notifyListeners();
+  }
+}
+
+class FrontendToBackendConnection with ChangeNotifier {
   // baseURL for the backend server running on the PC!
   static const String baseURL = "http://10.0.2.2:8000/";
 
@@ -94,8 +129,7 @@ class FrontendToBackendConnection {
         return json.decode(response.body);
       } else {
         throw Exception(
-            'Failed to delete data: HTTP status ${response
-                .statusCode},  ${response.body}');
+            'Failed to delete data: HTTP status ${response.statusCode},  ${response.body}');
       }
     } catch (e) {
       throw Exception('Network error while trying to delete data: $e');
@@ -105,7 +139,8 @@ class FrontendToBackendConnection {
   // Erstellen Sie eine Instanz von FlutterSecureStorage
   static final storage = new FlutterSecureStorage();
 
-  static Future<http.Response> loginStudent(String email, String password) async {
+  static Future<http.Response> loginStudent(
+      String email, String password) async {
     try {
       String fullUrl = baseURL + "login/";
       var response = await http.post(
@@ -132,7 +167,6 @@ class FrontendToBackendConnection {
         String? savedToken = await storage.read(key: 'token');
         print('Saved token:');
         print(savedToken);
-
 
         return response;
       } else {
@@ -165,6 +199,7 @@ class FrontendToBackendConnection {
 
     return token;
   }
+
   static Future<String?> updateToken() async {
     print("Updating token");
     try {
@@ -188,8 +223,124 @@ class FrontendToBackendConnection {
       throw Exception('Network error while trying to update token: $e');
     }
   }
+
   static Future<void> clearStorage() async {
     await storage.deleteAll();
     print('Storage cleared');
   }
+
+  //Ads
+
+  static Future<void> addNewAdGroup(
+      String name, String description, var token) async {
+    print('Creating new AdGroup');
+    try {
+      String fullUrl = baseURL + "create_adgroup/";
+
+      var response = await http.post(
+        Uri.parse(fullUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': '$token',
+        },
+        body: jsonEncode(<String, String>{
+          'name': name,
+          'description': description,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('AdGroup created successfully');
+        await fetchAdGroups(token); // Refresh the list of AdGroups
+      } else {
+        throw Exception(
+            'Failed to create AdGroup: HTTP status ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Network error while trying to create AdGroup: $e');
+    }
   }
+
+  static Future<List<AdGroup>> fetchAdGroups(String token) async {
+    String fullUrl = baseURL + "get_adgroups/";
+
+    var response = await http.get(
+      Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> body = jsonDecode(response.body);
+      List<AdGroup> adGroups =
+          body.map((dynamic item) => AdGroup.fromJson(item)).toList();
+      return adGroups;
+    } else {
+      throw Exception('Failed to load ad groups');
+    }
+  }
+
+  static Future<void> deleteAdGroup(
+      BuildContext context, index, String name) async {
+    String fullUrl = baseURL + "delete_adgroup/";
+
+    try {
+      var token = await getToken(); // Fetch the token
+
+      var response = await http.delete(
+        Uri.parse(baseURL + 'delete_ad_group/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Use the token here
+        },
+        body: jsonEncode(<String, String>{
+          'name': name,
+        }),
+      );
+      List<dynamic> body = jsonDecode(response.body);
+      List<AdGroup> adGroups =
+          body.map((dynamic item) => AdGroup.fromJson(item)).toList();
+
+      if (response.statusCode == 200) {
+        Provider.of<AdGroupProvider>(context, listen: false)
+            .removeAdGroup(index);
+        print('AdGroup deleted successfully');
+      } else {
+        print(
+            'Failed to delete ad group: HTTP status ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      print('Error deleting AdGroup: $e');
+    }
+  }
+
+  static Future<void> getAdGroup(
+      int index, String oldName, String newName, String description) async {
+    String fullUrl = baseURL + "get_adgroups/?name=" + oldName;
+    var token = await getToken(); // Fetch the token
+
+    var response = await http.get(
+      Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 403) {
+      throw Exception('User is not an admin of this ad group');
+    } else if (response.statusCode != 200) {
+      print(
+          'Failed to get ad group: HTTP status ${response.statusCode}, ${response.body}');
+      throw Exception('Failed to get ad group');
+    }
+
+    try {
+      await fetchAdGroups(token!);
+    } catch (e) {
+      print('Error updating AdGroup: $e');
+    }
+  }
+
+  notifyListeners();
+}

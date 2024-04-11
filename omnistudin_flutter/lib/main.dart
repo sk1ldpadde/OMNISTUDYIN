@@ -22,12 +22,9 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   int _currentIndex = 0;
-<<<<<<< Updated upstream
+
   bool _isLoggedIn = false; // Set this value based on your login status
   late bool _showSearchBar;
-=======
-  // bool _isLoggedIn = false; // Set this value based on your login status
->>>>>>> Stashed changes
 
   final List<Widget> _pages = [
     HomePage(),
@@ -36,7 +33,6 @@ class _LandingPageState extends State<LandingPage> {
   ];
 
   @override
-<<<<<<< Updated upstream
   void initState() {
     super.initState();
     _showSearchBar = false;
@@ -49,21 +45,6 @@ class _LandingPageState extends State<LandingPage> {
       _isLoggedIn = token != null;
     });
   }
-=======
-  // void initState() {
-  //   super.initState();
-  //   _checkLoginStatus();
-  // }
-
-  // void _checkLoginStatus() async {
-  //   var token = await FrontendToBackendConnection.getToken();
-  //   print("Token:");
-  //   print(token);
-  //   setState(() {
-  //     _isLoggedIn = token != null;
-  //   });
-  // }
->>>>>>> Stashed changes
 
   void checkLoginStatus() {
     _checkLoginStatus();
@@ -72,7 +53,6 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-<<<<<<< Updated upstream
       home: FutureBuilder(
         future: FrontendToBackendConnection.getToken(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -81,71 +61,39 @@ class _LandingPageState extends State<LandingPage> {
           } else {
             _isLoggedIn = snapshot.data != null;
             return Scaffold(
-              body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(onLoginSuccess: _checkLoginStatus),
-              bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                items: const[
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.people),
-                    label: 'Find Friends',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person),
-                    label: 'Profile',
-                  ),
-                ],
-                selectedItemColor: Colors.amber,
-                unselectedItemColor: Colors.blue,
-              ) : null,
+              body: _isLoggedIn
+                  ? _pages[_currentIndex]
+                  : LoginPage(onLoginSuccess: _checkLoginStatus),
+              bottomNavigationBar: _isLoggedIn
+                  ? BottomNavigationBar(
+                      currentIndex: _currentIndex,
+                      onTap: (index) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      items: const [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.home),
+                          label: 'Home',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.people),
+                          label: 'Find Friends',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.person),
+                          label: 'Profile',
+                        ),
+                      ],
+                      selectedItemColor: Color(0xFFf46139),
+                      unselectedItemColor: Color(0xFFf7b29f),
+                    )
+                  : null,
             );
           }
         },
       ),
-=======
-      home: Scaffold(
-          body: _pages[_currentIndex],
-          // body: _isLoggedIn
-          //     ? _pages[_currentIndex]
-          //     : LoginPage(onLoginSuccess: _checkLoginStatus),
-          bottomNavigationBar:
-              // _isLoggedIn
-              //     ?
-              BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.people),
-                label: 'Find Friends',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-            selectedItemColor: Color(0xFFf46139),
-            unselectedItemColor: Color(0xFFf7b29f),
-          )
-          // : null,
-          ),
->>>>>>> Stashed changes
     );
   }
 }

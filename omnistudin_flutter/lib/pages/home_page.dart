@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-<<<<<<< Updated upstream
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import '../register/login.dart';
-=======
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 
 String jwtToken =
     'your_initial_token'; // Replace 'your_initial_token' with the actual JWT token
@@ -64,41 +64,6 @@ Future<void> updateAdGroup(
   }
 }
 
-Future<void> deleteAdGroup(String name) async {
-  final response = await http.delete(
-    Uri.parse('http://localhost:8000/delete_adgroup/'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $jwtToken',
-    },
-    body: jsonEncode(<String, String>{
-      'name': name,
-    }),
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception('Failed to delete AdGroup');
-  }
-}
-
-class AdGroup {
-  String name;
-  String description;
-
-  AdGroup({
-    required this.name,
-    required this.description,
-  });
-
-  factory AdGroup.fromJson(Map<String, dynamic> json) {
-    return AdGroup(
-      name: json['name'],
-      description: json['description'],
-    );
-  }
-}
->>>>>>> Stashed changes
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -106,7 +71,83 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _showSearchBar = false;
-<<<<<<< Updated upstream
+  List<AdGroup> _adGroups = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAdGroups().then((value) => setState(() {
+          _adGroups = value;
+        }));
+  }
+
+  void _addNewAdGroup(String name, String description) async {
+    print('Adding new ad group');
+    var token = await FrontendToBackendConnection.getToken();
+    print('Got token: $token');
+    await FrontendToBackendConnection.addNewAdGroup(name, description, token);
+    print('Added new ad group');
+    await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds
+    List<AdGroup> adGroups =
+        await FrontendToBackendConnection.fetchAdGroups(token!);
+    print('Fetched ad groups: $adGroups');
+    setState(() {
+      _adGroups = adGroups;
+    });
+    print('Updated state with new ad groups');
+  }
+
+  void _deleteAdGroup(int index, String name) async {
+    var token = await FrontendToBackendConnection.getToken();
+    try {
+      await FrontendToBackendConnection.deleteAdGroup(context, index, name);
+      await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds
+      List<AdGroup> adGroups =
+          await FrontendToBackendConnection.fetchAdGroups(token!);
+      print('Fetched ad groups: $adGroups');
+      setState(() {
+        _adGroups = adGroups;
+      });
+      print('Updated state with new ad groups');
+    } catch (e) {
+      print('Error deleting AdGroup: $e');
+      if (e is http.ClientException && e.message.contains('<!DOCTYPE html>')) {
+        print('Server returned an HTML response: ${e.message}');
+      } else if (e is http.ClientException && e.message.contains('404')) {
+        // Handle 403 error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('You are not authorized to delete this ad group')),
+        );
+      } else {
+        // Handle other errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete ad group')),
+        );
+      }
+    }
+  }
+
+  void updateAdGroup(
+      int index, String oldName, String newName, String description) async {
+    var token = await FrontendToBackendConnection.getToken();
+    try {
+      await FrontendToBackendConnection.getAdGroup(
+          index, oldName, newName, description);
+      await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds
+      List<AdGroup> adGroups =
+          await FrontendToBackendConnection.fetchAdGroups(token!);
+      print('Fetched ad groups: $adGroups');
+      setState(() {
+        _adGroups = adGroups;
+      });
+      print('Updated state with new ad groups');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update ad group')),
+      );
+    }
+  }
 
   void clearLocalStorage() async {
     await FrontendToBackendConnection.clearStorage();
@@ -123,75 +164,6 @@ class _HomePageState extends State<HomePage> {
         title: _showSearchBar ? TextField() : Text('Home'),
         leading: IconButton(
           icon: Icon(Icons.add),
-          onPressed: () {
-            // Add your create post logic here
-=======
-  List<AdGroup> _adGroups = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchAdGroups().then((value) => setState(() {
-          _adGroups = value;
-        }));
-  }
-
-  Future<void> _addNewAdGroup(String name, String description) async {
-    try {
-      final newAdGroup = await createAdGroup(name, description);
-      setState(() {
-        _adGroups.insert(0, newAdGroup);
-      });
-    } catch (e) {
-      print('Error creating AdGroup: $e');
-    }
-  }
-
-  Future<void> _updateAdGroup(
-      int index, String oldName, String newName, String description) async {
-    try {
-      await updateAdGroup(oldName, newName, description);
-      setState(() {
-        _adGroups[index].name = newName;
-        _adGroups[index].description = description;
-      });
-    } catch (e) {
-      print('Error updating AdGroup: $e');
-    }
-  }
-
-  Future<void> _deleteAdGroup(int index, String name) async {
-    try {
-      await deleteAdGroup(name);
-      setState(() {
-        _adGroups.removeAt(index);
-      });
-    } catch (e) {
-      print('Error deleting AdGroup: $e');
-    }
-  }
-
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: _showSearchBar
-            ? TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  contentPadding: EdgeInsets.all(10.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                ),
-              )
-            : Container(
-                width: 280, // Adjust as needed
-                height: 400, // Adjust as needed
-                child: Image.asset('assets/images/logo_name.png'),
-              ),
-        leading: IconButton(
-          icon: Icon(Icons.add),
           onPressed: () async {
             final newAdGroup = await showDialog<AdGroup>(
               context: context,
@@ -200,41 +172,9 @@ class _HomePageState extends State<HomePage> {
             if (newAdGroup != null) {
               _addNewAdGroup(newAdGroup.name, newAdGroup.description);
             }
->>>>>>> Stashed changes
-          },
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.audiotrack),
-            onPressed: () {
-              clearLocalStorage();
-            },
-          ),
-        ],
-      ),
-<<<<<<< Updated upstream
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (scrollNotification) {
-          if (scrollNotification is ScrollUpdateNotification) {
-            setState(() {
-              _showSearchBar = scrollNotification.scrollDelta! < 0;
-            });
-          }
-          return true;
-        },
-        child: ListView.builder(
-          itemCount: 100, // Replace with your actual item count
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('Item $index'),
-            );
           },
         ),
       ),
-    );
-  }
-}
-=======
       body: ListView.builder(
         itemCount: _adGroups.length,
         itemBuilder: (context, index) {
@@ -254,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                     if (updatedAdGroup != null) {
-                      _updateAdGroup(index, adGroup.name, updatedAdGroup.name,
+                      updateAdGroup(index, adGroup.name, updatedAdGroup.name,
                           updatedAdGroup.description);
                     }
                   } else if (value == 'Delete') {
@@ -393,8 +333,10 @@ class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
 }
 
 void main() {
-  runApp(MaterialApp(
-    home: HomePage(),
+  runApp(ChangeNotifierProvider(
+    create: (context) => FrontendToBackendConnection(),
+    child: MaterialApp(
+      home: HomePage(),
+    ),
   ));
 }
->>>>>>> Stashed changes
