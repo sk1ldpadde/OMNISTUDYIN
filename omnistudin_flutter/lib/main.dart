@@ -22,6 +22,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   int _currentIndex = 0;
+
   bool _isLoggedIn = false; // Set this value based on your login status
   late bool _showSearchBar;
 
@@ -60,31 +61,35 @@ class _LandingPageState extends State<LandingPage> {
           } else {
             _isLoggedIn = snapshot.data != null;
             return Scaffold(
-              body: _isLoggedIn ? _pages[_currentIndex] : LoginPage(onLoginSuccess: _checkLoginStatus),
-              bottomNavigationBar: _isLoggedIn ? BottomNavigationBar(
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                items: const[
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.people),
-                    label: 'Find Friends',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person),
-                    label: 'Profile',
-                  ),
-                ],
-                selectedItemColor: Colors.amber,
-                unselectedItemColor: Colors.blue,
-              ) : null,
+              body: _isLoggedIn
+                  ? _pages[_currentIndex]
+                  : LoginPage(onLoginSuccess: _checkLoginStatus),
+              bottomNavigationBar: _isLoggedIn
+                  ? BottomNavigationBar(
+                      currentIndex: _currentIndex,
+                      onTap: (index) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      items: const [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.home),
+                          label: 'Home',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.people),
+                          label: 'Find Friends',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.person),
+                          label: 'Profile',
+                        ),
+                      ],
+                      selectedItemColor: Color(0xFFf46139),
+                      unselectedItemColor: Color(0xFFf7b29f),
+                    )
+                  : null,
             );
           }
         },
