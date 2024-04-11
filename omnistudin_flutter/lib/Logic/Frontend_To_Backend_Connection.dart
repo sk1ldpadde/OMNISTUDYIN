@@ -289,10 +289,10 @@ class FrontendToBackendConnection with ChangeNotifier {
       var token = await getToken(); // Fetch the token
 
       var response = await http.delete(
-        Uri.parse(baseURL + 'delete_ad_group/'),
+        Uri.parse(baseURL + 'delete_adgroup/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token', // Use the token here
+          'Authorization': '$token', // Use the token here
         },
         body: jsonEncode(<String, String>{
           'name': name,
