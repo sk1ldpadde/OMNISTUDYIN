@@ -74,3 +74,19 @@ class StudentSerializer(serializers.Serializer):
             'interests_and_goals', instance.interests_and_goals)
         instance.save()
         return instance
+
+
+class StudentFriendSerializer(serializers.Serializer):
+    # Assuming you have a relationship between students
+    friend = StudentSerializer()
+    # Add any other fields you need here
+
+    def create(self, validated_data):
+        # Create and return a new `Student` instance, given the validated data
+        return Student.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        # Update and return an existing `Student` instance, given the validated data
+        instance.friend = validated_data.get('friend', instance.friend)
+        instance.save()
+        return instance
