@@ -24,7 +24,7 @@ from data_logic.ptrie_structures import student_ptrie
 from data_logic.secret import SECRET_KEY
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def get_friends(request):
     try:
         student = decode_jwt(request)

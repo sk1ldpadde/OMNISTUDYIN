@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
+import 'package:omnistudin_flutter/register/login.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -35,8 +37,10 @@ class SettingsPage extends StatelessWidget {
           ),
           ListTile(
             title: Text('Logout'),
-            onTap: () {
-              // TODO: Implement logout functionality
+            onTap: () async {
+              await FrontendToBackendConnection.clearStorage();
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => LoginPage()));
             },
           ),
         ],
