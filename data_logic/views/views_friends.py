@@ -101,3 +101,27 @@ def accept_friend_request(request):
     student.friends.connect(friend)
     student.save()
     return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
+
+
+@api_view(["DELETE"])
+def delete_friend(request):
+    try:
+        student = decode_jwt(request)
+    except Student.DoesNotExist:
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        friend_id = request.data.get('friend_email')
+    except KeyError:
+        return Response({'error': 'Friend ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        friend = Student.nodes.get(email=friend_id)
+    except Student.DoesNotExist:
+        return Response({'error': 'Friend not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    student.friends.disconnect(friend)
+    friend.friends.disconnect(student)
+    friend.save()
+    student.save()
+    return Response({'success': 'Friend deleted'}, status=status.HTTP_200_OK)

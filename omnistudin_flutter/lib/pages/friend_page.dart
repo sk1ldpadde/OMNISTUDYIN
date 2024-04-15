@@ -96,7 +96,7 @@ class _FriendsPageState extends State<FriendsPage> {
                       key: _formKey,
                       child: TextFormField(
                         controller: _emailController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Enter friend\'s email',
                         ),
                         validator: (value) {
@@ -115,7 +115,7 @@ class _FriendsPageState extends State<FriendsPage> {
                         },
                       ),
                       TextButton(
-                        child: Text('Add'),
+                        child: const Text('Add'),
                         onPressed: () {
                           if (_formKey.currentState != null &&
                               _formKey.currentState!.validate()) {
