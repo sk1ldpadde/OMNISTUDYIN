@@ -15,6 +15,8 @@ class FriendsPage extends StatefulWidget {
 
 class _FriendsPageState extends State<FriendsPage> {
   List<dynamic> friendsList = []; // List to hold friends data
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -42,6 +44,35 @@ class _FriendsPageState extends State<FriendsPage> {
     });
   }
 
+  Future<void> addFriend(String email) async {
+    print(email);
+    await FrontendToBackendConnection.postData(
+        "send_friend_request/", {"friend_email": email}).then((response) {
+      var responseData = response;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Friend Request'),
+            content: response["success"] != null
+                ? Text(responseData["success"])
+                : response["error"] != null
+                    ? Text(responseData["error"])
+                    : Text('An error occurred'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +83,54 @@ class _FriendsPageState extends State<FriendsPage> {
           height: 400,
           child: Image.asset('assets/images/logo_name.png'),
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Add a friend'),
+                    content: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter friend\'s email',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an email';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Add'),
+                        onPressed: () {
+                          if (_formKey.currentState != null &&
+                              _formKey.currentState!.validate()) {
+                            addFriend(_emailController.text);
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(

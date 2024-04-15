@@ -91,8 +91,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception(
-            'Failed to post data: HTTP status ${response.statusCode}, ${response.body}');
+        return json.decode(response.body);
       }
     } catch (e) {
       throw Exception('Network error while trying to post data: $e');
@@ -121,8 +120,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception(
-            'Failed to put data: HTTP status ${response.statusCode}, ${response.body}');
+        return json.decode(response.body);
       }
     } catch (e) {
       throw Exception('Network error while trying to put data: $e');
@@ -146,11 +144,10 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception(
-            'Failed to delete data: HTTP status ${response.statusCode},  ${response.body}');
+        return json.decode(response.body);
       }
     } catch (e) {
-      throw Exception('Network error while trying to delete data: $e');
+      return jsonDecode(e.toString());
     }
   }
 
