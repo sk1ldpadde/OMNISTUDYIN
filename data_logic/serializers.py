@@ -44,6 +44,7 @@ class AdSerializer(serializers.Serializer):
 class StudentSerializer(serializers.Serializer):
     forename = serializers.CharField(max_length=100)
     surname = serializers.CharField(max_length=100)
+    email = serializers.EmailField()
     dob = serializers.DateTimeField()  # Adjust the field type if needed
     bio = serializers.CharField(allow_blank=True, required=False)
     uni_name = serializers.CharField(

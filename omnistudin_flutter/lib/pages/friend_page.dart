@@ -152,6 +152,8 @@ class _FriendsPageState extends State<FriendsPage> {
                           'No name'), // use 'forename' field
                       subtitle: Text(friendsList[index]['bio'] ??
                           'No bio'), // use 'bio' field
+                      trailing: Text(friendsList[index]['friendship_status'] ??
+                          'No status'), // use 'friendship_status' field
                       onTap: () {
                         showDialog(
                           context: context,

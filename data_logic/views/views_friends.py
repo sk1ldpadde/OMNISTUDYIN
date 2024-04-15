@@ -32,15 +32,24 @@ def get_friends(request):
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
     matching = student.friends.all()
+    print(matching)
+
     serializer = StudentSerializer(matching, many=True)
     serializer_data = serializer.data
     for friend in matching:
+        print(friend.friends.all())
         if student not in friend.friends.all():
             for f in serializer_data:
-                f["friendship_status"] = "pending"
+                if f["email"] == friend.email:
+                    f["friendship_status"] = "pending"
+        elif student in friend.friends.all():
+            for f in serializer_data:
+                if f["email"] == friend.email:
+                    f["friendship_status"] = "accepted"
         else:
             for f in serializer_data:
-                f["friendship_status"] = "accepted"
+                if f["email"] == friend.email:
+                    f["friendship_status"] = "unknown"
     return Response(serializer_data, status=status.HTTP_200_OK)
 
 
