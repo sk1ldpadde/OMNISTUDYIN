@@ -94,7 +94,11 @@ def register_student(request):
 
     # Check if user does not already exist
     # Note: email is the unique property
-    matching_node = Student.nodes.filter(email=student_data.get('email'))
+    try:
+        matching_node = Student.nodes.filter(email=student_data.get('email'))
+    except Student.DoesNotExist:
+        return Response({'info': 'student with given email doesnt not exist.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     if matching_node:
         return Response({'info': 'student with given email already exists.'},
@@ -120,7 +124,7 @@ def register_student(request):
                     status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
+@ api_view(['POST'])
 def login_student(request):
     login_data = json.loads(request.body)
 
@@ -145,14 +149,14 @@ def login_student(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def get_all_students(request):
     students = Student.nodes.all()
     serializer = StudentSerializer(students, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def get_session_student(request):
     try:
         student = decode_jwt(request)
@@ -162,7 +166,7 @@ def get_session_student(request):
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['PUT'])
+@ api_view(['PUT'])
 def change_session_student(request):
     data = request.data
 
@@ -185,7 +189,7 @@ def change_session_student(request):
     return Response({'info': 'successfully changed student.'}, status=status.HTTP_200_OK)
 
 
-@api_view(['DELETE'])
+@ api_view(['DELETE'])
 def delete_session_student(request):
     try:
         student = decode_jwt(request)
@@ -198,7 +202,7 @@ def delete_session_student(request):
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['POST'])
+@ api_view(['POST'])
 def query_students(request):
     # Check if the session student exists
     if decode_jwt(request) is None:

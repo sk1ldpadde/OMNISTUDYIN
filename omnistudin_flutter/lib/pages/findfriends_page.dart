@@ -21,8 +21,7 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
   }
 
   Future<void> fetchFriends() async {
-    var url =
-        'http://yourdjangoapi.com/api/friends'; // Replace with your API URL
+    var url = 'http://10.0.2.2:8000/get_friends/'; // Replace with your API URL
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
