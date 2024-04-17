@@ -44,6 +44,35 @@ class _FriendsPageState extends State<FriendsPage> {
     });
   }
 
+  Future<void> deleteFriend(String email) async {
+    await FrontendToBackendConnection.postData(
+        "delete_friend/", {"friend_email": email}).then((response) {
+      var responseData = response;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete Friend'),
+            content: response["success"] != null
+                ? Text(responseData["success"])
+                : response["error"] != null
+                    ? Text(responseData["error"])
+                    : Text('An error occurred'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    });
+    fetchFriends();
+  }
+
   Future<void> addFriend(String email) async {
     print(email);
     await FrontendToBackendConnection.postData(
@@ -152,8 +181,53 @@ class _FriendsPageState extends State<FriendsPage> {
                           'No name'), // use 'forename' field
                       subtitle: Text(friendsList[index]['bio'] ??
                           'No bio'), // use 'bio' field
-                      trailing: Text(friendsList[index]['friendship_status'] ??
-                          'No status'), // use 'friendship_status' field
+                      trailing: friendsList[index]['friendship_status'] ==
+                              "pending"
+                          ? GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Friend Request'),
+                                      content: Text('Delete friend request?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Delete'),
+                                          onPressed: () {
+                                            deleteFriend(
+                                                friendsList[index]['email']);
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child:
+                                  Text(friendsList[index]['friendship_status']),
+                            )
+                          : PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'delete') {
+                                  deleteFriend(friendsList[index]['email']);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
+                                const PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Text('Delete'),
+                                ),
+                              ],
+                            ),
                       onTap: () {
                         showDialog(
                           context: context,

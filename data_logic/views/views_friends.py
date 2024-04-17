@@ -103,7 +103,7 @@ def accept_friend_request(request):
     return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
 
 
-@api_view(["DELETE"])
+@api_view(["POST"])
 def delete_friend(request):
     try:
         student = decode_jwt(request)
