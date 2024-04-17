@@ -369,7 +369,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CupertinoButton(
-          color: Colors.blue,
+          color: Colors.orange,
           child: Text('Find Friends'),
           onPressed: () {
             final result = Navigator.push(context,
