@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   python-test:
@@ -23,6 +23,8 @@ jobs:
       - name: Run tests
         run: |
           python -m unittest discover -s data_logic
+      - name: Lint with pylint
+        run: pylint **/*.py
 
   flutter-test:
     runs-on: ubuntu-latest
@@ -32,10 +34,13 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v1
         with:
-          flutter-version: '3.19.3'
+          flutter-version: "3.19.3"
       - name: Install dependencies
         run: flutter pub get
         working-directory: omnistudin_flutter
       - name: Run Flutter tests
         run: flutter test
+        working-directory: omnistudin_flutter
+      - name: Run Flutter analyze
+        run: flutter analyze
         working-directory: omnistudin_flutter
