@@ -44,6 +44,7 @@ class AdSerializer(serializers.Serializer):
 class StudentSerializer(serializers.Serializer):
     forename = serializers.CharField(max_length=100)
     surname = serializers.CharField(max_length=100)
+    email = serializers.EmailField()
     dob = serializers.DateTimeField()  # Adjust the field type if needed
     bio = serializers.CharField(allow_blank=True, required=False)
     uni_name = serializers.CharField(
@@ -72,5 +73,21 @@ class StudentSerializer(serializers.Serializer):
             'profile_picture', instance.profile_picture)
         instance.interests_and_goals = validated_data.get(
             'interests_and_goals', instance.interests_and_goals)
+        instance.save()
+        return instance
+
+
+class StudentFriendSerializer(serializers.Serializer):
+    # Assuming you have a relationship between students
+    friend = StudentSerializer()
+    # Add any other fields you need here
+
+    def create(self, validated_data):
+        # Create and return a new `Student` instance, given the validated data
+        return Student.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        # Update and return an existing `Student` instance, given the validated data
+        instance.friend = validated_data.get('friend', instance.friend)
         instance.save()
         return instance
