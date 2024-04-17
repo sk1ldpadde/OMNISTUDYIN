@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
+import 'package:omnistudin_flutter/pages/findfriends_page.dart';
 
 class FriendsPage extends StatefulWidget {
 //  final int tabIndex;
@@ -348,6 +349,19 @@ class _FriendsPageState extends State<FriendsPage> {
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CupertinoButton(
+          color: Colors.blue,
+          child: Text('Find Friends'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(builder: (context) => FindFriendsPage()),
+            );
+          },
         ),
       ),
     );
