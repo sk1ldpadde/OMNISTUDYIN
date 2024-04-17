@@ -14,7 +14,7 @@ class FriendsPage extends StatefulWidget {
   _FriendsPageState createState() => _FriendsPageState();
 }
 
-class _FriendsPageState extends State<FriendsPage> {
+class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
   List<dynamic> friendsList = []; // List to hold friends data
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -22,7 +22,22 @@ class _FriendsPageState extends State<FriendsPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     fetchFriends();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print("App resumed");
+      fetchFriends();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> fetchFriends() async {
@@ -357,10 +372,14 @@ class _FriendsPageState extends State<FriendsPage> {
           color: Colors.blue,
           child: Text('Find Friends'),
           onPressed: () {
-            Navigator.push(
-              context,
-              CupertinoPageRoute(builder: (context) => FindFriendsPage()),
-            );
+            final result = Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => FindFriendsPage()));
+            result.then((value) {
+              if (value == 'fetchFriends') {
+                print('fetching friends');
+                fetchFriends();
+              }
+            });
           },
         ),
       ),

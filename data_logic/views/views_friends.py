@@ -125,3 +125,17 @@ def delete_friend(request):
     friend.save()
     student.save()
     return Response({'success': 'Friend deleted'}, status=status.HTTP_200_OK)
+
+
+# Findfriends IN PROGRESS
+# TODO: Implement the find_friends function
+@api_view(['GET'])
+def find_friends(request):
+    try:
+        student = decode_jwt(request)
+    except Student.DoesNotExist:
+        return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    matching = Student.nodes.all()  # currently only returning all existing students
+    serializer = StudentSerializer(matching, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

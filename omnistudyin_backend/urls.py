@@ -58,4 +58,6 @@ urlpatterns = [
     path('accept_friend_request/', accept_friend_request,
          name='accept_friend_request'),
     path('delete_friend/', delete_friend, name='delete_friend'),
+    # find friends#
+    path('find_friends/', find_friends, name='find_friends'),
 ]
