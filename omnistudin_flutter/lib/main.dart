@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:isolate';
 
 import 'package:flutter/cupertino.dart';
@@ -8,9 +9,10 @@ import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/findfriends_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
+import 'package:path_provider/path_provider.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
+import 'Logic/chat_message_service/message.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
-import 'Logic/chat_message_service/message_persistence_isolate.dart';
 
 void main() async{
   runApp(OmniStudyingApp());
@@ -23,14 +25,30 @@ void main() async{
   *************************/
   ReceivePort mainReceivePort = ReceivePort();
 
-  // Start the message database service as an isolate
-  startMessagePersistenceService(mainReceivePort);
-
-  // Get the send port of the message persistence service
-  SendPort dbIsolatePort = await mainReceivePort.first;
-
   // Start the message polling service as an isolate
-  startMessagePollingService(dbIsolatePort, 'inf21111@gmail.com');
+  startMessagePollingService(mainReceivePort.sendPort, 'inf21111@gmail.com', await getApplicationDocumentsDirectory());
+
+  // Receive send port of polling Isolate
+  SendPort pollingServicePort = await mainReceivePort.first;
+
+  // Periodically print ALL stored messages
+  Timer.periodic(const Duration(seconds: 2), (Timer t) async {
+    // Create new port for responses from polling Isolate
+    ReceivePort pollingResponsePort = ReceivePort();
+
+    // Get all messages
+    pollingServicePort.send(['g', pollingResponsePort.sendPort]);
+
+    // Listen for response
+    final pollingServiceResponse = await pollingResponsePort.first;
+
+    // Print message for debug
+    final List<Message> messages = await pollingServiceResponse;
+
+    for (var message in messages) {
+      print(message);
+    }
+  });
 }
 
 class LandingPage extends StatefulWidget {

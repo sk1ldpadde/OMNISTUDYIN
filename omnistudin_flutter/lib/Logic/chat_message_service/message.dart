@@ -25,6 +25,16 @@ class Message {
     };
   }
 
+  // Convert a map to a Message object
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(fromStudent: json['from'],
+                   content: json['content'],
+                   timestamp: DateTime.parse(json['timestamp']),
+                   isRead: (json['isRead'] == 'True') ? true : false,
+                   ownMsg: (json['self'] == 'True') ? true : false
+    );
+  }
+
   // Implement toString to make it easier to see information about
   // each message when using the print statement.
   @override
