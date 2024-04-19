@@ -5,6 +5,7 @@ import 'package:flutter_session_jwt/flutter_session_jwt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer' as developer;
 
 class AdGroup {
   String name;
@@ -185,8 +186,7 @@ class FrontendToBackendConnection with ChangeNotifier {
 
         return response;
       } else {
-        throw Exception(
-            'Failed to login: HTTP status ${response.statusCode}, ${response.body}');
+        return response;
       }
     } catch (e) {
       throw Exception('Network error while trying to login: $e');
@@ -231,7 +231,7 @@ class FrontendToBackendConnection with ChangeNotifier {
         await storage.write(key: 'token', value: token);
         return token;
       } else {
-        throw Exception(
+        developer.log(
             'Failed to update token: HTTP status ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
