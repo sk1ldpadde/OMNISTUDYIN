@@ -37,7 +37,7 @@ void main() async{
     ReceivePort pollingResponsePort = ReceivePort();
 
     // Get all messages
-    pollingServicePort.send(['g', pollingResponsePort.sendPort]);
+    pollingServicePort.send(['w', pollingResponsePort.sendPort, ['inf21113@gmail.com']]);
 
     // Listen for response
     final pollingServiceResponse = await pollingResponsePort.first;
@@ -48,6 +48,7 @@ void main() async{
     for (var message in messages) {
       print(message);
     }
+
   });
 }
 

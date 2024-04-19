@@ -20,8 +20,8 @@ class Message {
       'from': fromStudent,
       'content': content,
       'timestamp': timestamp.toIso8601String(),
-      'isRead': isRead ? 1 : 0,
-      'self': ownMsg ? 1 : 0,
+      'isRead': isRead,
+      'self': ownMsg,
     };
   }
 
@@ -30,8 +30,8 @@ class Message {
     return Message(fromStudent: json['from'],
                    content: json['content'],
                    timestamp: DateTime.parse(json['timestamp']),
-                   isRead: (json['isRead'] == 'True') ? true : false,
-                   ownMsg: (json['self'] == 'True') ? true : false
+                   isRead: json['isRead'] ? true : false,
+                   ownMsg: json['self'] ? true : false
     );
   }
 
