@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/app.dart';
 import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
-import 'package:omnistudin_flutter/pages/findfriends_page.dart';
+import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 
@@ -28,7 +28,7 @@ class _LandingPageState extends State<LandingPage> {
 
   final List<Widget> _pages = [
     HomePage(),
-    FindFriendsPage(),
+    FriendsPage(),
     ProfilePage(),
   ];
 

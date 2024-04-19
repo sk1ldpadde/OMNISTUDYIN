@@ -12,7 +12,7 @@ String jwtToken =
 
 Future<List<AdGroup>> fetchAdGroups() async {
   final response =
-      await http.get(Uri.parse('http://localhost:8000/get_adgroups/'));
+      await http.get(Uri.parse('http://10.0.2.2:8000/get_adgroups/'));
 
   if (response.statusCode == 200) {
     Iterable l = json.decode(response.body);
@@ -26,7 +26,7 @@ Future<List<AdGroup>> fetchAdGroups() async {
 
 Future<AdGroup> createAdGroup(String name, String description) async {
   final response = await http.post(
-    Uri.parse('http://localhost:8000/create_adgroup/'),
+    Uri.parse('http://10.0.2.2:8000/create_adgroup/'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $jwtToken',
@@ -47,7 +47,7 @@ Future<AdGroup> createAdGroup(String name, String description) async {
 Future<void> updateAdGroup(
     String oldName, String newName, String description) async {
   final response = await http.put(
-    Uri.parse('http://localhost:8000/change_adgroup/'),
+    Uri.parse('http://10.0.2.2:8000/change_adgroup/'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $jwtToken',

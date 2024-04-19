@@ -5,6 +5,7 @@ import 'package:flutter_session_jwt/flutter_session_jwt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer' as developer;
 
 class AdGroup {
   String name;
@@ -47,12 +48,17 @@ class FrontendToBackendConnection with ChangeNotifier {
   // urlPattern is the backend endpoint url pattern
   static Future<dynamic> getData(String urlPattern,
       {client = "default"}) async {
+    var token = await getToken();
     try {
       if (client == "default") {
         client = http.Client();
       }
       String fullUrl = baseURL + urlPattern;
-      final response = await client.get(Uri.parse(fullUrl));
+      final response =
+          await client.get(Uri.parse(fullUrl), headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': '$token',
+      });
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
@@ -69,6 +75,7 @@ class FrontendToBackendConnection with ChangeNotifier {
   // data is the data to be sent to the server in a Map, which is basically a JSON object / Python-dictionary
   static Future<dynamic> postData(String url, Map<String, dynamic> data,
       {client = "default"}) async {
+    var token = await getToken();
     try {
       if (client == "default") {
         client = http.Client();
@@ -76,14 +83,16 @@ class FrontendToBackendConnection with ChangeNotifier {
       String fullUrl = baseURL + url;
       final response = await client.post(
         Uri.parse(fullUrl),
-        headers: {"Content-Type": "application/json"},
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': '$token'
+        },
         body: json.encode(data),
       );
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception(
-            'Failed to post data: HTTP status ${response.statusCode}, ${response.body}');
+        return json.decode(response.body);
       }
     } catch (e) {
       throw Exception('Network error while trying to post data: $e');
@@ -95,6 +104,7 @@ class FrontendToBackendConnection with ChangeNotifier {
   // data is the data to be sent to the server in a Map, which is basically a JSON object / Python-dictionary
   static Future<dynamic> putData(String url, Map<String, dynamic> data,
       {client = "default"}) async {
+    var token = await getToken();
     try {
       if (client == "default") {
         client = http.Client();
@@ -102,14 +112,16 @@ class FrontendToBackendConnection with ChangeNotifier {
       String fullUrl = baseURL + url;
       final response = await client.put(
         Uri.parse(fullUrl),
-        headers: {"Content-Type": "application/json"},
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': '$token'
+        },
         body: json.encode(data),
       );
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception(
-            'Failed to put data: HTTP status ${response.statusCode}, ${response.body}');
+        return json.decode(response.body);
       }
     } catch (e) {
       throw Exception('Network error while trying to put data: $e');
@@ -119,20 +131,24 @@ class FrontendToBackendConnection with ChangeNotifier {
   // Method to send delete request to the server
   // urlPattern is the backend endpoint url pattern
   static Future<dynamic> deleteData(String url, {client = "default"}) async {
+    var token = await getToken();
     try {
       if (client == "default") {
         client = http.Client();
       }
       String fullUrl = baseURL + url;
-      final response = await client.delete(Uri.parse(fullUrl));
+      final response =
+          await client.delete(Uri.parse(fullUrl), headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': '$token',
+      });
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception(
-            'Failed to delete data: HTTP status ${response.statusCode},  ${response.body}');
+        return json.decode(response.body);
       }
     } catch (e) {
-      throw Exception('Network error while trying to delete data: $e');
+      return jsonDecode(e.toString());
     }
   }
 
@@ -170,8 +186,7 @@ class FrontendToBackendConnection with ChangeNotifier {
 
         return response;
       } else {
-        throw Exception(
-            'Failed to login: HTTP status ${response.statusCode}, ${response.body}');
+        return response;
       }
     } catch (e) {
       throw Exception('Network error while trying to login: $e');
@@ -216,7 +231,7 @@ class FrontendToBackendConnection with ChangeNotifier {
         await storage.write(key: 'token', value: token);
         return token;
       } else {
-        throw Exception(
+        developer.log(
             'Failed to update token: HTTP status ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
@@ -289,10 +304,10 @@ class FrontendToBackendConnection with ChangeNotifier {
       var token = await getToken(); // Fetch the token
 
       var response = await http.delete(
-        Uri.parse(baseURL + 'delete_ad_group/'),
+        Uri.parse(baseURL + 'delete_adgroup/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token', // Use the token here
+          'Authorization': '$token', // Use the token here
         },
         body: jsonEncode(<String, String>{
           'name': name,
@@ -339,6 +354,31 @@ class FrontendToBackendConnection with ChangeNotifier {
       await fetchAdGroups(token!);
     } catch (e) {
       print('Error updating AdGroup: $e');
+    }
+  }
+
+  static Future<dynamic> register(String url, Map<String, dynamic> data,
+      {client = "default"}) async {
+    try {
+      if (client == "default") {
+        client = http.Client();
+      }
+      String fullUrl = baseURL + url;
+      final response = await client.post(
+        Uri.parse(fullUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(data),
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception(
+            'Failed to post data: HTTP status ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Network error while trying to post data: $e');
     }
   }
 
