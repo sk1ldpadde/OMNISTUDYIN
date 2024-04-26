@@ -59,6 +59,20 @@ def create_jwt(student: Student):
 
 
 def decode_jwt(request):
+    """
+    Decode a JSON Web Token (JWT) from the request headers and return the corresponding student object.
+
+    Parameters:
+    - request: The HTTP request object containing the JWT in the headers.
+
+    Returns:
+    - The student object associated with the JWT payload.
+
+    Raises:
+    - AuthenticationFailed: If the token is expired or invalid.
+    - Student.DoesNotExist: If the student does not exist in the database.
+    """
+
     token = request.headers.get('Authorization')
 
     try:
