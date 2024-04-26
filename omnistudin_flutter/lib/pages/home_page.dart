@@ -158,6 +158,30 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _toggleSearchBar() {
+    setState(() {
+      _showSearchBar = !_showSearchBar;
+    });
+  }
+
+  void _searchAdGroups(String query) async {
+    var token = await FrontendToBackendConnection.getToken();
+    List<AdGroup> adGroups =
+        await FrontendToBackendConnection.searchAdGroups(query);
+    setState(() {
+      _adGroups = adGroups;
+    });
+  }
+
+  void _showPostPage(AdGroup adGroup) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostPage(adGroup: adGroup),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,6 +214,7 @@ class _HomePageState extends State<HomePage> {
             ),
             color: Colors.grey, // Change the card color
             child: ListTile(
+              onTap: () => _showPostPage(adGroup),
               title: Text(
                 adGroup.name,
                 style: TextStyle(color: Colors.white), // Change the title color
@@ -232,6 +257,23 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
+    );
+  }
+}
+
+class PostPage extends StatelessWidget {
+  final AdGroup adGroup;
+
+  const PostPage({required this.adGroup});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(adGroup.name),
+      ),
+      body: SingleChildScrollView(
+          padding: EdgeInsets.all(16), child: Text(adGroup.description)),
     );
   }
 }

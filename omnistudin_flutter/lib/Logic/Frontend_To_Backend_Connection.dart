@@ -296,6 +296,24 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  static Future<List<AdGroup>> searchAdGroups(String keyword) async {
+    String fullUrl = baseURL + "search_adgroups/?keyword=$keyword";
+    var response = await http.get(
+      Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> body = jsonDecode(response.body);
+      List<AdGroup> adGroups =
+          body.map((dynamic item) => AdGroup.fromJson(item)).toList();
+      return adGroups;
+    } else {
+      throw Exception('Failed to search ad groups');
+    }
+  }
+
   static Future<void> deleteAdGroup(
       BuildContext context, index, String name) async {
     String fullUrl = baseURL + "delete_adgroup/";
