@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/cupertino.dart';
 
 String jwtToken =
     'your_initial_token'; // Replace 'your_initial_token' with the actual JWT token
@@ -161,7 +162,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _showSearchBar ? TextField() : Text('Home'),
+        centerTitle: true,
+        title: Container(
+            width: 280,
+            height: 400,
+            child: Image.asset('assets/images/logo_name.png')),
         leading: IconButton(
           icon: Icon(Icons.add),
           onPressed: () async {
@@ -180,9 +185,20 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           final adGroup = _adGroups[index];
           return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0), // Add rounded corners
+            ),
+            color: Colors.grey, // Change the card color
             child: ListTile(
-              title: Text(adGroup.name),
-              subtitle: Text(adGroup.description),
+              title: Text(
+                adGroup.name,
+                style: TextStyle(color: Colors.white), // Change the title color
+              ),
+              subtitle: Text(
+                adGroup.description,
+                style: TextStyle(
+                    color: Colors.white70), // Change the subtitle color
+              ),
               trailing: PopupMenuButton<String>(
                 onSelected: (value) async {
                   if (value == 'Change') {
@@ -226,49 +242,68 @@ class CreateAdGroupDialog extends StatefulWidget {
 }
 
 class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
-  late TextEditingController _nameController;
-  late TextEditingController _descriptionController;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController();
-    _descriptionController = TextEditingController();
-  }
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Create Post'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: 'Name',
-            ),
-          ),
-          TextField(
-            controller: _descriptionController,
-            decoration: InputDecoration(
-              labelText: 'Description',
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(AdGroup(
-              name: _nameController.text,
-              description: _descriptionController.text,
-            ));
-          },
-          child: Text('Create'),
+    return CupertinoTheme(
+        data: CupertinoThemeData(
+          brightness: Brightness.light,
+          primaryColor: Color(0xFFf46139),
         ),
-      ],
-    );
+        child: CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: Text('Create Post'),
+            trailing: CupertinoButton(
+              child: Text('Post'),
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                Navigator.of(context).pop(AdGroup(
+                  name: _nameController.text,
+                  description: _descriptionController.text,
+                ));
+              },
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  CupertinoTextField(
+                    controller: _nameController,
+                    placeholder: 'Name',
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: CupertinoColors.lightBackgroundGray,
+                          width: 0.0, // One physical pixel.
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 35),
+                  CupertinoTextField(
+                    controller: _descriptionController,
+                    placeholder: 'Description',
+                    maxLines: null,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: CupertinoColors.lightBackgroundGray,
+                          width: 0.0, // One physical pixel.
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }
 
