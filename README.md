@@ -66,8 +66,9 @@ Nach diesen Schritten sollte die OMNISTUDYIN-App lauffähig sein.
 # C4 Model
 
 Dies ist das C4 Modell für das Projekt.
+Für eine schönere Ansicht: Lightmode aktivieren!
 
-## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)
+## [System Context Diagram](#system-context-diagram)•[Container Diagram](#container-diagram)•[Component Diagram](#component-diagram)
 
 ### System Context Diagram
 
