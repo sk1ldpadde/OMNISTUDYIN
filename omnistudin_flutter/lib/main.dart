@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/app.dart';
@@ -9,13 +8,15 @@ import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 
 void main() {
-  runApp(OmniStudyingApp());
+  runApp(const OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  runApp(LandingPage());
+  runApp(const LandingPage());
 }
 
 class LandingPage extends StatefulWidget {
+  const LandingPage({super.key});
+
   @override
   _LandingPageState createState() => _LandingPageState();
 }
@@ -27,9 +28,9 @@ class _LandingPageState extends State<LandingPage> {
   late bool _showSearchBar;
 
   final List<Widget> _pages = [
-    HomePage(),
-    FriendsPage(),
-    ProfilePage(),
+    const HomePage(),
+    const FriendsPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -57,7 +58,7 @@ class _LandingPageState extends State<LandingPage> {
         future: FrontendToBackendConnection.getToken(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
+            return const CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
           } else {
             _isLoggedIn = snapshot.data != null;
             return Scaffold(
@@ -86,8 +87,8 @@ class _LandingPageState extends State<LandingPage> {
                           label: 'Profile',
                         ),
                       ],
-                      selectedItemColor: Color(0xFFf46139),
-                      unselectedItemColor: Color(0xFFf7b29f),
+                      selectedItemColor: const Color(0xFFf46139),
+                      unselectedItemColor: const Color(0xFFf7b29f),
                     )
                   : null,
             );

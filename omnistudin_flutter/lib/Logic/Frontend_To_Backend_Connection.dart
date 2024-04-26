@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_session_jwt/flutter_session_jwt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 
@@ -153,12 +152,12 @@ class FrontendToBackendConnection with ChangeNotifier {
   }
 
   // Erstellen Sie eine Instanz von FlutterSecureStorage
-  static final storage = new FlutterSecureStorage();
+  static const storage = FlutterSecureStorage();
 
   static Future<http.Response> loginStudent(
       String email, String password) async {
     try {
-      String fullUrl = baseURL + "login/";
+      String fullUrl = "${baseURL}login/";
       var response = await http.post(
         Uri.parse(fullUrl),
         headers: <String, String>{
@@ -218,7 +217,7 @@ class FrontendToBackendConnection with ChangeNotifier {
   static Future<String?> updateToken() async {
     print("Updating token");
     try {
-      String fullUrl = baseURL + "update_jwt/";
+      String fullUrl = "${baseURL}update_jwt/";
       var response = await http.get(
         Uri.parse(fullUrl),
         headers: <String, String>{
@@ -237,6 +236,7 @@ class FrontendToBackendConnection with ChangeNotifier {
     } catch (e) {
       throw Exception('Network error while trying to update token: $e');
     }
+    return null;
   }
 
   static Future<void> clearStorage() async {
@@ -250,7 +250,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       String name, String description, var token) async {
     print('Creating new AdGroup');
     try {
-      String fullUrl = baseURL + "create_adgroup/";
+      String fullUrl = "${baseURL}create_adgroup/";
 
       var response = await http.post(
         Uri.parse(fullUrl),
@@ -277,7 +277,7 @@ class FrontendToBackendConnection with ChangeNotifier {
   }
 
   static Future<List<AdGroup>> fetchAdGroups(String token) async {
-    String fullUrl = baseURL + "get_adgroups/";
+    String fullUrl = "${baseURL}get_adgroups/";
 
     var response = await http.get(
       Uri.parse(fullUrl),
@@ -297,7 +297,7 @@ class FrontendToBackendConnection with ChangeNotifier {
   }
 
   static Future<List<AdGroup>> searchAdGroups(String keyword) async {
-    String fullUrl = baseURL + "search_adgroups/?keyword=$keyword";
+    String fullUrl = "${baseURL}search_adgroups/?keyword=$keyword";
     var response = await http.get(
       Uri.parse(fullUrl),
       headers: <String, String>{
@@ -316,13 +316,13 @@ class FrontendToBackendConnection with ChangeNotifier {
 
   static Future<void> deleteAdGroup(
       BuildContext context, index, String name) async {
-    String fullUrl = baseURL + "delete_adgroup/";
+    String fullUrl = "${baseURL}delete_adgroup/";
 
     try {
       var token = await getToken(); // Fetch the token
 
       var response = await http.delete(
-        Uri.parse(baseURL + 'delete_adgroup/'),
+        Uri.parse('${baseURL}delete_adgroup/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': '$token', // Use the token here
@@ -350,7 +350,7 @@ class FrontendToBackendConnection with ChangeNotifier {
 
   static Future<void> getAdGroup(
       int index, String oldName, String newName, String description) async {
-    String fullUrl = baseURL + "get_adgroups/?name=" + oldName;
+    String fullUrl = "${baseURL}get_adgroups/?name=$oldName";
     var token = await getToken(); // Fetch the token
 
     var response = await http.get(
@@ -400,5 +400,6 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  @override
   notifyListeners();
 }
