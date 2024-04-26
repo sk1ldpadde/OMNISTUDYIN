@@ -1,7 +1,7 @@
 ![OMNISTUDYIN Logo](./Docs/Images/docs_logo.png)
 **"To connect international students and pave the way for meaningful relations online."**
 
-## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)
+## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)•[Contribute](#how-to-contribute)•[Lizenz](#lizenz)
 
 # About
 
@@ -68,7 +68,7 @@ Nach diesen Schritten sollte die OMNISTUDYIN-App lauffähig sein.
 Dies ist das C4 Modell für das Projekt.
 Für eine schönere Ansicht: Lightmode aktivieren!
 
-## [System Context Diagram](#system-context-diagram)•[Container Diagram](#container-diagram)•[Component Diagram](#component-diagram)
+#### [System Context Diagram](#system-context-diagram)•[Container Diagram](#container-diagram)•[Component Diagram](#component-diagram)
 
 ### System Context Diagram
 
@@ -147,8 +147,45 @@ System_Boundary(c1, "OMNISTUDYIN") {
     BiRel(friendsapi, student, "neomodel-use")
 
 }
-
-
-
-
 ```
+
+# How to contribute
+
+Hier sind einige Richtlinien, wie man zum Projekt beitragen kann:
+
+### Schritte zum Mitwirken
+
+1. **Fork das Repository**  
+   Beginne damit, das Projekt zu forken und dann deine Kopie lokal zu klonen.
+
+2. **Erstelle einen neuen Branch**  
+   Erstelle einen neuen Branch für jede Verbesserung oder Korrektur, z.B. `git checkout -b feature/meine-neue-funktion` oder `git checkout -b fix/bugfix`.
+
+3. **Mache deine Änderungen**  
+   Führe die Änderungen durch, die du für wichtig hältst. Stelle sicher, dass du deinen Code testest und dass er den bestehenden Richtlinien entspricht.
+
+4. **Commit deine Änderungen**  
+   Füge deine Änderungen mit `git add .` hinzu und erstelle einen Commit mit `git commit -m 'Füge eine nützliche Nachricht hinzu'`. Die Commit-Nachricht sollte klar und aussagekräftig sein.
+
+5. **Push deinen Branch**  
+   Lade deine Änderungen mit `git push origin feature/meine-neue-funktion` hoch.
+
+6. **Erstelle einen Pull Request**  
+   Gehe auf GitHub zu dem ursprünglichen Repository und erstelle einen Pull Request von deinem Fork. Beschreibe im Pull Request deine Änderungen und warum sie wichtig sind.
+
+## Richtlinien
+
+- Stelle sicher, dass dein Code den Stil- und Qualitätsstandards entspricht.
+- Füge Tests hinzu, wenn du neue Funktionen implementierst.
+- Aktualisiere die Dokumentation, wenn du Änderungen an der Funktionalität vornimmst.
+- Verwende aussagekräftige Commit-Nachrichten.
+
+Wir freuen uns auf alle Beiträge!
+
+# Lizenz
+
+Dieses Projekt ist unter der MIT-Lizenz lizenziert. Diese Lizenz ermöglicht es jedem, die Software für private oder kommerzielle Zwecke frei zu nutzen, zu verändern, zu verbreiten und zu verkaufen. Die MIT-Lizenz ist eine der permissivsten Lizenzen und legt nur sehr wenige Einschränkungen fest. Dabei muss lediglich der Urheberrechtshinweis und die Lizenzinformation in allen Kopien oder wesentlichen Teilen der Software erhalten bleiben.
+
+Die vollständige Lizenztext der MIT-Lizenz kann [hier](https://opensource.org/licenses/MIT) eingesehen werden. Durch die Nutzung dieses Projekts stimmen Sie den Bedingungen der MIT-Lizenz zu.
+
+Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwicklung der Software so offen und unkompliziert wie möglich zu gestalten. Wir ermutigen alle Nutzer, aktiv zur Verbesserung beizutragen und ihre Modifikationen mit der Gemeinschaft zu teilen.
