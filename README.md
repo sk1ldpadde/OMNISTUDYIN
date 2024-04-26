@@ -63,7 +63,7 @@ Wechsle in den Ordner `omnistudin_flutter` und führe den Befehl aus:
 
 Nach diesen Schritten sollte die OMNISTUDYIN-App lauffähig sein.
 
-# C4 Model
+# 📈 C4 Model
 
 Dies ist das C4 Modell für das Projekt.
 Für eine schönere Ansicht: Lightmode aktivieren!
@@ -82,7 +82,7 @@ C4Context
     Rel(student2, omnistudyin, "uses", "Via Android")
 ```
 
-### 📈 Container diagram
+### Container diagram
 
 ```mermaid
 C4Context
