@@ -1,2 +1,5 @@
-# OMNISTUDYIN
-This is the git-repos for the softwareengineering-project: OMNISTUDYIN
+# About
+
+OMNISTUDYIN ist eine Social Media Handy-Applikation, die darauf abzielt, die Studenten unserer Welt zu verknüpfen.
+
+
