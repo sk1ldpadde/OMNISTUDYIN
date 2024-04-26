@@ -3,7 +3,7 @@
 
 ## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)•[Contribute](#how-to-contribute)•[Lizenz](#lizenz)
 
-# About
+# 💡 About
 
 OMNISTUDYIN ist eine Social Media Handy-Applikation, die darauf abzielt, die Studenten unserer Welt zu verknüpfen.
 
@@ -13,7 +13,7 @@ Sie bietet die Folgenden Hauptfunktionalitäten:
 - Ein Freundschaftssystem mit täglich neuen Freundschafts-Vorschlägen, basierend auf angegebenen Interessen/Zielen, für das internationalen Verknüpfen mit neuen Menschen
 - Ein Chatsystem zum Interagieren mit anderen Menschen
 
-# Techstack
+# 👨‍💻 Techstack
 
 Eine kurze highlevel-Beschreibung der benutzten Technologien in diesem Projekt
 
@@ -22,7 +22,7 @@ Eine kurze highlevel-Beschreibung der benutzten Technologien in diesem Projekt
 - Die Schnittstelle zwischen Flutter-Frontend und der Neo4j-Datenbank bildet das Python-Framework [Django](https://www.djangoproject.com/). Django unterstützt Neo4j nicht out-of-the-Box, deswegen wurde die [NeoModel](https://neomodel.readthedocs.io/en/latest/) Bibliothek benutzt.
 - Das Django-Backend und die Datenbank wurde für eine übersichtliche und unkomplizierte Entwichlung mittels [Docker](https://docs.docker.com/) in unabhängige Container virtualisiert. Das Frontend wurde aufgrund der Benutzung von Offline-Handy-Emulatoren nicht zusätzlich virtualisiert.
 
-# Quickstart
+# 🛫 Quickstart
 
 Folge diesen Schritten, um mit OMNISTUDYIN schnell auszuführen:
 
@@ -82,7 +82,7 @@ C4Context
     Rel(student2, omnistudyin, "uses", "Via Android")
 ```
 
-### Container diagram
+### 📈 Container diagram
 
 ```mermaid
 C4Context
@@ -149,7 +149,7 @@ System_Boundary(c1, "OMNISTUDYIN") {
 }
 ```
 
-# How to contribute
+# 🙏 How to contribute
 
 Hier sind einige Richtlinien, wie man zum Projekt beitragen kann:
 
@@ -182,7 +182,7 @@ Hier sind einige Richtlinien, wie man zum Projekt beitragen kann:
 
 Wir freuen uns auf alle Beiträge!
 
-# Lizenz
+# ⚠️ Lizenz
 
 Dieses Projekt ist unter der MIT-Lizenz lizenziert. Diese Lizenz ermöglicht es jedem, die Software für private oder kommerzielle Zwecke frei zu nutzen, zu verändern, zu verbreiten und zu verkaufen. Die MIT-Lizenz ist eine der permissivsten Lizenzen und legt nur sehr wenige Einschränkungen fest. Dabei muss lediglich der Urheberrechtshinweis und die Lizenzinformation in allen Kopien oder wesentlichen Teilen der Software erhalten bleiben.
 
