@@ -18,12 +18,21 @@ SECRET_KEY = "12345"
 # TODO write tests to validate function
 
 def compute_current_age(student: Student):
+    """
+    Computes the current age of a student based on their date of birth.
+
+    Args:
+        student (Student): The student object containing the date of birth.
+
+    Returns:
+        int: The current age of the student.
+    """
     today = date.today()
     student_dob = datetime.strptime(student.dob, "%d-%m-%Y")
 
     age = today.year - student_dob.year
 
-    # check if birthday already happend this year
+    # check if birthday already happened this year
     if (today.month, today.day) < (student_dob.month, student_dob.day):
         age -= 1
 
@@ -32,6 +41,16 @@ def compute_current_age(student: Student):
 
 # Check if the given password matches the stored salted hash
 def check_credentials(stored_pwd, request_pwd):
+    """
+    Checks if the provided password matches the stored password hash.
+
+    Parameters:
+    stored_pwd (str): The stored password hash.
+    request_pwd (str): The password provided for verification.
+
+    Returns:
+    bool: True if the password matches the hash, False otherwise.
+    """
     ph = PasswordHasher()
     try:
         ph.verify(stored_pwd, request_pwd)
@@ -42,6 +61,15 @@ def check_credentials(stored_pwd, request_pwd):
 
 
 def check_profanity(string: str):
+    """
+    Check if a given string contains profanity.
+
+    Args:
+        string (str): The string to be checked for profanity.
+
+    Returns:
+        bool: True if the string contains profanity, False otherwise.
+    """
     if string is None:
         return False
     return profanity.contains_profanity(string)
@@ -49,6 +77,16 @@ def check_profanity(string: str):
 
 # Create a new jwt token for the given student
 def create_jwt(student: Student):
+    """
+    Creates a JSON Web Token (JWT) for the given student.
+
+    Parameters:
+        student (Student): The student object for which the JWT is created.
+
+    Returns:
+        str: The encoded JWT.
+
+    """
     jwt_payload = {
         'sub': student.email,
         'exp': datetime.now() + timedelta(hours=10)  # Token expiration time
