@@ -217,7 +217,7 @@ Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwickl
 
 ### Backend:
 
-Der Ordner data_logic ist der Huapt-Ordner für die Backendlogik. Hier findet man alle Backend-Algorithmen.
+Der Ordner data_logic ist der Haupt-Ordner für die Backendlogik.
 Hier findet man:
 
 #### Views
