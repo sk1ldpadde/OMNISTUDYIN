@@ -199,3 +199,42 @@ Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwickl
 |      Implementierung von neo4j hat sehr gut geklappt      | Frontend wurde zu langsam aufgebaut | Mehr Frontend developer |
 | Flutter lässt sich mittels Copilot sehr schnell schreiben | Flutter an sich ist unnötig komplex |                         |
 |                         col 3 is                          |            right-aligned            |           $1            |
+
+## Where to find what
+
+### Backend:
+
+Der Ordner data_logic ist der Huapt-Ordner für die Backendlogik. Hier findet man alle Backend-Algorithmen.
+Hier findet man:
+
+#### Views
+
+In dem Ordner "views": Alle Algorithmen, die sich direkt mit API-Access beschäftigt
+
+- Ad_Group: Get all groups, Creation, Deletion
+- Ad: Get, Creation, Deletion, Changing of a ad in a adgroup --> Ein Ad muss eine parent-adgroup haben
+- Students: Accountservice - Registering, Login (mit sessiontokens: JWT), sessiontoken-Updating, Change/Deletion von Accounts.
+- Friends: Senden/Annehmen von Freundschaftsanfragen, Get all students, **find-friends-Algorithmus-view**
+- Chat: Send-Chat-Message, Pull-Chat-Message
+
+#### Backend-Algorithmen
+
+Die meisten Backend-Algorithmen kann man in der Datei util.py finden.
+Hier findet man:
+
+- Algo, der das Alter eines Studenten berechnet
+- Hashed passwort Vergleiche
+- Profanity Check: Text nach Beleidigungen etc scannen
+- Alle Sachen rund um SessionTokens: Java Web Tokens: Creation & Decoding von JWTs
+
+#### Django
+
+Der Omnistudyin_Backend-Ordner besitzt prinzipiell nur django-spezifische Inhalte.
+
+- urls.py ist hier am wichtigsten, als Aufzählung der API-Points
+
+## Komplexere Algorithmen
+
+### Chat-System
+
+**TODO: DHBWKNK**
