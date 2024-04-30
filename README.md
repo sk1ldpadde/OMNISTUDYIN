@@ -194,8 +194,8 @@ Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwickl
 
 ## Retrospective
 
-|                            ☀️                             |                 ☁️                  |           🔜            |
-| :-------------------------------------------------------: | :---------------------------------: | :---------------------: |
-|      Implementierung von neo4j hat sehr gut geklappt      | Frontend wurde zu langsam aufgebaut | Mehr Frontend developer |
-| Flutter lässt sich mittels Copilot sehr schnell schreiben | Flutter an sich ist unnötig komplex |                         |
-|                         col 3 is                          |            right-aligned            |           $1            |
+|                            ☀️                             |                 ☁️                                       |           🔜                        |
+| :-------------------------------------------------------: | :------------------------------------------------------: | :-----------------------------------:|
+|      Implementierung von neo4j hat sehr gut geklappt      | Frontend wurde zu langsam aufgebaut                      |   Mehr Frontend developer            |
+| Flutter lässt sich mittels Copilot sehr schnell schreiben | Flutter an sich ist unnötig komplex                      |                                      |
+|     Strukturierung des Teams verlief hervorragend         | Umstellung Linux/Mac für Backend Funktionalität stressig |           $1                         |
