@@ -1,7 +1,7 @@
 ![OMNISTUDYIN Logo](./Docs/Images/docs_logo.png)
 **"To connect international students and pave the way for meaningful relations online."**
 
-## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)•[Contribute](#how-to-contribute)•[Lizenz](#lizenz)[Sonstiges](#sonstiges)
+## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)•[Contribute](#how-to-contribute)•[Lizenz](#lizenz)•[Sonstiges](#sonstiges)
 
 # 💡 About
 
