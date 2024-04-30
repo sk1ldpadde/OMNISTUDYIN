@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import '../register/login.dart';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -66,6 +64,8 @@ Future<void> updateAdGroup(
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
     print('Got token: $token');
     await FrontendToBackendConnection.addNewAdGroup(name, description, token);
     print('Added new ad group');
-    await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds
+    await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
     List<AdGroup> adGroups =
         await FrontendToBackendConnection.fetchAdGroups(token!);
     print('Fetched ad groups: $adGroups');
@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
     var token = await FrontendToBackendConnection.getToken();
     try {
       await FrontendToBackendConnection.deleteAdGroup(context, index, name);
-      await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds
+      await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
       List<AdGroup> adGroups =
           await FrontendToBackendConnection.fetchAdGroups(token!);
       print('Fetched ad groups: $adGroups');
@@ -117,13 +117,13 @@ class _HomePageState extends State<HomePage> {
       } else if (e is http.ClientException && e.message.contains('404')) {
         // Handle 403 error
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
               content: Text('You are not authorized to delete this ad group')),
         );
       } else {
         // Handle other errors
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete ad group')),
+          const SnackBar(content: Text('Failed to delete ad group')),
         );
       }
     }
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
     try {
       await FrontendToBackendConnection.getAdGroup(
           index, oldName, newName, description);
-      await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds
+      await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
       List<AdGroup> adGroups =
           await FrontendToBackendConnection.fetchAdGroups(token!);
       print('Fetched ad groups: $adGroups');
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
       print('Updated state with new ad groups');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update ad group')),
+        const SnackBar(content: Text('Failed to update ad group')),
       );
     }
   }
@@ -187,16 +187,16 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Container(
+        title: SizedBox(
             width: 280,
             height: 400,
             child: Image.asset('assets/images/logo_name.png')),
         leading: IconButton(
-          icon: Icon(Icons.add),
+          icon: const Icon(Icons.add),
           onPressed: () async {
             final newAdGroup = await showDialog<AdGroup>(
               context: context,
-              builder: (context) => CreateAdGroupDialog(),
+              builder: (context) => const CreateAdGroupDialog(),
             );
             if (newAdGroup != null) {
               _addNewAdGroup(newAdGroup.name, newAdGroup.description);
@@ -217,11 +217,11 @@ class _HomePageState extends State<HomePage> {
               onTap: () => _showPostPage(adGroup),
               title: Text(
                 adGroup.name,
-                style: TextStyle(color: Colors.white), // Change the title color
+                style: const TextStyle(color: Colors.white), // Change the title color
               ),
               subtitle: Text(
                 adGroup.description,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white70), // Change the subtitle color
               ),
               trailing: PopupMenuButton<String>(
@@ -243,11 +243,11 @@ class _HomePageState extends State<HomePage> {
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'Change',
                     child: Text('Change'),
                   ),
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'Delete',
                     child: Text('Delete'),
                   ),
@@ -264,7 +264,7 @@ class _HomePageState extends State<HomePage> {
 class PostPage extends StatelessWidget {
   final AdGroup adGroup;
 
-  const PostPage({required this.adGroup});
+  const PostPage({super.key, required this.adGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -273,12 +273,14 @@ class PostPage extends StatelessWidget {
         title: Text(adGroup.name),
       ),
       body: SingleChildScrollView(
-          padding: EdgeInsets.all(16), child: Text(adGroup.description)),
+          padding: const EdgeInsets.all(16), child: Text(adGroup.description)),
     );
   }
 }
 
 class CreateAdGroupDialog extends StatefulWidget {
+  const CreateAdGroupDialog({super.key});
+
   @override
   _CreateAdGroupDialogState createState() => _CreateAdGroupDialogState();
 }
@@ -290,15 +292,14 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
   @override
   Widget build(BuildContext context) {
     return CupertinoTheme(
-        data: CupertinoThemeData(
+        data: const CupertinoThemeData(
           brightness: Brightness.light,
           primaryColor: Color(0xFFf46139),
         ),
         child: CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
-            middle: Text('Create Post'),
+            middle: const Text('Create Post'),
             trailing: CupertinoButton(
-              child: Text('Post'),
               padding: EdgeInsets.zero,
               onPressed: () {
                 Navigator.of(context).pop(AdGroup(
@@ -306,6 +307,7 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
                   description: _descriptionController.text,
                 ));
               },
+              child: const Text('Post'),
             ),
           ),
           child: SafeArea(
@@ -316,7 +318,7 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
                   CupertinoTextField(
                     controller: _nameController,
                     placeholder: 'Name',
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
                           color: CupertinoColors.lightBackgroundGray,
@@ -326,12 +328,12 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 35),
+                  const SizedBox(height: 35),
                   CupertinoTextField(
                     controller: _descriptionController,
                     placeholder: 'Description',
                     maxLines: null,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
                           color: CupertinoColors.lightBackgroundGray,
@@ -353,7 +355,7 @@ class UpdateAdGroupDialog extends StatefulWidget {
   final String oldName;
   final String oldDescription;
 
-  const UpdateAdGroupDialog({
+  const UpdateAdGroupDialog({super.key, 
     required this.oldName,
     required this.oldDescription,
   });
@@ -376,19 +378,19 @@ class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Update Ad Group'),
+      title: const Text('Update Ad Group'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Name',
             ),
           ),
           TextField(
             controller: _descriptionController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Description',
             ),
           ),
@@ -402,7 +404,7 @@ class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
               description: _descriptionController.text,
             ));
           },
-          child: Text('Update'),
+          child: const Text('Update'),
         ),
       ],
     );
@@ -412,8 +414,9 @@ class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
 void main() {
   runApp(ChangeNotifierProvider(
     create: (context) => FrontendToBackendConnection(),
-    child: MaterialApp(
+    child: const MaterialApp(
       home: HomePage(),
     ),
   ));
 }
+

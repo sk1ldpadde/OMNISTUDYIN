@@ -29,10 +29,22 @@ from data_logic.ptrie_structures import student_ptrie, ads_ptrie
 
 @api_view(['POST'])
 def test_relationship(request):
+    """
+    Test the relationship between an ad and its ad group.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - If the ad group is found, returns a response with information about the test and the ad group name.
+    - If the ad group is not found, returns a response with an error message.
+
+    Raises:
+    - None.
+    """
     ad_name = request.data.get('ad_name')
     try:
         ad = Ad.nodes.get(title=ad_name)
-        # ad_group1 = ad.ad_group
         string1 = ad.ad_group[0].name
         return (Response({'info': 'test successful.', 'ad_group': string1}, status=status.HTTP_200_OK))
     except Ad_Group.DoesNotExist:
@@ -42,6 +54,15 @@ def test_relationship(request):
 
 @api_view(['GET'])
 def get_ad_groups(request):
+    """
+    Retrieve all ad groups.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - Response: The serialized data of all ad groups.
+    """
     ad_groups = Ad_Group.nodes.all()
     serializer = AdGroupSerializer(ad_groups, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -49,6 +70,20 @@ def get_ad_groups(request):
 
 @api_view(['POST'])
 def create_ad_group(request):
+    """
+    Create a new ad group.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        A Response object containing the serialized data of the newly created ad group.
+
+    Raises:
+        Ad_Group.DoesNotExist: If the ad group does not exist.
+        Student.DoesNotExist: If the student does not exist.
+    """
+    
     data = request.data
 
     # Check if an ad group with the provided name already exists
@@ -87,6 +122,32 @@ def create_ad_group(request):
 
 @api_view(['PUT'])
 def change_ad_group(request):
+    """
+    Change the attributes of an ad group.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object.
+
+    Raises:
+        Ad_Group.DoesNotExist: If the ad group with the provided name does not exist.
+        Student.DoesNotExist: If the session student is not found.
+
+    Notes:
+        - This function expects the following parameters in the request data:
+            - 'old_name' (str): The name of the existing ad group.
+            - 'new_name' (str, optional): The new name for the ad group.
+            - 'description' (str, optional): The new description for the ad group.
+        - If 'new_name' or 'description' is not provided, an error response is returned.
+        - If 'new_name' or 'description' contains profanity, an error response is returned.
+        - If the session student is not the admin of the ad group, an error response is returned.
+        - The ad group is updated with the new attributes and saved to the database.
+        - The ad group is removed from the ptrie data structure and then re-added after the update.
+
+    """
+    
     data = request.data
     # Check if an ad group with the provided name already exists
     # try catch block to handle the case where the ad group does not exist
@@ -128,6 +189,20 @@ def change_ad_group(request):
 
 @api_view(['DELETE'])
 def delete_ad_group(request):
+    """
+    Deletes an ad group and all of its ads.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object.
+
+    Raises:
+        Student.DoesNotExist: If the session student is not found.
+        Ad_Group.DoesNotExist: If an ad group with the specified name does not exist.
+
+    """
     data = request.data
     # Check if sessionHolder is the admin of the ad group
     try:
@@ -156,6 +231,19 @@ def delete_ad_group(request):
 
 @api_view(['POST'])
 def get_ads_of_group(request):
+    """
+    Retrieve all ads belonging to a specific ad group.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the serialized ads data.
+
+    Raises:
+        HTTP_400_BAD_REQUEST: If the ad_group_name parameter is missing in the request.
+        HTTP_404_NOT_FOUND: If the specified ad group does not exist.
+    """
     data = request.data
     # extract the ad group name from the request
     ad_group_name = data.get('ad_group_name')
@@ -177,6 +265,21 @@ def get_ads_of_group(request):
 
 @api_view(['POST'])
 def create_ads_in_group(request):
+    """
+    Create an ad in a specified ad group.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object.
+
+    Raises:
+        Ad_Group.DoesNotExist: If the specified ad group does not exist.
+        Student.DoesNotExist: If the session student is not found.
+
+    """
+
     data = request.data
     # extract the ad group name from the request
     ad_group_name = data.get('ad_group_name')
@@ -217,6 +320,22 @@ def create_ads_in_group(request):
 
 @api_view(['PUT'])
 def change_ad_in_group(request):
+    """
+    Change an ad in a specific ad group.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object.
+
+    Raises:
+        Ad_Group.DoesNotExist: If the specified ad group does not exist.
+        Ad.DoesNotExist: If the specified ad does not exist in the given group.
+        Student.DoesNotExist: If the session student does not exist.
+
+    """
+
     data = request.data
     # extract the ad group name from the request
     ad_group_name = data.get('ad_group_name')
@@ -266,9 +385,18 @@ def change_ad_in_group(request):
 
 @api_view(['DELETE'])
 def delete_ad_in_group(request):
+    """
+    Deletes an ad from a specified ad group.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object indicating the result of the operation.
+    """
+
     data = request.data
     # extract the ad group name from the request
-    # TODO: Check if sessionHolder is the admin of the ad
     ad_group_name = data.get('ad_group_name')
     if ad_group_name is None:
         return Response({"info": "please post the ad group name as the parameter ad_group_name"}, status=status.HTTP_400_BAD_REQUEST)
@@ -305,6 +433,20 @@ def delete_ad_in_group(request):
 
 @api_view(['POST'])
 def query_ads(request):
+    """
+    Retrieves ads that match the provided query string.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the serialized ads.
+
+    Raises:
+        HTTP_404_NOT_FOUND: If the session student is not found.
+        HTTP_400_BAD_REQUEST: If the query string is not provided.
+    """
+
     # Check if the session student exists
     if decode_jwt(request) is None:
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -329,6 +471,19 @@ def query_ads(request):
 
 @api_view(['POST'])
 def query_ads_by_group(request):
+    """
+    Retrieves ads from the specified ad group based on the provided search query.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the serialized ads matching the search query.
+
+    Raises:
+        Ad_Group.DoesNotExist: If the specified ad group does not exist.
+    """
+    
     data = request.data
     query = data.get('query')
     ad_group_name = data.get('ad_group_name')
@@ -351,6 +506,19 @@ def query_ads_by_group(request):
 
 @api_view(['POST'])
 def query_ad_groups(request):
+    """
+    Retrieves a list of ad groups that match the given query.
+
+    Parameters:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the serialized ad groups.
+
+    Raises:
+        HTTP 400 Bad Request: If the query parameter is missing.
+    """
+    
     data = request.data
     query = data.get('query')
 
@@ -370,6 +538,16 @@ def query_ad_groups(request):
 
 @api_view(['POST'])
 def query_all(request):
+    """
+    Retrieves matching students, ads, and ad groups based on the provided query.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the serialized data of matching students, ad groups, and ads.
+    """
+    
     query = request.data.get('query')
 
     if query is None:
