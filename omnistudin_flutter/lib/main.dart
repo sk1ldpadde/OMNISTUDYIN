@@ -1,4 +1,8 @@
+
+import 'dart:isolate';
+
 import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/app.dart';
@@ -7,15 +11,69 @@ import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
+import 'Logic/chat_message_service/message_polling_isolate.dart';
+import 'Logic/chat_message_service/message_persistence_isolate.dart';
+import 'Logic/chat_message_service/message.dart';
+import 'package:intl/intl.dart';
 
-void main() {
+
+void main() async {
   runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(LandingPage());
+
+  /************************
+  // CHAT MESSAGING SERVICES
+  *************************/
+  List MessageList = [];
+  ReceivePort mainReceivePort = ReceivePort();
+
+  // Start the message database service as an isolate
+  startMessagePersistenceService(mainReceivePort);
+
+  // Get the send port of the message persistence service
+  SendPort dbIsolatePort = await mainReceivePort.first;
+
+  // Start the message polling service as an isolate
+  startMessagePollingService(dbIsolatePort, 'ma@gmail.com');
+
+  // Create a response port and immediately set up a listener.
+  ReceivePort responsePort = ReceivePort();
+  responsePort.listen((message) {
+    MessageList.add(message);
+    // Log or process the answer received from the isolate
+  });
+
+  // Inform the database isolate about where to send responses.
+  // Assuming the database service is expecting a "setupResponsePort" message with a SendPort.
+  dbIsolatePort.send(["setupResponsePort", responsePort.sendPort]);
+
+  // Now send a message to the database isolate asking for data.
+  dbIsolatePort.send(["g"]);
+
+  Message msg = Message(
+      fromStudent: "ma@gmail.com",
+      content: "Hello",
+      timestamp: DateTime.now(),
+      isRead: false,
+      ownMsg: true);
+  Map<String, dynamic> msgMap = msg.toMap();
+  msgMap["to"] = "ma@gmail.com";
+  msgMap["timestamp"] = DateFormat('dd-MM-yyyy HH:mm:ss').format(msg.timestamp);
+  FrontendToBackendConnection.postData("send_chat_msg/", msgMap);
+  while (true) {
+    // Now send a message to the database isolate asking for data.
+    dbIsolatePort.send(["g"]);
+    await Future.delayed(Duration(seconds: 5));
+    print(MessageList);
+  }
+
 }
 
 class LandingPage extends StatefulWidget {
+  const LandingPage({super.key});
+
   @override
   _LandingPageState createState() => _LandingPageState();
 }
@@ -27,9 +85,9 @@ class _LandingPageState extends State<LandingPage> {
   late bool _showSearchBar;
 
   final List<Widget> _pages = [
-    HomePage(),
-    FriendsPage(),
-    ProfilePage(),
+    const HomePage(),
+    const FriendsPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -57,7 +115,7 @@ class _LandingPageState extends State<LandingPage> {
         future: FrontendToBackendConnection.getToken(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
+            return const CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
           } else {
             _isLoggedIn = snapshot.data != null;
             return Scaffold(
@@ -86,8 +144,10 @@ class _LandingPageState extends State<LandingPage> {
                           label: 'Profile',
                         ),
                       ],
-                      selectedItemColor: Color(0xFFf46139),
-                      unselectedItemColor: Color(0xFFf7b29f),
+
+                      selectedItemColor: const Color(0xFFf46139),
+                      unselectedItemColor: const Color(0xFFf7b29f),
+
                     )
                   : null,
             );

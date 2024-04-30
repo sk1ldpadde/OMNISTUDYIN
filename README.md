@@ -63,7 +63,7 @@ Wechsle in den Ordner `omnistudin_flutter` und führe den Befehl aus:
 
 Nach diesen Schritten sollte die OMNISTUDYIN-App lauffähig sein.
 
-# 📈 C4 Model
+# 🧨 C4 Model
 
 Dies ist das C4 Modell für das Projekt.
 Für eine schönere Ansicht: Lightmode aktivieren!

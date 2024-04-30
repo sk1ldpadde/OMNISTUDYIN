@@ -7,6 +7,8 @@ import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import 'package:omnistudin_flutter/pages/findfriends_page.dart';
 
 class FriendsPage extends StatefulWidget {
+  const FriendsPage({super.key});
+
 //  final int tabIndex;
 //  const FindFriendsPage({super.key, required this.tabIndex});
 
@@ -68,15 +70,15 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Delete Friend'),
+            title: const Text('Delete Friend'),
             content: response["success"] != null
                 ? Text(responseData["success"])
                 : response["error"] != null
                     ? Text(responseData["error"])
-                    : Text('An error occurred'),
+                    : const Text('An error occurred'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -98,15 +100,15 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Friend Request'),
+            title: const Text('Friend Request'),
             content: response["success"] != null
                 ? Text(responseData["success"])
                 : response["error"] != null
                     ? Text(responseData["error"])
-                    : Text('An error occurred'),
+                    : const Text('An error occurred'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -123,20 +125,20 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Container(
+        title: SizedBox(
           width: 280,
           height: 400,
           child: Image.asset('assets/images/logo_name.png'),
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Add a friend'),
+                    title: const Text('Add a friend'),
                     content: Form(
                       key: _formKey,
                       child: TextFormField(
@@ -154,7 +156,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                     ),
                     actions: <Widget>[
                       TextButton(
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -191,7 +193,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                               child: Image.memory(base64Decode(
                                   friendsList[index]['profile_picture'])),
                             )
-                          : Icon(Icons
+                          : const Icon(Icons
                               .person), // replace with actual image if available
                       title: Text(friendsList[index]['forename'] ??
                           'No name'), // use 'forename' field
@@ -205,17 +207,17 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: Text('Friend Request'),
-                                      content: Text('Delete friend request?'),
+                                      title: const Text('Friend Request'),
+                                      content: const Text('Delete friend request?'),
                                       actions: <Widget>[
                                         TextButton(
-                                          child: Text('Cancel'),
+                                          child: const Text('Cancel'),
                                           onPressed: () {
                                             Navigator.of(context).pop();
                                           },
                                         ),
                                         TextButton(
-                                          child: Text('Delete'),
+                                          child: const Text('Delete'),
                                           onPressed: () {
                                             deleteFriend(
                                                 friendsList[index]['email']);
@@ -252,7 +254,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                               title: Center(
                                 child: Text(
                                   '${friendsList[index]['forename']} ${friendsList[index]['surname'] ?? ''}',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ),
                               content: SingleChildScrollView(
@@ -283,7 +285,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                                             TextSpan(
                                                 text:
                                                     '${friendsList[index]['bio']}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.normal)),
                                           ],
@@ -301,7 +303,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                                             TextSpan(
                                                 text:
                                                     '${friendsList[index]['uni_name']}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.normal)),
                                           ],
@@ -319,7 +321,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                                             TextSpan(
                                                 text:
                                                     '${friendsList[index]['degree']}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.normal)),
                                           ],
@@ -337,7 +339,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                                             TextSpan(
                                                 text:
                                                     '${friendsList[index]['semester']}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.normal)),
                                           ],
@@ -348,7 +350,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                               ),
                               actions: <Widget>[
                                 TextButton(
-                                  child: Text('Close'),
+                                  child: const Text('Close'),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
@@ -370,10 +372,10 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
         padding: const EdgeInsets.all(8.0),
         child: CupertinoButton(
           color: Colors.orange,
-          child: Text('Find Friends'),
+          child: const Text('Find Friends'),
           onPressed: () {
             final result = Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => FindFriendsPage()));
+                CupertinoPageRoute(builder: (context) => const FindFriendsPage()));
             result.then((value) {
               if (value == 'fetchFriends') {
                 print('fetching friends');

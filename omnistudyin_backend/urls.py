@@ -14,11 +14,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+
 from data_logic.views.views_ad import *
 from data_logic.views.views_student import *
 from data_logic.views.views_friends import *
+
+from data_logic.views.views_chat_msg import *
+
+from django.contrib import admin
+from django.urls import path
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -52,6 +57,7 @@ urlpatterns = [
     path('query_adgroups/', query_ad_groups, name='search_adgroups'),
     path('query_all/', query_all, name='search_all'),
     path('query_ads_by_group/', query_ads_by_group, name='search_ad_in_group'),
+
     # friends
     path('get_friends/', get_friends, name='get_friends'),
     path('send_friend_request/', send_friend_request, name='send_friend_request'),
@@ -60,4 +66,9 @@ urlpatterns = [
     path('delete_friend/', delete_friend, name='delete_friend'),
     # find friends#
     path('find_friends/', find_friends, name='find_friends'),
+
+    #chat
+    path('send_chat_msg/', send_chat_msg, name='send_chat_msg'),
+    path('pull_new_chat_msg/', pull_new_chat_msg, name='pull_new_chat_msg'),
+
 ]

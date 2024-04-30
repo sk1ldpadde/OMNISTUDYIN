@@ -32,6 +32,18 @@ from data_logic.secret import SECRET_KEY
 
 @api_view(['GET'])
 def get_value(request):
+    """
+    Retrieves the value of a student's forename and semester based on the provided token.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the student's forename and semester.
+
+    Raises:
+        AuthenticationFailed: If the token is expired or invalid.
+    """
     token = request.headers.get('Authorization')
 
     try:
@@ -49,6 +61,15 @@ def get_value(request):
 
 @api_view(['GET'])
 def test(request):
+    """
+    This function is used to test the functionality of the API endpoint.
+
+    Parameters:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The response object containing the test result.
+    """
     return Response({'info': 'test successful.'},
                     status=status.HTTP_200_OK)
 
@@ -60,6 +81,19 @@ def test(request):
 
 @api_view(['GET'])
 def update_jwt(request):
+    """
+    Updates the JSON Web Token (JWT) for the authenticated user.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - Response: The HTTP response object containing the updated JWT.
+
+    Raises:
+    - AuthenticationFailed: If the token is expired, invalid, or the email is invalid.
+    """
+
     # use given token to authorize the user
     token = request.headers.get('Authorization')
     # which user to create the token for
@@ -88,6 +122,20 @@ def update_jwt(request):
 
 @api_view(['POST'])
 def register_student(request):
+    """
+    Register a new student.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object indicating the result of the registration.
+
+    Raises:
+        None
+
+    """
+
     student_data = json.loads(request.body)
 
     # Check if payload is valid
@@ -126,6 +174,20 @@ def register_student(request):
 
 @ api_view(['POST'])
 def login_student(request):
+    """
+    Authenticates a student's login credentials and generates a JWT token if the credentials are correct.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the login status and JWT token.
+
+    Raises:
+        None
+
+    """
+
     login_data = json.loads(request.body)
 
     # TODO: Check if payload is valid
@@ -151,6 +213,15 @@ def login_student(request):
 
 @ api_view(['GET'])
 def get_all_students(request):
+    """
+    Retrieve all students from the database and serialize them using the StudentSerializer.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - A Response object containing the serialized data of all students.
+    """
     students = Student.nodes.all()
     serializer = StudentSerializer(students, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -158,6 +229,16 @@ def get_all_students(request):
 
 @ api_view(['GET'])
 def get_session_student(request):
+    """
+    Retrieves the session student based on the provided request.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - If the session student is found, returns the serialized student data with a status code of 200.
+    - If the session student is not found, returns an error message with a status code of 404.
+    """
     try:
         student = decode_jwt(request)
         serializer = StudentSerializer(student)
@@ -168,6 +249,16 @@ def get_session_student(request):
 
 @ api_view(['PUT'])
 def change_session_student(request):
+    """
+    Change the session student's attributes based on the provided data.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object indicating the status of the operation.
+    """
+
     data = request.data
 
     try:
@@ -191,6 +282,18 @@ def change_session_student(request):
 
 @ api_view(['DELETE'])
 def delete_session_student(request):
+    """
+    Deletes the session student.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object.
+
+    Raises:
+        Student.DoesNotExist: If the session student does not exist.
+    """
     try:
         student = decode_jwt(request)
         student.delete()
@@ -204,6 +307,21 @@ def delete_session_student(request):
 
 @ api_view(['POST'])
 def query_students(request):
+    """
+    Retrieves a list of students based on the provided query string.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the serialized list of matching students.
+
+    Raises:
+        NotFound (HTTP 404): If the session student is not found.
+        BadRequest (HTTP 400): If the query string is not provided.
+
+    """
+
     # Check if the session student exists
     if decode_jwt(request) is None:
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -225,6 +343,6 @@ def query_students(request):
 
 
 # TODO: define a view for session password or email changes
-# TODO define a view for simple student matching algorithm
+
 
 # ------------------STUDENT-END------------------#

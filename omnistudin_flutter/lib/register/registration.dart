@@ -70,7 +70,7 @@ class RegistrationPage extends StatelessWidget {
                     Navigator.push(
                         context,
                         CupertinoPageRoute(
-                            builder: (context) => DataEntryPage()));
+                            builder: (context) => const DataEntryPage()));
                   },
                 ),
               ],
@@ -83,23 +83,23 @@ class RegistrationPage extends StatelessWidget {
 }
 
 class DataEntryPage extends StatefulWidget {
-  const DataEntryPage({Key? key}) : super(key: key);
+  const DataEntryPage({super.key});
   @override
   _DataEntryPageState createState() => _DataEntryPageState();
 }
 
 class _DataEntryPageState extends State<DataEntryPage> {
   File? _image;
-  TextEditingController _firstPassword = TextEditingController();
-  TextEditingController _secondPassword = TextEditingController();
+  final TextEditingController _firstPassword = TextEditingController();
+  final TextEditingController _secondPassword = TextEditingController();
   DateTime _dateOfBirth = DateTime.now();
-  TextEditingController _email = TextEditingController();
-  TextEditingController _firstName = TextEditingController();
-  TextEditingController _lastName = TextEditingController();
-  TextEditingController _bio = TextEditingController();
-  TextEditingController _university = TextEditingController();
-  TextEditingController _course = TextEditingController();
-  TextEditingController _semester = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _firstName = TextEditingController();
+  final TextEditingController _lastName = TextEditingController();
+  final TextEditingController _bio = TextEditingController();
+  final TextEditingController _university = TextEditingController();
+  final TextEditingController _course = TextEditingController();
+  final TextEditingController _semester = TextEditingController();
 
   void _showDatePicker(BuildContext context) {
     showCupertinoModalPopup(
@@ -181,7 +181,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _firstName,
                 placeholder: 'Vorname',
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
               ),
               const SizedBox(height: 16.0),
               const Text(
@@ -192,7 +192,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _lastName,
                 placeholder: 'Nachname',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
               ),
               const SizedBox(height: 16.0), // 16 Pixel Abstand
               const Text(
@@ -205,7 +205,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   _dateOfBirth == DateTime.now()
                       ? 'Datum auswählen'
                       : DateFormat('dd.MM.yyyy').format(_dateOfBirth),
-                  style: TextStyle(color: CupertinoColors.activeBlue),
+                  style: const TextStyle(color: CupertinoColors.activeBlue),
                 ),
                 onPressed: () => _showDatePicker(context),
               ),
@@ -217,7 +217,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _bio,
                 placeholder: 'Bio',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 maxLines: 5, // Erlaubt bis zu 5 Zeilen Text
               ), // 16 Pixel Abstand
               const SizedBox(height: 16.0),
@@ -225,11 +225,11 @@ class _DataEntryPageState extends State<DataEntryPage> {
                 'Welche Universität besuchst du?',
                 style: TextStyle(fontSize: 16.0),
               ),
-              SizedBox(height: 16.0), // 16 Pixel Abstand
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
               CupertinoTextField(
                 controller: _university,
                 placeholder: 'Universität',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
               ),
               const SizedBox(height: 16.0), // 16 Pixel Abstand
               const Text(
@@ -240,7 +240,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _course,
                 placeholder: 'Studienfach',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
               ),
               const SizedBox(height: 16.0), // 16 Pixel Abstand
               const Text(
@@ -251,7 +251,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _semester,
                 placeholder: 'Semester',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16.0),
@@ -263,7 +263,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _email,
                 placeholder: 'E-Mail-Adresse',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16.0),
@@ -275,28 +275,28 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _firstPassword,
                 placeholder: 'Passwort',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 obscureText: true,
               ),
-              SizedBox(height: 16.0), // 16 Pixel Abstand
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
               const Text(
                 'Bestätige dein Passwort:',
                 style: TextStyle(fontSize: 16.0),
               ),
-              SizedBox(height: 16.0), // 16 Pixel Abstand
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
               CupertinoTextField(
                 controller: _secondPassword,
                 placeholder: 'Passwort bestätigen:',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 obscureText: true,
               ),
-              SizedBox(height: 16.0), // 16 Pixel Abstand
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
               const SizedBox(height: 24.0),
               const Text(
                 'Lade ein Profilbild hoch:',
                 style: TextStyle(fontSize: 16.0),
               ),
-              SizedBox(
+              const SizedBox(
                   height:
                       16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
               Stack(
@@ -318,14 +318,14 @@ class _DataEntryPageState extends State<DataEntryPage> {
                     ),
                   if (_image == null)
                     CupertinoButton(
-                      child: Icon(
-                        CupertinoIcons.add,
-                        color: CupertinoColors.inactiveGray,
-                      ),
                       onPressed: getImage,
                       padding: EdgeInsets.zero,
                       color: CupertinoColors.white.withOpacity(0.0),
                       minSize: 48.0,
+                      child: const Icon(
+                        CupertinoIcons.add,
+                        color: CupertinoColors.inactiveGray,
+                      ),
                     ),
                 ],
               ),
