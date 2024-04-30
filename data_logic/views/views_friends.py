@@ -26,6 +26,16 @@ from data_logic.secret import SECRET_KEY
 
 @api_view(['GET'])
 def get_friends(request):
+    """
+    Retrieves the list of friends for a given student.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - Response: The HTTP response object containing the list of friends and their friendship status.
+    """
+
     try:
         student = decode_jwt(request)
     except Student.DoesNotExist:
@@ -55,6 +65,20 @@ def get_friends(request):
 
 @api_view(['POST'])
 def send_friend_request(request):
+    """
+    Sends a friend request from the current student to another student.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - If the friend request is sent successfully, returns a Response object with a success message and status code 200.
+    - If the session student is not found, returns a Response object with an error message and status code 404.
+    - If the friend ID is not provided, returns a Response object with an error message and status code 400.
+    - If the friend is not found, returns a Response object with an error message and status code 404.
+    - If the friend already exists in the student's friends list, returns a Response object with an error message and status code 400.
+    """
+
     try:
         student = decode_jwt(request)
     except Student.DoesNotExist:
@@ -80,6 +104,20 @@ def send_friend_request(request):
 
 @api_view(['POST'])
 def accept_friend_request(request):
+    """
+    Accepts a friend request from another student.
+
+    Parameters:
+    - request: The HTTP request object.
+
+    Returns:
+    - If the friend request is accepted successfully, returns a response with status code 200 and a success message.
+    - If the session student is not found, returns a response with status code 404 and an error message.
+    - If the friend ID is not provided, returns a response with status code 400 and an error message.
+    - If the friend is not found, returns a response with status code 404 and an error message.
+    - If the friend request is not found, returns a response with status code 400 and an error message.
+    """
+
     try:
         student = decode_jwt(request)
     except Student.DoesNotExist:
@@ -105,6 +143,16 @@ def accept_friend_request(request):
 
 @api_view(["POST"])
 def delete_friend(request):
+    """
+    Deletes a friend from the student's friend list.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object indicating the success or failure of the operation.
+    """
+
     try:
         student = decode_jwt(request)
     except Student.DoesNotExist:
