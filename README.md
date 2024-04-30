@@ -1,7 +1,7 @@
 ![OMNISTUDYIN Logo](./Docs/Images/docs_logo.png)
 **"To connect international students and pave the way for meaningful relations online."**
 
-## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)•[Contribute](#how-to-contribute)•[Lizenz](#lizenz)
+## [About](#about)•[Techstack](#techstack)•[Quickstart](#quickstart)•[C4 Model](#c4-model)•[Contribute](#how-to-contribute)•[Lizenz](#lizenz)[Sonstiges](#sonstiges)
 
 # 💡 About
 
@@ -189,3 +189,13 @@ Dieses Projekt ist unter der MIT-Lizenz lizenziert. Diese Lizenz ermöglicht es 
 Die vollständige Lizenztext der MIT-Lizenz kann [hier](https://opensource.org/licenses/MIT) eingesehen werden. Durch die Nutzung dieses Projekts stimmen Sie den Bedingungen der MIT-Lizenz zu.
 
 Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwicklung der Software so offen und unkompliziert wie möglich zu gestalten. Wir ermutigen alle Nutzer, aktiv zur Verbesserung beizutragen und ihre Modifikationen mit der Gemeinschaft zu teilen.
+
+# Sonstiges
+
+## Retrospective
+
+|                            ☀️                             |                 ☁️                  |           🔜            |
+| :-------------------------------------------------------: | :---------------------------------: | :---------------------: |
+|      Implementierung von neo4j hat sehr gut geklappt      | Frontend wurde zu langsam aufgebaut | Mehr Frontend developer |
+| Flutter lässt sich mittels Copilot sehr schnell schreiben | Flutter an sich ist unnötig komplex |                         |
+|                         col 3 is                          |            right-aligned            |           $1            |
