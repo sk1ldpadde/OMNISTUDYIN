@@ -192,6 +192,19 @@ Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwickl
 
 # Sonstiges
 
+## Overview
+
+- [Sonstiges](#sonstiges)
+  - [Retrospective](#retrospective)
+  - [Where to find what](#where-to-find-what)
+    - [Backend:](#backend)
+      - [Views](#views)
+      - [Backend-Algorithmen](#backend-algorithmen)
+      - [Django](#django)
+  - [Komplexere Algorithmen](#komplexere-algorithmen)
+    - [Chat-System](#chat-system)
+    -
+
 ## Retrospective
 
 |                            ☀️                             |                            ☁️                            |           🔜            |
