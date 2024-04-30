@@ -1,18 +1,21 @@
+
 import 'dart:isolate';
 
 import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/app.dart';
 import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
-import 'package:omnistudin_flutter/pages/findfriends_page.dart';
+import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
 import 'Logic/chat_message_service/message_persistence_isolate.dart';
 import 'Logic/chat_message_service/message.dart';
 import 'package:intl/intl.dart';
+
 
 void main() async {
   runApp(OmniStudyingApp());
@@ -65,22 +68,26 @@ void main() async {
     await Future.delayed(Duration(seconds: 5));
     print(MessageList);
   }
+
 }
 
 class LandingPage extends StatefulWidget {
+  const LandingPage({super.key});
+
   @override
   _LandingPageState createState() => _LandingPageState();
 }
 
 class _LandingPageState extends State<LandingPage> {
   int _currentIndex = 0;
+
   bool _isLoggedIn = false; // Set this value based on your login status
   late bool _showSearchBar;
 
   final List<Widget> _pages = [
-    HomePage(),
-    FindFriendsPage(),
-    ProfilePage(),
+    const HomePage(),
+    const FriendsPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -108,7 +115,7 @@ class _LandingPageState extends State<LandingPage> {
         future: FrontendToBackendConnection.getToken(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
+            return const CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
           } else {
             _isLoggedIn = snapshot.data != null;
             return Scaffold(
@@ -137,8 +144,10 @@ class _LandingPageState extends State<LandingPage> {
                           label: 'Profile',
                         ),
                       ],
-                      selectedItemColor: Colors.amber,
-                      unselectedItemColor: Colors.blue,
+
+                      selectedItemColor: const Color(0xFFf46139),
+                      unselectedItemColor: const Color(0xFFf7b29f),
+
                     )
                   : null,
             );

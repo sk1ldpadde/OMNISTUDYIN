@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'Logic/Frontend_To_Backend_Connection.dart';
 
 class OmniStudyingApp extends StatelessWidget {

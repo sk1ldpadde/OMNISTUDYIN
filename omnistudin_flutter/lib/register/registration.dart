@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 
-
 bool isPasswordStrong(String password) {
   // Mindestlänge von 8 Zeichen
   if (password.length < 8) {
@@ -44,7 +43,9 @@ class RegistrationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Willkommen'),),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Willkommen'),
+      ),
       child: Scaffold(
         body: Center(
           child: Padding(
@@ -66,7 +67,10 @@ class RegistrationPage extends StatelessWidget {
                   child: const Text('Weiter'),
                   onPressed: () {
                     // Hier navigieren Sie zur Seite für die Dateneingabe
-                    Navigator.push(context, CupertinoPageRoute(builder: (context) => DataEntryPage()));
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => const DataEntryPage()));
                   },
                 ),
               ],
@@ -79,24 +83,23 @@ class RegistrationPage extends StatelessWidget {
 }
 
 class DataEntryPage extends StatefulWidget {
-  const DataEntryPage({Key? key}) : super(key: key);
+  const DataEntryPage({super.key});
   @override
   _DataEntryPageState createState() => _DataEntryPageState();
 }
 
 class _DataEntryPageState extends State<DataEntryPage> {
   File? _image;
-  TextEditingController _firstPassword = TextEditingController();
-  TextEditingController _secondPassword = TextEditingController();
+  final TextEditingController _firstPassword = TextEditingController();
+  final TextEditingController _secondPassword = TextEditingController();
   DateTime _dateOfBirth = DateTime.now();
-  TextEditingController _email = TextEditingController();
-  TextEditingController _firstName = TextEditingController();
-  TextEditingController _lastName = TextEditingController();
-  TextEditingController _bio = TextEditingController();
-  TextEditingController _university = TextEditingController();
-  TextEditingController _course = TextEditingController();
-  TextEditingController _semester = TextEditingController();
-
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _firstName = TextEditingController();
+  final TextEditingController _lastName = TextEditingController();
+  final TextEditingController _bio = TextEditingController();
+  final TextEditingController _university = TextEditingController();
+  final TextEditingController _course = TextEditingController();
+  final TextEditingController _semester = TextEditingController();
 
   void _showDatePicker(BuildContext context) {
     showCupertinoModalPopup(
@@ -116,6 +119,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
       ),
     );
   }
+
   Map<String, dynamic> getRegistrationData() {
     String? base64Image;
     if (_image != null) {
@@ -131,21 +135,23 @@ class _DataEntryPageState extends State<DataEntryPage> {
       'bio': _bio.text,
       'uni_name': _university.text,
       'degree': _course.text,
-      'semester': _semester.text,
+      'semester': _semester.text.isNotEmpty ? _semester.text : '-1',
       'profile_picture': base64Image, // Pfad zur Bilddatei
     };
   }
+
   void _register() {
     Map<String, dynamic> registerData = getRegistrationData();
     try {
-      FrontendToBackendConnection.postData("register/", registerData);
+      FrontendToBackendConnection.register("register/", registerData);
     } catch (e) {
       print('Error while trying to register: $e');
     }
   }
 
   Future getImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
@@ -175,7 +181,7 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _firstName,
                 placeholder: 'Vorname',
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
               ),
               const SizedBox(height: 16.0),
               const Text(
@@ -186,124 +192,162 @@ class _DataEntryPageState extends State<DataEntryPage> {
               CupertinoTextField(
                 controller: _lastName,
                 placeholder: 'Nachname',
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
               ),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  const Text('Gib dein Geburtsdatum ein:', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoButton(
-                    child: Text(
-                      _dateOfBirth == DateTime.now() ? 'Datum auswählen' : DateFormat('dd.MM.yyyy').format(_dateOfBirth),
-                      style: TextStyle(color: CupertinoColors.activeBlue),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              const Text(
+                'Gib dein Geburtsdatum ein:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoButton(
+                child: Text(
+                  _dateOfBirth == DateTime.now()
+                      ? 'Datum auswählen'
+                      : DateFormat('dd.MM.yyyy').format(_dateOfBirth),
+                  style: const TextStyle(color: CupertinoColors.activeBlue),
+                ),
+                onPressed: () => _showDatePicker(context),
+              ),
+              const Text(
+                'Gib deine Bio ein:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoTextField(
+                controller: _bio,
+                placeholder: 'Bio',
+                padding: const EdgeInsets.all(12.0),
+                maxLines: 5, // Erlaubt bis zu 5 Zeilen Text
+              ), // 16 Pixel Abstand
+              const SizedBox(height: 16.0),
+              const Text(
+                'Welche Universität besuchst du?',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoTextField(
+                controller: _university,
+                placeholder: 'Universität',
+                padding: const EdgeInsets.all(12.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              const Text(
+                'Welches Studienfach belegst du?',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoTextField(
+                controller: _course,
+                placeholder: 'Studienfach',
+                padding: const EdgeInsets.all(12.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              const Text(
+                'Welches Semester belegst du?',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoTextField(
+                controller: _semester,
+                placeholder: 'Semester',
+                padding: const EdgeInsets.all(12.0),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16.0),
+              const Text(
+                'Gib deine E-Mail-Adresse ein:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoTextField(
+                controller: _email,
+                placeholder: 'E-Mail-Adresse',
+                padding: const EdgeInsets.all(12.0),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16.0),
+              const Text(
+                'Wähle ein sicheres Passwort:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoTextField(
+                controller: _firstPassword,
+                placeholder: 'Passwort',
+                padding: const EdgeInsets.all(12.0),
+                obscureText: true,
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              const Text(
+                'Bestätige dein Passwort:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              CupertinoTextField(
+                controller: _secondPassword,
+                placeholder: 'Passwort bestätigen:',
+                padding: const EdgeInsets.all(12.0),
+                obscureText: true,
+              ),
+              const SizedBox(height: 16.0), // 16 Pixel Abstand
+              const SizedBox(height: 24.0),
+              const Text(
+                'Lade ein Profilbild hoch:',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(
+                  height:
+                      16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (_image != null)
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: CupertinoColors.activeBlue,
+                          width: 3.0,
+                        ),
+                        borderRadius: BorderRadius.circular(12.0),
+                        image: DecorationImage(
+                          image: FileImage(_image!),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                    onPressed: () => _showDatePicker(context),
-                  ),
-                  const Text('Gib deine Bio ein:', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoTextField(
-                    controller: _bio,
-                    placeholder: 'Bio',
-                    padding: EdgeInsets.all(12.0),
-                    maxLines: 5, // Erlaubt bis zu 5 Zeilen Text
-                  ),// 16 Pixel Abstand
-                  const SizedBox(height: 16.0),
-                  const Text('Welche Universität besuchst du?', style: TextStyle(fontSize: 16.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoTextField(
-                    controller: _university,
-                    placeholder: 'Universität',
-                    padding: EdgeInsets.all(12.0),
-                  ),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  const Text('Welches Studienfach belegst du?', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoTextField(
-                    controller: _course,
-                    placeholder: 'Studienfach',
-                    padding: EdgeInsets.all(12.0),
-                  ),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  const Text('Welches Semester belegst du?', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoTextField(
-                    controller: _semester,
-                    placeholder: 'Semester',
-                    padding: EdgeInsets.all(12.0),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text('Gib deine E-Mail-Adresse ein:', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoTextField(
-                    controller: _email,
-                    placeholder: 'E-Mail-Adresse',
-                    padding: EdgeInsets.all(12.0),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text('Wähle ein sicheres Passwort:', style: TextStyle(fontSize: 16.0),),
-                  const SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoTextField(
-                    controller: _firstPassword,
-                    placeholder: 'Passwort',
-                    padding: EdgeInsets.all(12.0),
-                    obscureText: true,
-                  ),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand
-                  const Text('Bestätige dein Passwort:', style: TextStyle(fontSize: 16.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand
-                  CupertinoTextField(
-                    controller: _secondPassword,
-                    placeholder: 'Passwort bestätigen:',
-                    padding: EdgeInsets.all(12.0),
-                    obscureText: true,
-                  ),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand
-                  const SizedBox(height: 24.0),
-                  const Text('Lade ein Profilbild hoch:', style: TextStyle(fontSize: 16.0),),
-                  SizedBox(height: 16.0), // 16 Pixel Abstand (nur ein Container mit Höhe 16.0 Pixel
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (_image != null)
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: CupertinoColors.activeBlue,
-                              width: 3.0,
-                            ),
-                            borderRadius: BorderRadius.circular(12.0),
-                            image: DecorationImage(
-                              image: FileImage(_image!),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      if (_image == null)
-                        CupertinoButton(
-                          child: Icon(CupertinoIcons.add, color: CupertinoColors.inactiveGray,),
-                          onPressed: getImage,
-                          padding: EdgeInsets.zero,
-                          color: CupertinoColors.white.withOpacity(0.0),
-                          minSize: 48.0,
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 24.0),
+                  if (_image == null)
+                    CupertinoButton(
+                      onPressed: getImage,
+                      padding: EdgeInsets.zero,
+                      color: CupertinoColors.white.withOpacity(0.0),
+                      minSize: 48.0,
+                      child: const Icon(
+                        CupertinoIcons.add,
+                        color: CupertinoColors.inactiveGray,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 24.0),
               CupertinoButton.filled(
                 child: const Text('Registrieren'),
                 onPressed: () {
                   if (_firstPassword.text == _secondPassword.text) {
                     if (isPasswordStrong(_firstPassword.text)) {
                       _register();
-                      Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginPage()));
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => LoginPage()));
                     } else {
                       showCupertinoDialog(
                         context: context,
                         builder: (context) {
                           return CupertinoAlertDialog(
                             title: const Text('Fehler'),
-                            content: const Text('Das Passwort ist nicht sicher genug. Wähle mindestens 8 Zeichen, mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen.'),
+                            content: const Text(
+                                'Das Passwort ist nicht sicher genug. Wähle mindestens 8 Zeichen, mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen.'),
                             actions: [
                               CupertinoDialogAction(
                                 child: const Text('OK'),
@@ -322,7 +366,8 @@ class _DataEntryPageState extends State<DataEntryPage> {
                       builder: (context) {
                         return CupertinoAlertDialog(
                           title: const Text('Fehler'),
-                          content: const Text('Die Passwörter stimmen nicht überein'),
+                          content: const Text(
+                              'Die Passwörter stimmen nicht überein'),
                           actions: [
                             CupertinoDialogAction(
                               child: const Text('OK'),
