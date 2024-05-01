@@ -28,7 +28,7 @@ def compute_current_age(student: Student):
         int: The current age of the student.
     """
     today = date.today()
-    student_dob = datetime.strptime(student.dob, "%d-%m-%Y")
+    student_dob = student.dob
 
     age = today.year - student_dob.year
 

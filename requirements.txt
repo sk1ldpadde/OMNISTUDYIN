@@ -13,3 +13,7 @@ better_profanity==0.7.0
 PyJWT==2.3.0
 pytrie==0.3.1
 pylint==3.1.0
+numpy
+packaging
+faiss-cpu  # Use faiss-gpu if you want to use GPU
+gensim
