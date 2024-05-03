@@ -267,17 +267,17 @@ In der folgenden Abbildung aus dem Wikipedia-Artikel zum Patricia-Trie, kann die
 
 Neu registrierte User sowie neu erstelle Ads und Ad-Gruppen können dem Index leicht hinzugefügt und wieder entfernt werden. Zur Implementierung verwendet, wurde das Python-Modul `pytrie` und die darin enthaltene Klasse `StringTrie`. Definiert ist die Implementierung in `data_logic/ptrie_structures.py`. Es werden jeweils zwei Klassen und damit zwei Strukturen definiert: `StudentsPTrie` und `AdsPTrie`.
 
-## Mögliche Erweiterung bzgl. System Design
+#### Mögliche Erweiterung bzgl. System Design
 Das gesamte Patricia-Trie Modul in einen eigenständigen Service auslagern, der sich nur um Suchanfragen kümmert. Außerdem eine persistente Speicherung der Indexstrukturen in einer Datenbank (beispielsweise Cassandra), um den Index nicht dauerhaft erneut aufbauen zu müssen.  
 
 ### Chat-System
 Es soll eine direkte Kommunikation zwischen zwei Studenten ermöglicht werden. Die Architektur wurde an jener von WhatsApp orientiert. Hauptargument ist dabei die lokale Speicherung der gesamten Chat-Daten auf den Geräten der jeweiligen Endnutzer. Lediglich der Austausch neuer Nachrichten geschieht über den Server. Folgendes Rechenbeispiel soll diese System-Design-Entscheidung bestärken:
 
 > [!IMPORTANT]
-> Alle Studenten weltweit: 7 Mio. 
-> Durchschnittliche verschiedene Chatpartner pro Student: 15
-> Durchschnittliche Anzahl an Nachrichten pro Chat (nur Fotos und Videos): 50
-> Durchschnittliche Anzahl Bytes pro Nachricht (Foto oder Video): 2MB
+> Alle Studenten weltweit: 7 Mio.   
+> Durchschnittliche verschiedene Chatpartner pro Student: 15  
+> Durchschnittliche Anzahl an Nachrichten pro Chat (nur Fotos und Videos): 50  
+> Durchschnittliche Anzahl Bytes pro Nachricht (Foto oder Video): 2MB  
 > Gesamtdatenmenge: 10 Pettabyte !!! (1 PB Storage bei Google Cloud kostet ca. 25k€/Monat)
 
 Ein neuer Hintergrund-Service (in Flutter: Isolate, vergleichbar mit einem Thread, aber eigener Heap) wird aufgesetzt, um alle zwei Sekunden Polling durchzuführen und nach neuen Nachrichten zu fragen. Auch eigene Nachrichten können gesendet werden. Gespeichert werden die Nachrichten auf dem Server in der Graph-Datenbank. Ein User kann somit die mit seinen User-Knoten verbundenen Message-Knoten erfragen und erhalten. Nach Erhalt werden die Daten vom Server gelöscht. Das persistieren liegt nun in der Verantwortung der lokalen Anwendung. WhatsApp verwendet eine Sqlite Datenbank. Aus Zeitgründen werden die Daten zunächst in einer Textdatei persistiert. Die Schnittstelle, die der `Message Polling Service` bereitstellt (unter `omnistudin_flutter/lib/Logic/chat_message_service`) besteht in seiner Grundfunktionalität aus drei Funktionen: 
@@ -287,10 +287,10 @@ Ein neuer Hintergrund-Service (in Flutter: Isolate, vergleichbar mit einem Threa
 + Alle paarweise verschiedenen Chatpartner erhalten (nützlich für die Startseite): `getDistinctChatPartners()`
 + Alle Nachrichten bezüglich eines definierten Chatpartners erhalten: `getAllMessagesWith(...)`
 
-## Überblick: System Design des Chat-Systems
+#### Überblick: System Design des Chat-Systems
 ```mermaid
 C4Context
-     System Design Overview for OMNISTUDYIN Messaging Service
+    System Design Overview for OMNISTUDYIN Messaging Service
 
 System_Boundary(c1, "OMNISTUDYIN") {
     Container_Boundary(flutter, "Flutter Frontend"){
@@ -312,7 +312,7 @@ System_Boundary(c1, "OMNISTUDYIN") {
 }
 ```
 
-## Mögliche Erweiterung bzgl. Security Aspekten
+#### Mögliche Erweiterung bzgl. Security Aspekten
 Um eine End-zu-End-Verschlüsselung, bei der die Nachricht lediglich von den beiden Gesprächspartnern gelesen werden kann, zu implementieren, ist eine PKI notwendig. Diese muss die öffentlichen Schlüssel der jeweiligen Teilnehmer speichern. Die jeweiligen Nachrichten können dann mit dem öffentlichen Schlüssel jener Person verschlüsselt werden, an die die Nachricht gerichtet ist. Diese kann die Nachricht anschließend mit ihrem geheimen, privaten Schlüssel entschlüsseln.  
 
 ### Friend-Matching mit FAISS
