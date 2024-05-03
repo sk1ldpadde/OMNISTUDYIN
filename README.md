@@ -295,7 +295,7 @@ C4Context
 System_Boundary(c1, "OMNISTUDYIN") {
     Container_Boundary(flutter, "Flutter Frontend"){
 
-    Component(messageIsolate,"Message Handling Isolate", "Send, poll and filter messages")  
+    Component(messageIsolate,"Message Handling Isolate", "Send, poll and filter messages")
     Component(mainIsolate,"Main Isolate", "Draw the GUI")
 
     }
@@ -306,9 +306,9 @@ System_Boundary(c1, "OMNISTUDYIN") {
 
     }
 
-    BiRel(mainIsolate, messageIsolate, "use functionality interface described above")
-    BiRel(messageIsolate, backendContent, "send_chat_msg(...)")
-    BiRel(messageIsolate, backendContent, "pull_new_chat_msg(...)")
+    Rel(mainIsolate, messageIsolate, "use functionality interface described above")
+    Rel(messageIsolate, backendContent, "send_chat_msg(...)")
+    Rel(messageIsolate, backendContent, "pull_new_chat_msg(...)")
 }
 ```
 
