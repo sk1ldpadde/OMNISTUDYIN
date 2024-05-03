@@ -249,7 +249,7 @@ Der Omnistudyin_Backend-Ordner besitzt prinzipiell nur django-spezifische Inhalt
 
 ## Komplexere Algorithmen
 
-### Patricia-Trie zur Inhaltssuche
+### ➡️ Patricia-Trie zur Inhaltssuche
 Eine einfache, aber effiziente Inhaltssuche nach anderen Studenten oder Beiträgen (beides jeweils über den Namen) wird
 mithilfe einer speziellen Indexstruktur umgesetzt.
 
@@ -270,7 +270,7 @@ Neu registrierte User sowie neu erstelle Ads und Ad-Gruppen können dem Index le
 #### Mögliche Erweiterung bzgl. System Design
 Das gesamte Patricia-Trie Modul in einen eigenständigen Service auslagern, der sich nur um Suchanfragen kümmert. Außerdem eine persistente Speicherung der Indexstrukturen in einer Datenbank (beispielsweise Cassandra), um den Index nicht dauerhaft erneut aufbauen zu müssen.  
 
-### Chat-System
+### ➡️ Chat-System
 Es soll eine direkte Kommunikation zwischen zwei Studenten ermöglicht werden. Die Architektur wurde an jener von WhatsApp orientiert. Hauptargument ist dabei die lokale Speicherung der gesamten Chat-Daten auf den Geräten der jeweiligen Endnutzer. Lediglich der Austausch neuer Nachrichten geschieht über den Server. Folgendes Rechenbeispiel soll diese System-Design-Entscheidung bestärken:
 
 > [!IMPORTANT]
@@ -290,7 +290,7 @@ Ein neuer Hintergrund-Service (in Flutter: Isolate, vergleichbar mit einem Threa
 #### Überblick: System Design des Chat-Systems
 ```mermaid
 C4Context
-    System Design Overview for OMNISTUDYIN Messaging Service
+    title System Design Overview for OMNISTUDYIN Messaging Service
 
 System_Boundary(c1, "OMNISTUDYIN") {
     Container_Boundary(flutter, "Flutter Frontend"){
@@ -315,7 +315,7 @@ System_Boundary(c1, "OMNISTUDYIN") {
 #### Mögliche Erweiterung bzgl. Security Aspekten
 Um eine End-zu-End-Verschlüsselung, bei der die Nachricht lediglich von den beiden Gesprächspartnern gelesen werden kann, zu implementieren, ist eine PKI notwendig. Diese muss die öffentlichen Schlüssel der jeweiligen Teilnehmer speichern. Die jeweiligen Nachrichten können dann mit dem öffentlichen Schlüssel jener Person verschlüsselt werden, an die die Nachricht gerichtet ist. Diese kann die Nachricht anschließend mit ihrem geheimen, privaten Schlüssel entschlüsseln.  
 
-### Friend-Matching mit FAISS
+### ➡️ Friend-Matching mit FAISS
 Eine Hauptfunktionalität innerhalb der Anwendung ist das Vorschlagen von potenziellen Freunden auf Basis von ähnlichen Interessen der Studenten. FAISS (Facebook AI Similarity Search) bietet eine effiziente Möglichkeit die $n$ ähnlichsten Datenpunkte bzgl. eines gegebenen Datenpunkts zu erhalten (KNN). FAISS bietet dazu viele verschiedenen Indexstrukturen. Genutzt wird in diesem Projekt der `IndexFlatL2`. Dieser definiert eine exakte Brute-Force Suche basierend auf der euklidischen Norm (L2).
 
 > [!NOTE]
@@ -325,7 +325,7 @@ Der wichtigste Vorgang, der das Endergebnis der Similarity Search am meisten bee
 
 Die Implementierung findet in `data_logic/views/views_friends.py` statt. Die Funktionen `find_friends` (als API-Endpoint) sowie `embed_student` für die Berechnung einer Vektor-Repräsentation eines Studenten (Embedding) sind relevant.
 
-### Passwort-Speicherung in der Datenbank
+### ➡️ Passwort-Speicherung in der Datenbank
 Unsere Passwort-Speicherung für die Studenten-Accounts basiert auf State-of-the-art Security-Standards. Die verwendete Hash-Funktion Argon2 ist eine sog. Slow-Hash-Funktion, deren Hashrate im Vergleich zu beispielsweise SHA sehr gering ist. In Kombination mit einem jeweils für jeden User zufällig neu generierten Salt, der dem Passwort hinzugefügt wird, sind Brute-Force-Attacken oder Rainbow-Table Neuberechnungen unattraktiv. 
 
 [Reference](https://rohanhonwade.com/posts/argon-password-hashing/)
