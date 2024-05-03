@@ -295,7 +295,7 @@ C4Context
 System_Boundary(c1, "OMNISTUDYIN") {
     Container_Boundary(flutter, "Flutter Frontend"){
 
-    Component(messageIsolate,"Message Handling Isolate", "Send, poll and filter messages")
+    Component(messageIsolate,"Message Handling Isolate", "Send, poll and filter messages")  
     Component(mainIsolate,"Main Isolate", "Draw the GUI")
 
     }
