@@ -219,6 +219,12 @@ Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwickl
 Insgesamt ist das Projekt ein Erfolg, jedoch zeigte sich, dass die Strukturierung in Backend/Frontend-Developer nicht immer sinnvoll ist. Während das Backend recht schnell aufgebaut wurde, hinkte das Frontend deutlich hinterher, da Schönheit doh ein zeitaufwendinger Faktor ist. Ebenso ist die Verknüpfung von Frontend und Backend ohne dauerhafte hevorragende Kommunikation eher schwierig. 
 Es wäre also vielleicht besser gewesen einfach den Developern einzelne Features zuzuteilen, die sie dann im Frontend **UND** im Backend entwickeln. Dabei wären alle im kompletten Projekt vertreten und als Developer hat man einen besseren Überblick über seine und andere Features.
 
+## Architektur
+
+![Architecture Overview](./Docs/Images/image.png)
+
+
+
 
 ## Where to find what
 
