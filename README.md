@@ -249,6 +249,26 @@ Der Omnistudyin_Backend-Ordner besitzt prinzipiell nur django-spezifische Inhalt
 
 ## Komplexere Algorithmen
 
+### Patricia-Trie zur Inhaltssuche
+Eine einfache aber effiziente Inhaltssuche nach anderen Studenten oder Beiträgen (beides jeweils über den Namen) wird
+mithilfe einer speziellen Indexstruktur umgesetzt.
+
+Der **Patricia-Trie** ist eine spezielle Datenstruktur, die als Erweiterung des Prefix-Tree oder einfach "Trie" mehrere
+Zeichen innerhalb eines Knotens zusammenfassen kann. Dies steigert die Effizienz enorm. Ein praktisches Anwendungsbeispiel,
+indem eine solche Datenstruktur verwendet wird, ist Ethereum. Dort wird der gesamte World State, also alle persistenten Daten zu jedem Account in einer sog. "Patricia Merkle Trie" Struktur gehalten. 
+
+In der folgenden Abbildung aus dem Wikipedia-Artikel zum Patricia-Trie, kann die Struktur und der Aufbau nachvollzogen werden. In dem Fall wurden sieben verschiedene Zeichenketten in die Struktur eingefügt. Gibt ein Nutzer beispielsweise folgende Suchanfrage ein "ro", so werden ihm umgehend die User "romane", "romanus" und "romulus" vorgeschlagen. 
+
+> [!TIP]
+> Die Suche kann dabei durch den Index in $O(n)$, wobei $n$ = Länge der Query (im Beispiel $n$ = 2) abgehandelt werden. 
+> Eine lineare Suche über alle registrierten Studenten würde sich nicht skalieren lassen, wenn die Plattform Millionen von Nutzer hat.
+
+![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Patricia_trie.svg/1920px-Patricia_trie.svg.png)
+
+Neu registrierte User sowie neu erstelle Ads und Ad-Gruppen, können dem Index leicht hinzugefügt und wieder entfernt werden. Zur Implementierung verwendet wurde das Python-Modul pytrie und die darin enthaltene Klasse `StringTrie`. Definiert ist die Implementierung in `data_logic/ptrie_structures.py`. Es werden jeweils zwei Klassen und damit zwei Strukturen definiert: `StudentsPTrie` und `AdsPTrie`.
+
 ### Chat-System
+
+### Friend-Matching mit FAISS
 
 **TODO: DHBWKNK**
