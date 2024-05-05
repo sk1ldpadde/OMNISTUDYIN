@@ -6,62 +6,44 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 
-String jwtToken =
-    'your_initial_token'; // Replace 'your_initial_token' with the actual JWT token
+// String jwtToken =
+//     'your_initial_token'; // Replace 'your_initial_token' with the actual JWT token
 
-Future<List<AdGroup>> fetchAdGroups() async {
-  final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/get_adgroups/'));
+// Future<List<AdInGroup>> fetchAdGroups() async {
+//   final response =
+//       await http.get(Uri.parse('http://10.0.2.2:8000/get_adgroups/'));
 
-  if (response.statusCode == 200) {
-    Iterable l = json.decode(response.body);
-    List<AdGroup> adGroups =
-        List<AdGroup>.from(l.map((model) => AdGroup.fromJson(model)));
-    return adGroups;
-  } else {
-    throw Exception('Failed to load AdGroups');
-  }
-}
+//   if (response.statusCode == 200) {
+//     Iterable l = json.decode(response.body);
+//     List<AdInGroup> adGroups =
+//         List<AdInGroup>.from(l.map((model) => AdInGroup.fromJson(model)));
+//     return adGroups;
+//   } else {
+//     throw Exception('Failed to load AdGroups');
+//   }
+// }
 
-Future<AdGroup> createAdGroup(String name, String description) async {
-  final response = await http.post(
-    Uri.parse('http://10.0.2.2:8000/create_adgroup/'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $jwtToken',
-    },
-    body: jsonEncode(<String, String>{
-      'name': name,
-      'description': description,
-    }),
-  );
+// Future<AdInGroup> createAdsInGroup(
+//     String ad_group_name, String name, String description) async {
+//   final response = await http.post(
+//     Uri.parse('http://10.0.2.2:8000/create_ads_in_group/'),
+//     headers: <String, String>{
+//       'Content-Type': 'application/json; charset=UTF-8',
+//       'Authorization': 'Bearer $jwtToken',
+//     },
+//     body: jsonEncode(<String, String>{
+//       'ad_group_name': ad_group_name,
+//       'name': name,
+//       'description': description,
+//     }),
+//   );
 
-  if (response.statusCode == 200) {
-    return AdGroup.fromJson(json.decode(response.body));
-  } else {
-    throw Exception('Failed to create AdGroup');
-  }
-}
-
-Future<void> updateAdGroup(
-    String oldName, String newName, String description) async {
-  final response = await http.put(
-    Uri.parse('http://10.0.2.2:8000/change_adgroup/'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $jwtToken',
-    },
-    body: jsonEncode(<String, String>{
-      'old_name': oldName,
-      'new_name': newName,
-      'description': description,
-    }),
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception('Failed to update AdGroup');
-  }
-}
+//   if (response.statusCode == 200) {
+//     return AdInGroup.fromJson(json.decode(response.body));
+//   } else {
+//     throw Exception('Failed to create AdGroup');
+//   }
+// }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -72,42 +54,73 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _showSearchBar = false;
-  List<AdGroup> _adGroups = [];
+  List<AdInGroup> _adsInGroup = [];
 
   @override
   void initState() {
     super.initState();
-    fetchAdGroups().then((value) => setState(() {
-          _adGroups = value;
-        }));
+    initializeState();
+  }
+
+  void initializeState() async {
+    var token = await FrontendToBackendConnection.getToken();
+    FrontendToBackendConnection.fetchAdGroups(token!)
+        .then((value) => setState(() {
+              _adsInGroup = value;
+            }));
+  }
+
+  void _addNewAdsInGroup(
+      String adgroupname, String title, String description) async {
+    if (adgroupname == null || title == null || description == null) {
+      print('Error: adgroupname, title, and description must not be null');
+      return;
+    }
+    print('Adding new ad group');
+    var token = await FrontendToBackendConnection.getToken();
+    print('Got token: $token');
+    await FrontendToBackendConnection.addNewAdsInGroup(
+        adgroupname, title, description, token);
+    print('Added new ad group');
+    await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
+    List<AdInGroup> adsInGroup =
+        await FrontendToBackendConnection.fetchAdGroups(token!);
+    print('Fetched ad groups: $adsInGroup');
+    setState(() {
+      _adsInGroup = adsInGroup;
+    });
+    print('Updated state with new ad groups');
   }
 
   void _addNewAdGroup(String name, String description) async {
     print('Adding new ad group');
     var token = await FrontendToBackendConnection.getToken();
     print('Got token: $token');
-    await FrontendToBackendConnection.addNewAdGroup(name, description, token);
+    await FrontendToBackendConnection.createAdGroup(name, description, token);
     print('Added new ad group');
     await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
-    List<AdGroup> adGroups =
+    List<AdInGroup> adsInGroup =
         await FrontendToBackendConnection.fetchAdGroups(token!);
-    print('Fetched ad groups: $adGroups');
+    print('Fetched ad groups: $adsInGroup');
     setState(() {
-      _adGroups = adGroups;
+      _adsInGroup = adsInGroup;
     });
     print('Updated state with new ad groups');
+    print(AdGroup(name: name, description: description));
+    print(adsInGroup);
   }
 
   void _deleteAdGroup(int index, String name) async {
     var token = await FrontendToBackendConnection.getToken();
     try {
-      await FrontendToBackendConnection.deleteAdGroup(context, index, name);
+      await FrontendToBackendConnection.deleteAdGroup(
+          context as BuildContext, index, name);
       await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
-      List<AdGroup> adGroups =
+      List<AdInGroup> adsInGroup =
           await FrontendToBackendConnection.fetchAdGroups(token!);
-      print('Fetched ad groups: $adGroups');
+      print('Fetched ad groups: $adsInGroup');
       setState(() {
-        _adGroups = adGroups;
+        _adsInGroup = adsInGroup;
       });
       print('Updated state with new ad groups');
     } catch (e) {
@@ -116,44 +129,44 @@ class _HomePageState extends State<HomePage> {
         print('Server returned an HTML response: ${e.message}');
       } else if (e is http.ClientException && e.message.contains('404')) {
         // Handle 403 error
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
           const SnackBar(
               content: Text('You are not authorized to delete this ad group')),
         );
       } else {
         // Handle other errors
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
           const SnackBar(content: Text('Failed to delete ad group')),
         );
       }
     }
   }
 
-  void updateAdGroup(
-      int index, String oldName, String newName, String description) async {
-    var token = await FrontendToBackendConnection.getToken();
-    try {
-      await FrontendToBackendConnection.getAdGroup(
-          index, oldName, newName, description);
-      await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
-      List<AdGroup> adGroups =
-          await FrontendToBackendConnection.fetchAdGroups(token!);
-      print('Fetched ad groups: $adGroups');
-      setState(() {
-        _adGroups = adGroups;
-      });
-      print('Updated state with new ad groups');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update ad group')),
-      );
-    }
-  }
+  // void updateAdInGroup(
+  //     int index, String oldName, String newName, String description) async {
+  //   var token = await FrontendToBackendConnection.getToken();
+  //   try {
+  //     await FrontendToBackendConnection.getAdGroup(
+  //         index, oldName, newName, description);
+  //     await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
+  //     List<AdInGroup> adsInGroup =
+  //         await FrontendToBackendConnection.fetchAdGroups(token!);
+  //     print('Fetched ad groups: $adsInGroup');
+  //     setState(() {
+  //       _adsInGroup = adsInGroup;
+  //     });
+  //     print('Updated state with new ad groups');
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Failed to update ad group')),
+  //     );
+  //   }
+  // }
 
   void clearLocalStorage() async {
     await FrontendToBackendConnection.clearStorage();
     Navigator.pushReplacement(
-      context,
+      context as BuildContext,
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
@@ -164,20 +177,20 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _searchAdGroups(String query) async {
-    var token = await FrontendToBackendConnection.getToken();
-    List<AdGroup> adGroups =
-        await FrontendToBackendConnection.searchAdGroups(query);
-    setState(() {
-      _adGroups = adGroups;
-    });
-  }
+  // void _searchAdGroups(String query) async {
+  //   var token = await FrontendToBackendConnection.getToken();
+  //   List<AdInGroup> adsInGroups =
+  //       await FrontendToBackendConnection.searchAdsInGroup(query);
+  //   setState(() {
+  //     _adsInGroups = adsInGroups;
+  //   });
+  // }
 
-  void _showPostPage(AdGroup adGroup) {
+  void _showPostPage(AdInGroup adGroup) {
     Navigator.push(
-      context,
+      context as BuildContext,
       MaterialPageRoute(
-        builder: (context) => PostPage(adGroup: adGroup),
+        builder: (context) => PostPage(adInGroup: adGroup),
       ),
     );
   }
@@ -194,20 +207,53 @@ class _HomePageState extends State<HomePage> {
         leading: IconButton(
           icon: const Icon(Icons.add),
           onPressed: () async {
-            final newAdGroup = await showDialog<AdGroup>(
-              context: context,
-              builder: (context) => const CreateAdGroupDialog(),
-            );
-            if (newAdGroup != null) {
-              _addNewAdGroup(newAdGroup.name, newAdGroup.description);
+            final action = await showDialog<String>(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: const Text('Create'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop('Ad');
+                          },
+                          child: const Text('Ad'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop('Ad Group');
+                          },
+                          child: const Text('Ad Group'),
+                        ),
+                      ],
+                    ));
+            if (action != null) {
+              if (action == 'Ad') {
+                final newAdInGroup = await showDialog<AdInGroup>(
+                  context: context,
+                  builder: (context) => const CreateAdInGroupDialog(),
+                );
+                if (newAdInGroup != null) {
+                  _addNewAdsInGroup(newAdInGroup.adGroupName, newAdInGroup.name,
+                      newAdInGroup.description);
+                }
+              } else if (action == 'Ad Group') {
+                final newAdGroup = await showDialog<AdGroup>(
+                  context: context,
+                  builder: (context) => const CreateAdGroupDialog(),
+                );
+                if (newAdGroup != null) {
+                  _addNewAdGroup(newAdGroup.name, newAdGroup.description);
+                }
+              }
             }
+            ;
           },
         ),
       ),
       body: ListView.builder(
-        itemCount: _adGroups.length,
+        itemCount: _adsInGroup.length,
         itemBuilder: (context, index) {
-          final adGroup = _adGroups[index];
+          final adGroup = _adsInGroup[index];
           return Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15.0), // Add rounded corners
@@ -217,7 +263,8 @@ class _HomePageState extends State<HomePage> {
               onTap: () => _showPostPage(adGroup),
               title: Text(
                 adGroup.name,
-                style: const TextStyle(color: Colors.white), // Change the title color
+                style: const TextStyle(
+                    color: Colors.white), // Change the title color
               ),
               subtitle: Text(
                 adGroup.description,
@@ -227,16 +274,18 @@ class _HomePageState extends State<HomePage> {
               trailing: PopupMenuButton<String>(
                 onSelected: (value) async {
                   if (value == 'Change') {
-                    final updatedAdGroup = await showDialog<AdGroup>(
+                    final updatedAdGroup = await showDialog<AdInGroup>(
                       context: context,
                       builder: (context) => UpdateAdGroupDialog(
                         oldName: adGroup.name,
+                        newName: adGroup.name,
                         oldDescription: adGroup.description,
+                        newDescription: adGroup.description,
                       ),
                     );
                     if (updatedAdGroup != null) {
-                      updateAdGroup(index, adGroup.name, updatedAdGroup.name,
-                          updatedAdGroup.description);
+                      FrontendToBackendConnection.updateAdInGroup(adGroup.name,
+                          updatedAdGroup.name, adGroup.description);
                     }
                   } else if (value == 'Delete') {
                     _deleteAdGroup(index, adGroup.name);
@@ -262,14 +311,38 @@ class _HomePageState extends State<HomePage> {
 }
 
 class PostPage extends StatelessWidget {
-  final AdGroup adGroup;
+  final AdInGroup adInGroup;
 
-  const PostPage({super.key, required this.adGroup});
+  const PostPage({super.key, required this.adInGroup});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(adInGroup.name),
+      ),
+      body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Text(adInGroup.description)),
+    );
+  }
+}
+
+class AGPage extends StatelessWidget {
+  final AdGroup adGroup;
+
+  const AGPage({super.key, required this.adGroup});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: Text(adGroup.name),
       ),
       body: SingleChildScrollView(
@@ -278,14 +351,124 @@ class PostPage extends StatelessWidget {
   }
 }
 
-class CreateAdGroupDialog extends StatefulWidget {
-  const CreateAdGroupDialog({super.key});
+// class AGPostPage extends StatelessWidget {
+//   final AdGroup adGroup;
+//   var token = FrontendToBackendConnection.getToken();
+
+//   AGPostPage({required this.adGroup});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(adGroup.name),
+//       ),
+//       body: FutureBuilder<List<AdInGroup>>(
+//         future: FrontendToBackendConnection.fetchAdsInGroup(adGroup, await token), // Replace with your method to fetch ads
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return Center(child: CircularProgressIndicator());
+//           } else if (snapshot.hasError) {
+//             return Text('Error: ${snapshot.error}');
+//           } else {
+//             return ListView.builder(
+//               itemCount: snapshot.data!.length,
+//               itemBuilder: (context, index) {
+//                 final ad = snapshot.data![index];
+//                 return ListTile(
+//                   title: Text(ad.name), // Replace with your ad fields
+//                   subtitle: Text(ad.description), // Replace with your ad fields
+//                 );
+//               },
+//             );
+//           }
+//         },
+//       ),
+//     );
+//   }
+// }
+
+class AdGroupView extends StatelessWidget {
+  final List<AdGroup> adGroups;
+
+  AdGroupView({required this.adGroups});
+
+  void _showAGPage(BuildContext context, AdGroup adGroup) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AGPage(adGroup: adGroup)));
+  }
 
   @override
-  _CreateAdGroupDialogState createState() => _CreateAdGroupDialogState();
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: adGroups.length,
+      itemBuilder: (context, index) {
+        final adGroup = adGroups[index];
+        return Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0), // Add rounded corners
+          ),
+          color: Colors.grey, // Change the card color
+          child: ListTile(
+            onTap: () => _showAGPage(context, adGroup),
+            title: Text(
+              adGroup.name,
+              style: const TextStyle(
+                  color: Colors.white), // Change the title color
+            ),
+            subtitle: Text(
+              adGroup.description,
+              style: const TextStyle(
+                  color: Colors.white70), // Change the subtitle color
+            ),
+            trailing: PopupMenuButton<String>(
+              onSelected: (value) async {
+                if (value == 'Change') {
+                  final updatedAdGroup = await showDialog<AdGroup>(
+                    context: context,
+                    builder: (context) => UpdateAdGroupDialog(
+                      oldName: adGroup.name,
+                      newName: adGroup.name,
+                      oldDescription: adGroup.description,
+                      newDescription: adGroup.description,
+                    ),
+                  );
+                  if (updatedAdGroup != null) {
+                    FrontendToBackendConnection.updateAdGroup(
+                        adGroup.name, updatedAdGroup.name, adGroup.description);
+                  }
+                } else if (value == 'Delete') {
+                  FrontendToBackendConnection.deleteAdGroup(
+                      context, index, adGroup.name);
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'Change',
+                  child: Text('Change'),
+                ),
+                const PopupMenuItem(
+                  value: 'Delete',
+                  child: Text('Delete'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
+class CreateAdInGroupDialog extends StatefulWidget {
+  const CreateAdInGroupDialog({super.key});
+
+  @override
+  _CreateAdInGroupDialogState createState() => _CreateAdInGroupDialogState();
+}
+
+class _CreateAdInGroupDialogState extends State<CreateAdInGroupDialog> {
+  final _adGroupNameController = TextEditingController();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -302,7 +485,8 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {
-                Navigator.of(context).pop(AdGroup(
+                Navigator.of(context).pop(AdInGroup(
+                  adGroupName: _adGroupNameController.text,
                   name: _nameController.text,
                   description: _descriptionController.text,
                 ));
@@ -315,6 +499,19 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  CupertinoTextField(
+                    controller: _adGroupNameController,
+                    placeholder: 'Ad Group Name',
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: CupertinoColors.lightBackgroundGray,
+                          width: 0.0, // One physical pixel.
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                    ),
+                  ),
                   CupertinoTextField(
                     controller: _nameController,
                     placeholder: 'Name',
@@ -354,8 +551,13 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
 class UpdateAdGroupDialog extends StatefulWidget {
   final String oldName;
   final String oldDescription;
+  final String newName;
+  final String newDescription;
 
-  const UpdateAdGroupDialog({super.key, 
+  const UpdateAdGroupDialog({
+    super.key,
+    required this.newName,
+    required this.newDescription,
     required this.oldName,
     required this.oldDescription,
   });
@@ -365,12 +567,14 @@ class UpdateAdGroupDialog extends StatefulWidget {
 }
 
 class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
+  late TextEditingController _adGroupNameController;
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
 
   @override
   void initState() {
     super.initState();
+    _adGroupNameController = TextEditingController(text: widget.oldName);
     _nameController = TextEditingController(text: widget.oldName);
     _descriptionController = TextEditingController(text: widget.oldDescription);
   }
@@ -399,12 +603,91 @@ class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(AdGroup(
+            Navigator.of(context).pop(AdInGroup(
+              adGroupName: _adGroupNameController.text,
               name: _nameController.text,
               description: _descriptionController.text,
             ));
           },
           child: const Text('Update'),
+        ),
+      ],
+    );
+  }
+}
+
+class CreateAdGroupDialog extends StatefulWidget {
+  const CreateAdGroupDialog({Key? key}) : super(key: key);
+
+  @override
+  _CreateAdGroupDialogState createState() => _CreateAdGroupDialogState();
+}
+
+class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
+  final _formKey = GlobalKey<FormState>();
+  String _name = '';
+  String _description = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Create Ad Group'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a name';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _name = value!;
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Description'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a description';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _description = value!;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              AdGroup newAdGroup =
+                  AdGroup(name: _name, description: _description);
+              Navigator.of(context).pop(newAdGroup);
+              List<AdGroup> _adGroups =
+                  []; // Define the variable _adGroups as an empty list
+              _adGroups.add(newAdGroup); // Add newAdGroup to _adGroups list
+
+              Navigator.of(context)
+                  .pop(AdGroup(name: _name, description: _description));
+              // Navigate to AGPostPage
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => AdGroupView(
+                    adGroups: [],
+                  ),
+                ),
+              );
+            }
+          },
+          child: Text('Create'),
         ),
       ],
     );
@@ -419,4 +702,3 @@ void main() {
     ),
   ));
 }
-

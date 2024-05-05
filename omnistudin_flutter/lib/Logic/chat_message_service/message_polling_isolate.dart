@@ -15,14 +15,16 @@ void startMessagePollingService(SendPort dbIsolatePort, String email) async {
 }
 
 void messagePollingService(Map initialData) async {
+  const String baseURL = "http://localhost:8000/";
+
   // Get port and email from initial data map
   SendPort sendPort = initialData['sendPort'];
   String email = initialData['email'];
+  String fullUrl = "${baseURL}pull_new_chat_msg/?email=$email";
 
   Timer.periodic(const Duration(seconds: 2), (Timer t) async {
     // Poll new messages from the server
-    var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/pull_new_chat_msg/?email=$email'));
+    var response = await http.get(Uri.parse(fullUrl));
 
     // Check response status code
     if (response.statusCode != 200) {
