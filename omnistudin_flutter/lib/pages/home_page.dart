@@ -55,6 +55,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _showSearchBar = false;
   List<AdInGroup> _adsInGroup = [];
+  List<AdGroup> _adGroups = [];
 
   @override
   void initState() {
@@ -72,42 +73,43 @@ class _HomePageState extends State<HomePage> {
 
   void _addNewAdsInGroup(
       String adgroupname, String title, String description) async {
-    if (adgroupname == null || title == null || description == null) {
-      print('Error: adgroupname, title, and description must not be null');
-      return;
+    Map<String, String> newAd = {
+      "ad_group_name": adgroupname,
+      "title": title,
+      "description": description
+    };
+    var resOfCreate = await FrontendToBackendConnection.postData(
+        "create_ads_in_group/", newAd);
+    print(resOfCreate);
+    var MapListOfAdsInGroup = await FrontendToBackendConnection.postData(
+        "get_ads_of_group/", {"ad_group_name": adgroupname});
+    _adsInGroup = [];
+    for (int i = 0; i < MapListOfAdsInGroup.length; i++) {
+      _adsInGroup.add(AdInGroup(
+          adGroupName: MapListOfAdsInGroup[i]['ad_group_name'],
+          name: MapListOfAdsInGroup[i]['title'],
+          description: MapListOfAdsInGroup[i]['description']));
     }
-    print('Adding new ad group');
-    var token = await FrontendToBackendConnection.getToken();
-    print('Got token: $token');
-    await FrontendToBackendConnection.addNewAdsInGroup(
-        adgroupname, title, description, token);
-    print('Added new ad group');
-    await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
-    List<AdInGroup> adsInGroup =
-        await FrontendToBackendConnection.fetchAdGroups(token!);
-    print('Fetched ad groups: $adsInGroup');
-    setState(() {
-      _adsInGroup = adsInGroup;
-    });
-    print('Updated state with new ad groups');
+    print(_adsInGroup);
   }
 
   void _addNewAdGroup(String name, String description) async {
-    print('Adding new ad group');
-    var token = await FrontendToBackendConnection.getToken();
-    print('Got token: $token');
-    await FrontendToBackendConnection.createAdGroup(name, description, token);
-    print('Added new ad group');
-    await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
-    List<AdInGroup> adsInGroup =
-        await FrontendToBackendConnection.fetchAdGroups(token!);
-    print('Fetched ad groups: $adsInGroup');
-    setState(() {
-      _adsInGroup = adsInGroup;
-    });
-    print('Updated state with new ad groups');
-    print(AdGroup(name: name, description: description));
-    print(adsInGroup);
+    Map<String, String> adgroup = {
+      'name': name,
+      'description': description,
+    };
+    var resOfCreate =
+        await FrontendToBackendConnection.postData("create_adgroup/", adgroup);
+    print(resOfCreate);
+    var MapListOfAdsInGroup =
+        await FrontendToBackendConnection.getData("get_adgroups/");
+    _adGroups = [];
+    for (int i = 0; i < MapListOfAdsInGroup.length; i++) {
+      _adGroups.add(AdGroup(
+          name: MapListOfAdsInGroup[i]['name'],
+          description: MapListOfAdsInGroup[i]['description']));
+    }
+    print(_adGroups);
   }
 
   void _deleteAdGroup(int index, String name) async {
