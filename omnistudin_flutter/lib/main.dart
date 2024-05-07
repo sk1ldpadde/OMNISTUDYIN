@@ -10,6 +10,7 @@ import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
+import 'package:omnistudin_flutter/chatpages/chatOverview.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
 import 'Logic/chat_message_service/message_persistence_isolate.dart';
@@ -88,6 +89,7 @@ class _LandingPageState extends State<LandingPage> {
     const HomePage(),
     const FriendsPage(),
     const ProfilePage(),
+    ChatOverviewPage(),
   ];
 
   @override
@@ -142,6 +144,10 @@ class _LandingPageState extends State<LandingPage> {
                         BottomNavigationBarItem(
                           icon: Icon(Icons.person),
                           label: 'Profile',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.chat),
+                          label: 'Chat',
                         ),
                       ],
 

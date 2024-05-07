@@ -14,6 +14,10 @@ void startMessagePollingService(SendPort dbIsolatePort, String email) async {
   );
 }
 
+void spawnMessagePollingService(SendPort sendPort) {
+  messagePollingService({'sendPort': sendPort});
+}
+
 void messagePollingService(Map initialData) async {
   // Get port and email from initial data map
   SendPort sendPort = initialData['sendPort'];
