@@ -7,7 +7,7 @@ import json
 
 from argon2 import PasswordHasher, exceptions
 
-from data_logic.util import check_credentials, check_profanity
+from data_logic.util import check_credentials, check_profanity, compute_current_age
 
 import jwt
 
@@ -22,6 +22,17 @@ from data_logic.util import create_jwt, decode_jwt
 from data_logic.ptrie_structures import student_ptrie
 
 from data_logic.secret import SECRET_KEY
+
+import numpy as np
+
+import gensim.downloader
+
+import faiss
+
+
+# Load pre-trained Word2Vec model
+model_name = 'word2vec-google-news-300'
+word_vectors = gensim.downloader.load(model_name)
 
 
 @api_view(['GET'])
@@ -184,6 +195,59 @@ def find_friends(request):
     except Student.DoesNotExist:
         return Response({'error': 'Session Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    matching = Student.nodes.all()  # currently only returning all existing students
-    serializer = StudentSerializer(matching, many=True)
+    # Define the potential friend space as the set of all students then decrease step by step
+    matching = Student.nodes.all()
+
+    # Students do not want to be matched with themselves
+    matching.remove(student)
+    
+    
+    # Initialize FAISS index
+    dimension = word_vectors.vector_size # age and semester for now
+    index = faiss.IndexFlatL2(dimension)  # You can choose a different index type based on your requirements
+
+    # Add vectors to index
+    for match_student in matching:
+        index.add(np.expand_dims(embed_student(match_student), axis=0))
+    
+    
+    ### ******************************* ###
+    ### *** FAISS SIMILARITY SEARCH *** ###
+    ### ******************************* ###
+    
+    query_vector = np.expand_dims(embed_student(student), axis=0)
+    
+    k = 5  # Number of nearest neighbors to retrieve
+    distances, indices = index.search(query_vector, k)
+
+    # Retrieve similar student objects
+    similar_students = [matching[i] for i in indices[0]]
+
+    serializer = StudentSerializer(similar_students, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def embed_student(student):
+    # Create a list of strings for the student's attributes
+    attr = [student.uni_name, student.degree, student.semester, compute_current_age(student)]
+    
+    # attr.extend(student.bio.split())
+    # TODO: concatenate the interest and goals strings
+    
+    # TODO: Implement the embedding function
+    
+    # Create a zero vector of the same dimension as the word vectors
+    vector_sum = np.zeros(word_vectors.vector_size)
+    
+    vectors = []
+    
+    # Obtain vector representations for strings and average them
+    for attr_value in attr:
+        if attr_value in word_vectors:
+            vectors.append(word_vectors[attr_value])
+
+    # Average the vectors
+    avg_vector = np.mean(vectors, axis=0)
+    vector_sum += avg_vector
+    
+    return vector_sum
