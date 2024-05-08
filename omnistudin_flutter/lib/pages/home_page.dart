@@ -55,7 +55,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _showSearchBar = false;
   List<AdInGroup> _adsInGroup = [];
-  List<AdGroup> _adGroups = [];
 
   @override
   void initState() {
@@ -101,15 +100,14 @@ class _HomePageState extends State<HomePage> {
     var resOfCreate =
         await FrontendToBackendConnection.postData("create_adgroup/", adgroup);
     print(resOfCreate);
-    var MapListOfAdsInGroup =
-        await FrontendToBackendConnection.getData("get_adgroups/");
-    _adGroups = [];
-    for (int i = 0; i < MapListOfAdsInGroup.length; i++) {
-      _adGroups.add(AdGroup(
-          name: MapListOfAdsInGroup[i]['name'],
-          description: MapListOfAdsInGroup[i]['description']));
-    }
-    print(_adGroups);
+    // var MapListOfAdsInGroup =
+    //     await FrontendToBackendConnection.getData("get_adgroups/");
+    // _adGroups = [];
+    // for (int i = 0; i < MapListOfAdsInGroup.length; i++) {
+    //   _adGroups.add(AdGroup(
+    //       name: MapListOfAdsInGroup[i]['name'],
+    //       description: MapListOfAdsInGroup[i]['description']));
+    // }
   }
 
   void _deleteAdGroup(int index, String name) async {
@@ -188,7 +186,7 @@ class _HomePageState extends State<HomePage> {
   //   });
   // }
 
-  void _showPostPage(AdInGroup adGroup) {
+  void _showPostPage(Map adGroup) {
     Navigator.push(
       context as BuildContext,
       MaterialPageRoute(
@@ -252,68 +250,130 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-      body: ListView.builder(
-        itemCount: _adsInGroup.length,
-        itemBuilder: (context, index) {
-          final adGroup = _adsInGroup[index];
-          return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0), // Add rounded corners
-            ),
-            color: Colors.grey, // Change the card color
-            child: ListTile(
-              onTap: () => _showPostPage(adGroup),
-              title: Text(
-                adGroup.name,
-                style: const TextStyle(
-                    color: Colors.white), // Change the title color
-              ),
-              subtitle: Text(
-                adGroup.description,
-                style: const TextStyle(
-                    color: Colors.white70), // Change the subtitle color
-              ),
-              trailing: PopupMenuButton<String>(
-                onSelected: (value) async {
-                  if (value == 'Change') {
-                    final updatedAdGroup = await showDialog<AdInGroup>(
-                      context: context,
-                      builder: (context) => UpdateAdGroupDialog(
-                        oldName: adGroup.name,
-                        newName: adGroup.name,
-                        oldDescription: adGroup.description,
-                        newDescription: adGroup.description,
+      body: FutureBuilder(
+          future: FrontendToBackendConnection.getData('get_adgroups/'),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              print(snapshot.data);
+              List adGroups = snapshot.data;
+              print(adGroups[0]['name']);
+              return ListView.builder(
+                itemCount: adGroups.length,
+                itemBuilder: (context, index) {
+                  final adGroup = adGroups[index];
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(15.0), // Add rounded corners
+                    ),
+                    color: Colors.grey, // Change the card color
+                    child: ListTile(
+                      onTap: () => _showPostPage(adGroup),
+                      title: Text(
+                        adGroup['name'],
+                        style: const TextStyle(
+                            color: Colors.white), // Change the title color
                       ),
-                    );
-                    if (updatedAdGroup != null) {
-                      FrontendToBackendConnection.updateAdInGroup(adGroup.name,
-                          updatedAdGroup.name, adGroup.description);
-                    }
-                  } else if (value == 'Delete') {
-                    _deleteAdGroup(index, adGroup.name);
-                  }
+                      subtitle: Text(
+                        adGroup['description'],
+                        style: const TextStyle(
+                            color: Colors.white70), // Change the subtitle color
+                      ),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (value) async {
+                          if (value == 'Change') {
+                            final updatedAdGroup = await showDialog<AdInGroup>(
+                              context: context,
+                              builder: (context) => UpdateAdGroupDialog(
+                                oldName: adGroup['name'],
+                                newName: adGroup['name'],
+                                oldDescription: adGroup['description'],
+                                newDescription: adGroup['description'],
+                              ),
+                            );
+                            if (updatedAdGroup != null) {
+                              FrontendToBackendConnection.updateAdInGroup(
+                                  adGroup['name'],
+                                  updatedAdGroup.name,
+                                  adGroup['description']);
+                            }
+                          } else if (value == 'Delete') {
+                            _deleteAdGroup(index, adGroup['name']);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'Change',
+                            child: Text('Change'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'Delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'Change',
-                    child: Text('Change'),
-                  ),
-                  const PopupMenuItem(
-                    value: 'Delete',
-                    child: Text('Delete'),
-                  ),
-                ],
-              ),
-            ),
-          );
+              );
+            }
+          }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final action = await showDialog<String>(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: const Text('Create'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop('Ad');
+                        },
+                        child: const Text('Ad'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop('Ad Group');
+                        },
+                        child: const Text('Ad Group'),
+                      ),
+                    ],
+                  ));
+          if (action != null) {
+            if (action == 'Ad') {
+              final newAdInGroup = await showDialog<AdInGroup>(
+                context: context,
+                builder: (context) => const CreateAdInGroupDialog(),
+              );
+              if (newAdInGroup != null) {
+                _addNewAdsInGroup(newAdInGroup.adGroupName, newAdInGroup.name,
+                    newAdInGroup.description);
+              }
+            } else if (action == 'Ad Group') {
+              final newAdGroup = await showDialog<AdGroup>(
+                context: context,
+                builder: (context) => const CreateAdGroupDialog(),
+              );
+              if (newAdGroup != null) {
+                _addNewAdGroup(newAdGroup.name, newAdGroup.description);
+              }
+            }
+          }
+
+          setState(() {});
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
 class PostPage extends StatelessWidget {
-  final AdInGroup adInGroup;
+  final Map adInGroup;
 
   const PostPage({super.key, required this.adInGroup});
 
@@ -321,17 +381,17 @@ class PostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(adInGroup.name),
+        title: Text(adInGroup['name']),
       ),
       body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Text(adInGroup.description)),
+          child: Text(adInGroup['description'])),
     );
   }
 }
 
 class AGPage extends StatelessWidget {
-  final AdGroup adGroup;
+  final Map adGroup;
 
   const AGPage({super.key, required this.adGroup});
 
@@ -345,10 +405,11 @@ class AGPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text(adGroup.name),
+        title: Text(adGroup['name']),
       ),
       body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16), child: Text(adGroup.description)),
+          padding: const EdgeInsets.all(16),
+          child: Text(adGroup['description'])),
     );
   }
 }
@@ -391,73 +452,84 @@ class AGPage extends StatelessWidget {
 // }
 
 class AdGroupView extends StatelessWidget {
-  final List<AdGroup> adGroups;
+  final List<Map> adGroups;
 
-  AdGroupView({required this.adGroups});
+  const AdGroupView({super.key, required this.adGroups});
 
-  void _showAGPage(BuildContext context, AdGroup adGroup) {
+  void _showAGPage(BuildContext context, Map adGroup) {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => AGPage(adGroup: adGroup)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: adGroups.length,
-      itemBuilder: (context, index) {
-        final adGroup = adGroups[index];
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0), // Add rounded corners
-          ),
-          color: Colors.grey, // Change the card color
-          child: ListTile(
-            onTap: () => _showAGPage(context, adGroup),
-            title: Text(
-              adGroup.name,
-              style: const TextStyle(
-                  color: Colors.white), // Change the title color
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: adGroups.length,
+        itemBuilder: (context, index) {
+          final adGroup = adGroups[index];
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0), // Add rounded corners
             ),
-            subtitle: Text(
-              adGroup.description,
-              style: const TextStyle(
-                  color: Colors.white70), // Change the subtitle color
-            ),
-            trailing: PopupMenuButton<String>(
-              onSelected: (value) async {
-                if (value == 'Change') {
-                  final updatedAdGroup = await showDialog<AdGroup>(
-                    context: context,
-                    builder: (context) => UpdateAdGroupDialog(
-                      oldName: adGroup.name,
-                      newName: adGroup.name,
-                      oldDescription: adGroup.description,
-                      newDescription: adGroup.description,
-                    ),
-                  );
-                  if (updatedAdGroup != null) {
-                    FrontendToBackendConnection.updateAdGroup(
-                        adGroup.name, updatedAdGroup.name, adGroup.description);
+            color: Colors.grey, // Change the card color
+            child: ListTile(
+              onTap: () => _showAGPage(context, adGroup),
+              title: Text(
+                adGroup['name'],
+                style: const TextStyle(
+                    color: Colors.white), // Change the title color
+              ),
+              subtitle: Text(
+                adGroup['description'],
+                style: const TextStyle(
+                    color: Colors.white70), // Change the subtitle color
+              ),
+              trailing: PopupMenuButton<String>(
+                onSelected: (value) async {
+                  if (value == 'Change') {
+                    final updatedAdGroup = await showDialog<AdGroup>(
+                      context: context,
+                      builder: (context) => UpdateAdGroupDialog(
+                        oldName: adGroup['name'],
+                        newName: adGroup['name'],
+                        oldDescription: adGroup['description'],
+                        newDescription: adGroup['description'],
+                      ),
+                    );
+                    if (updatedAdGroup != null) {
+                      FrontendToBackendConnection.updateAdGroup(adGroup['name'],
+                          updatedAdGroup.name, adGroup['description']);
+                    }
+                  } else if (value == 'Delete') {
+                    FrontendToBackendConnection.deleteAdGroup(
+                        context, index, adGroup['name']);
                   }
-                } else if (value == 'Delete') {
-                  FrontendToBackendConnection.deleteAdGroup(
-                      context, index, adGroup.name);
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'Change',
-                  child: Text('Change'),
-                ),
-                const PopupMenuItem(
-                  value: 'Delete',
-                  child: Text('Delete'),
-                ),
-              ],
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'Change',
+                    child: Text('Change'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'Delete',
+                    child: Text('Delete'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final newAdGroup = await showDialog<AdGroup>(
+            context: context,
+            builder: (context) => const CreateAdGroupDialog(),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
@@ -627,66 +699,76 @@ class CreateAdGroupDialog extends StatefulWidget {
 
 class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
   final _formKey = GlobalKey<FormState>();
-  String _name = '';
-  String _description = '';
+
+  Map<String, String> adgroup = {
+    'name': '',
+    'description': '',
+  };
+
+  late TextEditingController _nameController;
+  late TextEditingController _descriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _descriptionController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Create Ad Group'),
+      title: const Text('Create Ad Group'),
       content: Form(
         key: _formKey,
         child: Column(
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: 'Name'),
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Name'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a name';
                 }
                 return null;
               },
-              onSaved: (value) {
-                _name = value!;
-              },
+              // onSaved: (value) {
+              //   _name = value!;
+              // },
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Description'),
+              controller: _descriptionController,
+              decoration: const InputDecoration(labelText: 'Description'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a description';
                 }
                 return null;
               },
-              onSaved: (value) {
-                _description = value!;
-              },
+              // onSaved: (value) {
+              //   _description = value!;
+              // },
             ),
           ],
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              AdGroup newAdGroup =
-                  AdGroup(name: _name, description: _description);
-              Navigator.of(context).pop(newAdGroup);
-              List<AdGroup> _adGroups =
-                  []; // Define the variable _adGroups as an empty list
-              _adGroups.add(newAdGroup); // Add newAdGroup to _adGroups list
-
-              Navigator.of(context)
-                  .pop(AdGroup(name: _name, description: _description));
-              // Navigate to AGPostPage
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => AdGroupView(
-                    adGroups: [],
-                  ),
-                ),
-              );
+              adgroup['name'] = _nameController.text;
+              adgroup['description'] = _descriptionController.text;
+              await FrontendToBackendConnection.postData(
+                  "create_adgroup/", adgroup);
+              Navigator.of(context).pop();
             }
           },
           child: Text('Create'),
@@ -696,11 +778,11 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
   }
 }
 
-void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => FrontendToBackendConnection(),
-    child: const MaterialApp(
-      home: HomePage(),
-    ),
-  ));
-}
+// void main() {
+//   runApp(ChangeNotifierProvider(
+//     create: (context) => FrontendToBackendConnection(),
+//     child: MaterialApp(
+//       home: AdGroupView(adGroups: []),
+//     ),
+//   ));
+// }
