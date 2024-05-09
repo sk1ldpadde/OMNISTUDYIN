@@ -228,6 +228,49 @@ Es wäre also vielleicht besser gewesen einfach den Developern einzelne Features
 
 ## Where to find what
 
+### Frontend:
+
+#### Architektur
+
+![OMNISTUDYIN Logo](./Docs/Images/component_diagramm_frontend.png)
+
+Wie die einzelnen Seiten miteinander interagieren können, ist in dem Bild dargestellt.
+
+#### Design
+
+Das Frontend wurde unter Verwendung des Cupertino-Designs entwickelt, das von Apple für seine iOS-Betriebssysteme eingeführt wurde. 
+Das Cupertino-Design zeichnet sich durch seine klare, minimalistische Ästhetik und seine Fokussierung auf einfache Formen aus.
+Animationen aus.
+
+##### Farbschema
+
+Das Farbschema unseres Frontends entspricht den Standard des Cupertino-Designs. Die Farbpalette ist so gestaltet, 
+dass die Farben nicht zu sehr von den Inhalten ablenkt. Die einzelnen Farbtöne sind aufeinander abgestimmt, sodass sie 
+harmonisch aufeinander wirken. 
+
+##### Schriftarten
+
+Für die Texte wird die standardmäßig im Cupertino-Design verwendete Schriftart genutzt. Sie weist eine klare 
+Lesbarkeit auf verschiedenen Bildschirmgrößen und -auflösungen auf. Die Schriftgrößen und -gewichtungen wurden entsprechend 
+angepasst, um eine optimale Benutzererfahrung zu gewährleisten.
+
+##### Benutzeroberfläche
+
+Die Benutzeroberfläche unseres Frontends folgt den bewährten Gestaltungsprinzipien des Cupertino-Designs, 
+um eine intuitive und benutzerfreundliche Interaktion zu ermöglichen. Wir setzen auf klare, eindeutige Symbole und Schaltflächen, 
+um dem Benutzer eine klare Orientierung zu bieten und die Navigation durch die Anwendung zu erleichtern. 
+Darüber hinaus verwenden wir subtile Animationen und Übergänge, um die Interaktion mit der Anwendung flüssig und ansprechend zu 
+gestalten.
+
+##### Responsivität
+Unser Frontend ist vollständig responsiv für mobile Geräte und passt sich automatisch an verschiedene Bildschirmgrößen und -auflösungen an, 
+um eine konsistente Benutzererfahrung auf allen Geräten zu gewährleisten. Dabei werden die bewährten Praktiken des responsiven 
+Webdesigns angewendet, um sicherzustellen, dass die Inhalte optimal dargestellt und bedient werden können.
+
+#### Komponenten
+
+
+
 ### Backend:
 
 Der Ordner data_logic ist der Haupt-Ordner für die Backendlogik.
