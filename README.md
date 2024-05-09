@@ -208,11 +208,11 @@ Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwickl
 ## Retrospective
 
 |                            ☀️                             |                            ☁️                            |           🔜            |
-| :-------------------------------------------------------: | :------------------------------------------------------: | :---------------------: |
+|:---------------------------------------------------------:|:--------------------------------------------------------:| :---------------------: |
 |      Implementierung von neo4j hat sehr gut geklappt      |           Frontend wurde zu langsam aufgebaut            | Mehr Frontend developer |
 | Flutter lässt sich mittels Copilot sehr schnell schreiben |           Flutter an sich ist unnötig komplex            |   Mehr Dokumentation         |
 |       Strukturierung des Teams verlief hervorragend       | Umstellung Linux/Mac für Backend Funktionalität stressig |           Mehr Code Kommentare            |
-|Docker Einrichtung verlief ebenso reibungslos|||
+|      Docker Einrichtung verlief ebenso reibungslos        |        Flutter Code wird schnell unübersichtlich         ||
 
 
 #### Fazit
@@ -227,6 +227,44 @@ Es wäre also vielleicht besser gewesen einfach den Developern einzelne Features
 
 
 ## Where to find what
+
+### Frontend:
+
+#### Architektur
+
+![OMNISTUDYIN Logo](./Docs/Images/component_diagramm_frontend.png)
+
+Wie die einzelnen Seiten miteinander interagieren können, ist in dem Bild dargestellt.
+
+#### Design
+
+Das Frontend wurde unter Verwendung des Cupertino-Designs entwickelt, das von Apple für seine iOS-Betriebssysteme eingeführt wurde. 
+Das Cupertino-Design zeichnet sich durch seine klare, minimalistische Ästhetik und seine Fokussierung auf einfache Formen aus.
+Animationen aus.
+
+##### Farbschema
+
+Das Farbschema unseres Frontends entspricht den Standard des Cupertino-Designs. Die Farbpalette ist so gestaltet, 
+dass die Farben nicht zu sehr von den Inhalten ablenkt. Die einzelnen Farbtöne sind aufeinander abgestimmt, sodass sie 
+harmonisch aufeinander wirken. 
+
+##### Schriftarten
+
+Für die Texte wird die standardmäßig im Cupertino-Design verwendete Schriftart genutzt. Sie weist eine klare 
+Lesbarkeit auf verschiedenen Bildschirmgrößen und -auflösungen auf. Die Schriftgrößen und -gewichtungen wurden entsprechend 
+angepasst, um eine optimale Benutzererfahrung zu gewährleisten.
+
+##### Benutzeroberfläche
+
+Die Benutzeroberfläche unseres Frontends folgt den Gestaltungsprinzipien des Cupertino-Designs, 
+um eine intuitive und benutzerfreundliche Interaktion zu ermöglichen. Die Funktion von Symbole und Schaltflächen, sind eindeutig ersichtlich
+um dem Benutzer eine klare Orientierung zu bieten und die Navigation durch die Anwendung zu erleichtern. 
+
+##### Responsivität
+Unser Frontend ist vollständig responsiv für mobile Geräte und passt sich automatisch an verschiedene Bildschirmgrößen und -auflösungen an, 
+um eine konsistente Benutzererfahrung auf allen Geräten zu gewährleisten. Dabei werden die bewährten Praktiken des responsiven 
+Webdesigns angewendet, um sicherzustellen, dass die Inhalte optimal dargestellt und bedient werden können.
+
 
 ### Backend:
 
