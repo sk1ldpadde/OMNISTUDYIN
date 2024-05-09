@@ -256,19 +256,14 @@ angepasst, um eine optimale Benutzererfahrung zu gewährleisten.
 
 ##### Benutzeroberfläche
 
-Die Benutzeroberfläche unseres Frontends folgt den bewährten Gestaltungsprinzipien des Cupertino-Designs, 
-um eine intuitive und benutzerfreundliche Interaktion zu ermöglichen. Wir setzen auf klare, eindeutige Symbole und Schaltflächen, 
+Die Benutzeroberfläche unseres Frontends folgt den Gestaltungsprinzipien des Cupertino-Designs, 
+um eine intuitive und benutzerfreundliche Interaktion zu ermöglichen. Die Funktion von Symbole und Schaltflächen, sind eindeutig ersichtlich
 um dem Benutzer eine klare Orientierung zu bieten und die Navigation durch die Anwendung zu erleichtern. 
-Darüber hinaus verwenden wir subtile Animationen und Übergänge, um die Interaktion mit der Anwendung flüssig und ansprechend zu 
-gestalten.
 
 ##### Responsivität
 Unser Frontend ist vollständig responsiv für mobile Geräte und passt sich automatisch an verschiedene Bildschirmgrößen und -auflösungen an, 
 um eine konsistente Benutzererfahrung auf allen Geräten zu gewährleisten. Dabei werden die bewährten Praktiken des responsiven 
 Webdesigns angewendet, um sicherzustellen, dass die Inhalte optimal dargestellt und bedient werden können.
-
-#### Komponenten
-
 
 
 ### Backend:
