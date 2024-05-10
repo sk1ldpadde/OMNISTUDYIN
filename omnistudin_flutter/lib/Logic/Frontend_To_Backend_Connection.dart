@@ -19,9 +19,9 @@ class AdInGroup {
 
   factory AdInGroup.fromJson(Map<String, dynamic> json) {
     return AdInGroup(
-      adGroupName: json['ad_group_name'],
-      name: json['name'],
-      description: json['description'],
+      adGroupName: json['ad_group_name'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
     );
   }
 }
@@ -55,6 +55,22 @@ class AdsInGroupProvider with ChangeNotifier {
 
   void setAdGroups(List<AdInGroup> adsInGroup) {
     _adsInGroup = adsInGroup;
+    notifyListeners();
+  }
+}
+
+class AdGroupProvider with ChangeNotifier {
+  List<AdGroup> _adGroups = [];
+
+  List<AdGroup> get adGroups => _adGroups;
+
+  void removeAdGroup(int index) {
+    _adGroups.removeAt(index);
+    notifyListeners();
+  }
+
+  void setAdGroups(List<AdGroup> adGroups) {
+    _adGroups = adGroups;
     notifyListeners();
   }
 }
@@ -314,6 +330,40 @@ class FrontendToBackendConnection with ChangeNotifier {
       return adsInGroups;
     } else {
       throw Exception('Failed to load new ads');
+    }
+  }
+
+  static Future<List<AdInGroup>> getAdsOfGroup(String groupName) async {
+    if (groupName == null) {
+      throw Exception('groupName is null');
+    }
+
+    var token = await getToken();
+
+    if (token == null) {
+      throw Exception('token is null');
+    }
+
+    try {
+      String fullUrl = "${baseURL}get_ads_of_group/";
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        headers: <String, String>{
+          'Authorization': '$token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'ad_group_name': groupName}),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> body = jsonDecode(response.body);
+        List<AdInGroup> ads =
+            body.map((dynamic item) => AdInGroup.fromJson(item)).toList();
+        return ads;
+      } else {
+        throw Exception('Failed to get ads of group');
+      }
+    } catch (e) {
+      throw Exception('Network error while trying to get ads of group: $e');
     }
   }
 
