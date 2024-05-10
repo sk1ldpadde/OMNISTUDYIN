@@ -441,6 +441,28 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  static Future<void> deleteAdInGroup(String adName, var token) async {
+    print('Deleting Ad');
+    try {
+      String fullUrl = "${baseURL}delete_ad_group/";
+      var response = await http.delete(
+        Uri.parse(fullUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': '$token',
+        },
+        body: jsonEncode({'name': adName}),
+      );
+      if (response.statusCode == 200) {
+        await fetchAdGroups(token); // Refresh the list of AdGroups
+      } else {
+        throw Exception('Failed to delete Ad');
+      }
+    } catch (e) {
+      throw Exception('Network error while trying to delete Ad: $e');
+    }
+  }
+
   static Future<void> deleteAdGroup(
       BuildContext context, index, String name) async {
     String fullUrl = "${baseURL}delete_adgroup/";

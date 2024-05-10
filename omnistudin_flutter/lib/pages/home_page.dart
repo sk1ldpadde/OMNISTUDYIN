@@ -187,7 +187,10 @@ class _HomePageState extends State<HomePage> {
         MaterialPageRoute(
           builder: (context) => PostPage(
             key: UniqueKey(),
-            adInGroup: {'ads': ads}, // pass the fetched ads here
+            adInGroup: {
+              'ads': ads,
+              'ad_group_name': adGroup['name']
+            }, // pass the  fetched ads and ad group name here
           ),
         ),
       );
@@ -345,25 +348,96 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
   List<AdInGroup>? ads;
+  String? adGroupName;
 
   @override
   void initState() {
     super.initState();
     ads = widget.adInGroup['ads'];
+    adGroupName =
+        widget.adInGroup['ad_group_name']; // get the ad group name here
+  }
+
+  void _deleteAdInGroup(String name) async {
+    Map<String, String> ad = {
+      'name': name,
+    };
+    var token = await FrontendToBackendConnection.getToken();
+    try {
+      await FrontendToBackendConnection.deleteAdInGroup(name, token);
+      await Future.delayed(const Duration(seconds: 2)); // Wait for 2 seconds
+      print('Ad group name: $name');
+      print('Token: $token');
+
+      List<dynamic> data =
+          await FrontendToBackendConnection.getData('get_adsofgroup/');
+      if (data != null) {
+        List<AdInGroup> adInGroup =
+            data.map((item) => AdInGroup.fromJson(item)).toList();
+        print('Fetched ad groups: $adInGroup');
+
+        setState(() {});
+
+        print('Updated state with new ads');
+      } else {
+        print('No Ads found');
+      }
+    } catch (e) {
+      print('Error deleting Ad: $e');
+      if (e is http.ClientException && e.message.contains('<!DOCTYPE html>')) {
+        print('Server returned an HTML response: ${e.message}');
+      } else if (e is http.ClientException && e.message.contains('404')) {
+        // Handle 403 error
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+          const SnackBar(
+              content: Text('You are not authorized to delete this ad')),
+        );
+      } else {
+        // Handle other errors
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+          const SnackBar(content: Text('Failed to delete ad')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Post Page'),
+        title: Text(adGroupName ?? 'Default Title'),
       ),
       body: ListView.builder(
         itemCount: ads?.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(ads?[index].name ?? ''),
-            subtitle: Text(ads?[index].description ?? ''),
+          return Card(
+            child: ListTile(
+              title: Text(ads?[index].name ?? ''),
+              subtitle: Text(ads?[index].description ?? ''),
+              trailing: PopupMenuButton(
+                onSelected: (value) async {
+                  if (value == 'Edit') {
+                    // Implement your edit functionality here
+                  } else if (value == 'Delete') {
+                    print('Ads: $ads');
+                    _deleteAdInGroup(ads![index].name);
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'Edit',
+                    child: Text('Edit'),
+                  ),
+                  PopupMenuItem(
+                    value: 'Delete',
+                    child: Text('Delete'),
+                  ),
+                ],
+              ),
+              onTap: () {
+                // Implement your onTap functionality here
+              },
+            ),
           );
         },
       ),
