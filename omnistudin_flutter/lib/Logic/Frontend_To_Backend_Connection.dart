@@ -6,18 +6,21 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 
+//AdInGroup class
 class AdInGroup {
   String adGroupName;
   String name;
-  String description;
+  String description; // Description of the Ad
 
   AdInGroup({
+    // Constructor
     required this.adGroupName,
     required this.name,
     required this.description,
   });
 
   factory AdInGroup.fromJson(Map<String, dynamic> json) {
+    // Factory method to create an AdInGroup object from a JSON object
     return AdInGroup(
       adGroupName: json['ad_group_name'] ?? '',
       name: json['name'] ?? '',
@@ -26,16 +29,19 @@ class AdInGroup {
   }
 }
 
+//AdGroup class
 class AdGroup {
   String name;
-  String description;
+  String description; // Description of the AdGroup
 
   AdGroup({
+    // Constructor
     required this.name,
     required this.description,
   });
 
   factory AdGroup.fromJson(Map<String, dynamic> json) {
+    // Factory method to create an AdGroup object from a JSON object
     return AdGroup(
       name: json['name'],
       description: json['description'],
@@ -43,38 +49,46 @@ class AdGroup {
   }
 }
 
+//Provider class
 class AdsInGroupProvider with ChangeNotifier {
-  List<AdInGroup> _adsInGroup = [];
+  List<AdInGroup> _adsInGroup = []; // List of AdInGroup objects
 
-  List<AdInGroup> get adsInGroup => _adsInGroup;
+  List<AdInGroup> get adsInGroup =>
+      _adsInGroup; // Getter for the list of AdInGroup objects
 
   void removeAdGroup(int index) {
+    // Method to remove an AdGroup object from the list
     _adsInGroup.removeAt(index);
-    notifyListeners();
+    notifyListeners(); // Notify the listeners that the list has changed
   }
 
   void setAdGroups(List<AdInGroup> adsInGroup) {
+    // Method to set the list of AdInGroup objects
     _adsInGroup = adsInGroup;
     notifyListeners();
   }
 }
 
+//Provider class
 class AdGroupProvider with ChangeNotifier {
-  List<AdGroup> _adGroups = [];
+  List<AdGroup> _adGroups = []; // List of AdGroup objects
 
   List<AdGroup> get adGroups => _adGroups;
 
   void removeAdGroup(int index) {
+    // Method to remove an AdGroup object from the list
     _adGroups.removeAt(index);
     notifyListeners();
   }
 
   void setAdGroups(List<AdGroup> adGroups) {
+    // Method to set the list of AdGroup objects
     _adGroups = adGroups;
     notifyListeners();
   }
 }
 
+//Class that connects the frontend to the backend
 class FrontendToBackendConnection with ChangeNotifier {
   // baseURL for the backend server running on the PC!
   static const String baseURL = "http://localhost:8000/";
@@ -88,17 +102,19 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (client == "default") {
         client = http.Client();
       }
-      String fullUrl = baseURL + urlPattern;
+      String fullUrl = baseURL + urlPattern; // Construct the full URL
       final response =
           await client.get(Uri.parse(fullUrl), headers: <String, String>{
+        // Send a get request to the server
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': '$token',
       });
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        // Check if the response is successful
+        return json.decode(response.body); // Return the decoded JSON response
       } else {
         throw Exception(
-            'Failed to get data: HTTP status ${response.statusCode},  ${response.body}');
+            'Failed to get data: HTTP status ${response.statusCode},  ${response.body}'); // Throw an exception if the response is not successful
       }
     } catch (e) {
       throw Exception('Network error while trying to get data: $e');
@@ -187,7 +203,7 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
-  // Erstellen Sie eine Instanz von FlutterSecureStorage
+  // Create a FlutterSecureStorage object
   static const storage = FlutterSecureStorage();
 
   static Future<http.Response> loginStudent(
@@ -284,11 +300,14 @@ class FrontendToBackendConnection with ChangeNotifier {
 
   static Future<void> addNewAdsInGroup(
       String adgroupname, String title, String description, var token) async {
-    print('Creating new Ad');
+    // Method to add a new Ad to a group
+    print('Creating new Ad'); //Debugging purposes
     try {
-      String fullUrl = "${baseURL}create_ads_in_group/";
+      String fullUrl =
+          "${baseURL}create_ads_in_group/"; // Construct the full URL
 
       var response = await http.post(
+        // Send a post request to the server
         Uri.parse(fullUrl),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -302,6 +321,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // Check if the response is successful
         print('Ad created successfully');
         await fetchAdGroups(token); // Refresh the list of AdGroups
       } else {
@@ -313,10 +333,12 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  // Method to fetch all the ads
   static Future<List<AdInGroup>> fetchAdGroups(String token) async {
-    String fullUrl = "${baseURL}get_adgroups/";
+    String fullUrl = "${baseURL}get_adgroups/"; // Construct the full URL
 
     var response = await http.get(
+      // Send a get request to the server
       Uri.parse(fullUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -325,40 +347,46 @@ class FrontendToBackendConnection with ChangeNotifier {
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
-      List<AdInGroup> adsInGroups =
-          body.map((dynamic item) => AdInGroup.fromJson(item)).toList();
+      List<AdInGroup> adsInGroups = body
+          .map((dynamic item) => AdInGroup.fromJson(item))
+          .toList(); // Convert the JSON response to a list of AdInGroup objects
       return adsInGroups;
     } else {
       throw Exception('Failed to load new ads');
     }
   }
 
+  // Method to fetch all the ads of a group
   static Future<List<AdInGroup>> getAdsOfGroup(String groupName) async {
     if (groupName == null) {
+      // Check if the group name is null
       throw Exception('groupName is null');
     }
 
-    var token = await getToken();
+    var token = await getToken(); // Fetch the token
 
     if (token == null) {
       throw Exception('token is null');
     }
 
     try {
-      String fullUrl = "${baseURL}get_ads_of_group/";
+      String fullUrl = "${baseURL}get_ads_of_group/"; // Construct the full URL
       final response = await http.post(
         Uri.parse(fullUrl),
         headers: <String, String>{
           'Authorization': '$token',
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({'ad_group_name': groupName}),
+        body: jsonEncode(
+            {'ad_group_name': groupName}), // Send the group name in the body
       );
       if (response.statusCode == 200) {
-        List<dynamic> body = jsonDecode(response.body);
-        List<AdInGroup> ads =
-            body.map((dynamic item) => AdInGroup.fromJson(item)).toList();
-        return ads;
+        List<dynamic> body =
+            jsonDecode(response.body); // Decode the JSON response
+        List<AdInGroup> ads = body
+            .map((dynamic item) => AdInGroup.fromJson(item))
+            .toList(); // Convert the JSON response to a list of AdInGroup objects
+        return ads; // Return the list of AdInGroup objects
       } else {
         throw Exception('Failed to get ads of group');
       }
@@ -367,13 +395,14 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  // Method to update an ad in a group
   static Future<void> updateAdInGroup(
       String oldName, String newName, String description) async {
     try {
-      var token = await getToken();
+      var token = await getToken(); // Fetch the token
 
       var response = await http.put(
-        Uri.parse('${baseURL}change_ad_in_group/'),
+        Uri.parse('${baseURL}change_ad_in_group/'), // Construct the full URL
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': '$token',
@@ -395,13 +424,15 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  // Method to update an adgroup
   static Future<void> updateAdGroup(
       String oldName, String newName, String description) async {
     try {
-      var token = await getToken();
+      var token = await getToken(); // Fetch the token
 
       var response = await http.put(
-        Uri.parse('${baseURL}change_adgroup/'),
+        // Send a put request to the server
+        Uri.parse('${baseURL}change_adgroup/'), // Construct the full URL
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': '$token',
@@ -414,7 +445,8 @@ class FrontendToBackendConnection with ChangeNotifier {
       );
 
       if (response.statusCode != 200) {
-        print('Failed to update AdGroup: ${response.body}');
+        print(
+            'Failed to update AdGroup: ${response.body}'); // Debugging purposes
         throw Exception('Failed to update AdGroup');
       }
     } catch (e) {
@@ -423,29 +455,36 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  // Method to search for ads
   static Future<List<AdInGroup>> searchAdGroups(String keyword) async {
-    String fullUrl = "${baseURL}search_adgroups/?keyword=$keyword";
+    String fullUrl =
+        "${baseURL}search_adgroups/?keyword=$keyword"; // Construct the full URL
     var response = await http.get(
+      // Send a get request to the server
       Uri.parse(fullUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
     if (response.statusCode == 200) {
-      List<dynamic> body = jsonDecode(response.body);
-      List<AdInGroup> adGroups =
-          body.map((dynamic item) => AdInGroup.fromJson(item)).toList();
+      List<dynamic> body =
+          jsonDecode(response.body); // Decode the JSON response
+      List<AdInGroup> adGroups = body
+          .map((dynamic item) => AdInGroup.fromJson(item))
+          .toList(); // Convert the JSON response to a list of AdInGroup objects
       return adGroups;
     } else {
       throw Exception('Failed to search ad');
     }
   }
 
+  // Method to delete an ad in a group
   static Future<void> deleteAdInGroup(String adName, var token) async {
     print('Deleting Ad');
     try {
-      String fullUrl = "${baseURL}delete_ad_group/";
+      String fullUrl = "${baseURL}delete_ad_group/"; // Construct the full URL
       var response = await http.delete(
+        // Send a delete request to the server
         Uri.parse(fullUrl),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -456,16 +495,18 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (response.statusCode == 200) {
         await fetchAdGroups(token); // Refresh the list of AdGroups
       } else {
-        throw Exception('Failed to delete Ad');
+        throw Exception(
+            'Failed to delete Ad'); // Throw an exception if the response is not successful
       }
     } catch (e) {
       throw Exception('Network error while trying to delete Ad: $e');
     }
   }
 
+  // Method to delete an ad group
   static Future<void> deleteAdGroup(
       BuildContext context, index, String name) async {
-    String fullUrl = "${baseURL}delete_adgroup/";
+    String fullUrl = "${baseURL}delete_adgroup/"; // Construct the full URL
 
     try {
       var token = await getToken(); // Fetch the token
@@ -480,9 +521,11 @@ class FrontendToBackendConnection with ChangeNotifier {
           'name': name,
         }),
       );
-      List<dynamic> body = jsonDecode(response.body);
-      List<AdInGroup> adGroups =
-          body.map((dynamic item) => AdInGroup.fromJson(item)).toList();
+      List<dynamic> body =
+          jsonDecode(response.body); // Decode the JSON response
+      List<AdInGroup> adGroups = body
+          .map((dynamic item) => AdInGroup.fromJson(item))
+          .toList(); // Convert the JSON response to a list of AdInGroup objects
 
       if (response.statusCode == 200) {
         Provider.of<AdsInGroupProvider>(context, listen: false)
@@ -497,9 +540,11 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  // Method to get an ad group
   static Future<void> getAdGroup(
       int index, String oldName, String newName, String description) async {
-    String fullUrl = "${baseURL}get_adgroups/?name=$oldName";
+    String fullUrl =
+        "${baseURL}get_adgroups/?name=$oldName"; // Construct the full URL
     var token = await getToken(); // Fetch the token
 
     var response = await http.get(
@@ -508,7 +553,7 @@ class FrontendToBackendConnection with ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-
+    //Errorhandling
     if (response.statusCode == 403) {
       throw Exception('User is not an admin of this ad group');
     } else if (response.statusCode != 200) {
@@ -518,17 +563,18 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
 
     try {
-      await fetchAdGroups(token!);
+      await fetchAdGroups(token!); // Refresh the list of AdGroups
     } catch (e) {
       print('Error updating Ads: $e');
     }
   }
 
+  // Method to create an ad group
   static Future<dynamic> createAdGroup(
       String name, String description, var token) async {
-    print('Creating new AdGroup');
+    print('Creating new AdGroup'); // Debugging purposes
     try {
-      String fullUrl = "${baseURL}create_adgroup/";
+      String fullUrl = "${baseURL}create_adgroup/"; // Construct the full URL
 
       var response = await http.post(
         Uri.parse(fullUrl),

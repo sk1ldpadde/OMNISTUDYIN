@@ -71,20 +71,24 @@ void main() async {
   }
 }
 
+// Method for Landing Page
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+  const LandingPage({super.key}); //Constructor for Landing Page
 
   @override
-  _LandingPageState createState() => _LandingPageState();
+  _LandingPageState createState() =>
+      _LandingPageState(); //Create State for Landing Page
 }
 
+// State for Landing Page
 class _LandingPageState extends State<LandingPage> {
-  int _currentIndex = 0;
+  int _currentIndex = 0; // Index for the current page
 
   bool _isLoggedIn = false; // Set this value based on your login status
-  late bool _showSearchBar;
+  //late bool _showSearchBar;
 
   final List<Widget> _pages = [
+    // List of pages
     const HomePage(),
     const FriendsPage(),
     const ProfilePage(),
@@ -92,51 +96,60 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   void initState() {
+    // Initialize the state
     super.initState();
-    _showSearchBar = false;
+    //_showSearchBar = false;
     _checkLoginStatus();
   }
 
   void _checkLoginStatus() async {
-    var token = await FrontendToBackendConnection.getToken();
+    // Check the login status
+    var token = await FrontendToBackendConnection.getToken(); // Get the token
     setState(() {
+      // Set the state
       _isLoggedIn = token != null;
     });
   }
 
   void checkLoginStatus() {
+    // Check the login status
     _checkLoginStatus();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/', // Set the initial route
       routes: {
+        // Set the routes
         '/home': (context) => const HomePage(),
         '/friends': (context) => const FriendsPage(),
         '/profile': (context) => const ProfilePage(),
       },
       home: FutureBuilder(
-        future: FrontendToBackendConnection.getToken(),
+        future: FrontendToBackendConnection.getToken(), // Get the token
         builder: (BuildContext context, AsyncSnapshot snapshot) {
+          // Build the context
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während auf den Token gewartet wird
+            return const CircularProgressIndicator(); // Show the circular progress indicator if the connection state is waiting
           } else {
-            _isLoggedIn = snapshot.data != null;
+            _isLoggedIn = snapshot.data != null; // Set the login status
             return Scaffold(
               body: _isLoggedIn
-                  ? _pages[_currentIndex]
-                  : LoginPage(onLoginSuccess: _checkLoginStatus),
+                  ? _pages[_currentIndex] // Show the current page
+                  : LoginPage(
+                      onLoginSuccess: _checkLoginStatus), // Show the login page
               bottomNavigationBar: _isLoggedIn
                   ? BottomNavigationBar(
                       currentIndex: _currentIndex,
                       onTap: (index) {
                         setState(() {
-                          _currentIndex = index;
+                          // Set the state
+                          _currentIndex = index; // Set the current index
                         });
                       },
                       items: const [
+                        //Set the bottom navigation bar items
                         BottomNavigationBarItem(
                           icon: Icon(Icons.home),
                           label: 'Home',
