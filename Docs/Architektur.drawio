@@ -1,0 +1,51 @@
+<mxfile host="app.diagrams.net" modified="2024-05-03T08:45:02.840Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Safari/605.1.15" etag="ruxL7oantYRYOTi23ljI" version="24.3.1" type="device">
+  <diagram name="Seite-1" id="x-lJeb8PZtaO31JW5wdy">
+    <mxGraphModel dx="838" dy="568" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="E0kPqm17k1ggUt1T_y85-2" value="Neo4j" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="560" y="240" width="110" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="E0kPqm17k1ggUt1T_y85-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="325" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-11" value="API CALLS" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="E0kPqm17k1ggUt1T_y85-10">
+          <mxGeometry x="-0.0355" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-4" value="Flutter" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="240" width="110" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-5" value="Django" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="240" width="110" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-6" value="Dockerized" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="130" width="420" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-7" value="Django Container" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="E0kPqm17k1ggUt1T_y85-6">
+          <mxGeometry x="5" y="80" width="200" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-9" value="Database Container" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="E0kPqm17k1ggUt1T_y85-6">
+          <mxGeometry x="205" y="80" width="200" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="E0kPqm17k1ggUt1T_y85-5" target="E0kPqm17k1ggUt1T_y85-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="425" y="450" />
+              <mxPoint x="615" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E0kPqm17k1ggUt1T_y85-13" value="Django OGM" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="E0kPqm17k1ggUt1T_y85-12">
+          <mxGeometry y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

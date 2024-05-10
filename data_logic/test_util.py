@@ -25,8 +25,8 @@ class TestCurrentAgeCalculation(unittest.TestCase):
         # One student who did not have birthday this year
         date_object_2 = today + timedelta(days=1)
 
-        test_student_1 = Student(dob=date_object_1.strftime("%d-%m-%Y"))
-        test_student_2 = Student(dob=date_object_2.strftime("%d-%m-%Y"))
+        test_student_1 = Student(dob=date_object_1)
+        test_student_2 = Student(dob=date_object_2)
 
         # Act
         result_student_1 = compute_current_age(test_student_1)
