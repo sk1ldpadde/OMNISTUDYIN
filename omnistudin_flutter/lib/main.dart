@@ -1,4 +1,3 @@
-
 import 'dart:isolate';
 
 import 'package:flutter/cupertino.dart';
@@ -10,18 +9,20 @@ import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
+import 'package:provider/provider.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
 import 'Logic/chat_message_service/message_persistence_isolate.dart';
 import 'Logic/chat_message_service/message.dart';
 import 'package:intl/intl.dart';
 
-
 void main() async {
-  runApp(OmniStudyingApp());
+  // runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  runApp(LandingPage());
+  runApp(
+    LandingPage(),
+  );
 
   /************************
   // CHAT MESSAGING SERVICES
@@ -68,7 +69,6 @@ void main() async {
     await Future.delayed(Duration(seconds: 5));
     print(MessageList);
   }
-
 }
 
 class LandingPage extends StatefulWidget {
@@ -111,6 +111,12 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/home': (context) => const HomePage(),
+        '/friends': (context) => const FriendsPage(),
+        '/profile': (context) => const ProfilePage(),
+      },
       home: FutureBuilder(
         future: FrontendToBackendConnection.getToken(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -144,10 +150,8 @@ class _LandingPageState extends State<LandingPage> {
                           label: 'Profile',
                         ),
                       ],
-
                       selectedItemColor: const Color(0xFFf46139),
                       unselectedItemColor: const Color(0xFFf7b29f),
-
                     )
                   : null,
             );
