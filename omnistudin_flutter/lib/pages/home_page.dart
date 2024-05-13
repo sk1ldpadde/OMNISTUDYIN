@@ -247,6 +247,7 @@ class _HomePageState extends State<HomePage> {
             if (action != null) {
               // Check if an action was returned from the dialog
               if (action == 'Ad') {
+                print("Ad!!!!!!");
                 // Show a dialog to create a new ad in a group and wait for the user to fill in the details
                 final newAdInGroup = await showDialog<AdInGroup>(
                   context: context,
@@ -289,6 +290,7 @@ class _HomePageState extends State<HomePage> {
             } else {
               // If the future completed with data, showing the data
               print(snapshot.data); //Debugging purposes
+
               List adGroups =
                   snapshot.data; // Converting the data to a list of ad groups
               if (adGroups.isEmpty) {
@@ -459,46 +461,68 @@ class _PostPageState extends State<PostPage> {
         title: Text(adGroupName ??
             'Default Title'), // Set the title of the AppBar to ad group name, or 'Default Title' if it's null
       ),
-      body: ListView.builder(
-        // Create a ListView.builder to build the list of ads
-        itemCount: ads?.length,
-        itemBuilder: (context, index) {
-          // Build each item in the list
-          return Card(
-            child: ListTile(
-              // Create a ListTile for each ad
-              title: Text(ads?[index].name ??
-                  ''), // Set the title of the ListTile to the name of the ad, or an empty string if it's null
-              subtitle:
-                  Text(ads?[index].description ?? ''), //Analog to the title
-              trailing: PopupMenuButton(
-                onSelected: (value) async {
-                  // Define a function to handle when a menu item is selected
-                  if (value == 'Edit') {
-                    // Edit functionality
-                  } else if (value == 'Delete') {
-                    print('Ads: $ads'); //Debugging purposes
-                    _deleteAdInGroup(
-                        ads![index].name); // Delete the ad in the group
-                  }
-                },
-                itemBuilder: (context) => [
-                  // Build the menu items
-                  PopupMenuItem(
-                    value: 'Edit',
-                    child: Text('Edit'),
+      body: FutureBuilder(
+        future: () async {
+          // Fetch the ads of the group
+          ads = await FrontendToBackendConnection.getAdsOfGroup(adGroupName!)
+              as List<AdInGroup>?;
+        }(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            return ListView.builder(
+              itemCount: ads?.length,
+              itemBuilder: (context, index) {
+                // Build each item in the list
+                for (int i = 0; i < ads!.length; i++) {
+                  print('Ad name: ${ads![i].name}'); //Debugging purposes
+                }
+                return Card(
+                  child: ListTile(
+                    // Create a ListTile for each ad
+                    //Debugging purposes
+                    title: Text(ads?[index].name ??
+                        ''), // Set the title of the ListTile to the name of the ad, or an empty string if it's null
+                    subtitle: Text(
+                        ads?[index].description ?? ''), //Analog to the title
+                    trailing: PopupMenuButton(
+                      onSelected: (value) async {
+                        // Define a function to handle when a menu item is selected
+                        if (value == 'Edit') {
+                          // Edit functionality
+                        } else if (value == 'Delete') {
+                          print('Ads: $ads'); //Debugging purposes
+                          _deleteAdInGroup(
+                              ads![index].name); // Delete the ad in the group
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        // Build the menu items
+                        PopupMenuItem(
+                          value: 'Edit',
+                          child: Text('Edit'),
+                        ),
+                        PopupMenuItem(
+                          value: 'Delete',
+                          child: Text('Delete'),
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      // onTap functionality
+                    },
                   ),
-                  PopupMenuItem(
-                    value: 'Delete',
-                    child: Text('Delete'),
-                  ),
-                ],
-              ),
-              onTap: () {
-                // onTap functionality
+                );
               },
-            ),
-          );
+            );
+          }
         },
       ),
     );
