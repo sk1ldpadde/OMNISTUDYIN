@@ -143,17 +143,6 @@ class _DataEntryPageState extends State<DataEntryPage> {
     };
   }
 
-  Future<void> _register() async {
-    Map<String, dynamic> registerData = getMockRegistrationData();
-    print('registerData: $registerData'); // Debugging purposes
-    try {
-      await FrontendToBackendConnection.register(
-          "register/", registerData); // Await the register method
-    } catch (e) {
-      print('Error while trying to register: $e');
-    }
-  }
-
   Future getImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -340,10 +329,8 @@ class _DataEntryPageState extends State<DataEntryPage> {
                 onPressed: () async {
                   if (_firstPassword.text == _secondPassword.text) {
                     if (isPasswordStrong(_firstPassword.text)) {
-                      await _register(); // Wait for _register to complete
                       var registrationData = getRegistrationData();
-                      Provider.of<RegistrationData>(context, listen: false)
-                          .setData(registrationData);
+
                       print(registrationData); //Debugging purposes
 
                       Navigator.push(

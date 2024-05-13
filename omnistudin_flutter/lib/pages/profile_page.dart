@@ -6,17 +6,6 @@ import 'package:omnistudin_flutter/main.dart';
 import 'package:omnistudin_flutter/register/registration.dart';
 import 'package:provider/provider.dart';
 
-Future<void> _register() async {
-  Map<String, dynamic> registerData = getMockRegistrationData();
-  print('registerData: $registerData'); // Debugging purposes
-  try {
-    await FrontendToBackendConnection.register(
-        "register/", registerData); // Await the register method
-  } catch (e) {
-    print('Error while trying to register: $e');
-  }
-}
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -25,31 +14,39 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Map<String, dynamic> registrationData = {};
+  Map<String, dynamic> studentData = {};
 
   @override
   void initState() {
     super.initState();
-    registrationData =
-        Provider.of<RegistrationData>(context as BuildContext, listen: false)
-            .data;
+    loadStudentData();
+  }
+
+  Future<void> loadStudentData() async {
+    try {
+      var data = await FrontendToBackendConnection.getSessionStudent();
+      setState(() {
+        studentData = data;
+      });
+    } catch (e) {
+      print('Failed to load student data: $e');
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    registrationData =
-        Provider.of<RegistrationData>(context, listen: false).data;
-    print('didChangeDependencies: $registrationData'); // Debugging purposes
+
+    print('didChangeDependencies: $studentData'); // Debugging purposes
   }
 
   String get profileName {
-    return '${registrationData['forename']} ${registrationData['surname'] ?? ''}';
+    return '${studentData['forename']} ${studentData['surname'] ?? ''}';
   }
 
   @override
   Widget build(BuildContext context) {
-    print(registrationData); // Debugging purposes
+    print(studentData); // Debugging purposes
 
     return Scaffold(
       appBar: AppBar(
@@ -96,15 +93,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         Text(
-                          registrationData['uni_name'] ?? '',
+                          studentData['uni_name'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          registrationData['semester'] ?? '',
+                          studentData['semester'].toString() ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          registrationData['degree'] ?? '',
+                          studentData['degree'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ],
@@ -112,12 +109,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              CupertinoButton.filled(
-                child: const Text('Test Register'),
-                onPressed: () async {
-                  await _register(); // Call the _register method
-                },
-              ),
+              // CupertinoButton.filled(
+              //   child: const Text('Test Register'),
+              //   onPressed: () async {
+              //     await _register(); // Call the _register method
+              //   },
+              // ),
               const SizedBox(height: 20),
               Container(
                 width: MediaQuery.of(context).size.width *
@@ -128,15 +125,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         Text(
-                          registrationData['email'] ?? '',
+                          studentData['email'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          registrationData['dob'] ?? '',
+                          studentData['dob'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          registrationData['bio'] ?? '',
+                          studentData['bio'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ],
