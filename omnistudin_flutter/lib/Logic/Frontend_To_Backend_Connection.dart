@@ -91,7 +91,7 @@ class AdGroupProvider with ChangeNotifier {
 //Class that connects the frontend to the backend
 class FrontendToBackendConnection with ChangeNotifier {
   // baseURL for the backend server running on the PC!
-  static const String baseURL = "http://localhost:8000/";
+  static const String baseURL = "http://10.0.2.2:8000/";
 
   // method to get data from the server
   // urlPattern is the backend endpoint url pattern
