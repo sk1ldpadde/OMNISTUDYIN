@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 
@@ -336,6 +337,9 @@ class _DataEntryPageState extends State<DataEntryPage> {
                   if (_firstPassword.text == _secondPassword.text) {
                     if (isPasswordStrong(_firstPassword.text)) {
                       _register();
+                      // Create an instance of ProfilePage with the registration data
+                      ProfilePage profilePage =
+                          ProfilePage(registrationData: getRegistrationData());
                       Navigator.push(
                           context,
                           CupertinoPageRoute(

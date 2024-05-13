@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/pages/profilesettings_page.dart';
+import 'package:omnistudin_flutter/main.dart';
+import 'package:omnistudin_flutter/register/registration.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final Map<String, dynamic> registrationData;
+
+  const ProfilePage({Key? key, required this.registrationData})
+      : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String profileName = "Profile Name"; // Replace with actual profile name
-  String email = "Email"; // Replace with actual email
-  String major = "Selected Major"; // Replace with actual major
+  String get profileName {
+    return '${widget.registrationData['forename']} ${widget.registrationData['surname'] ?? ''}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +29,10 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () {
               // Navigate to the settings page
               // Replace 'SettingsPage()' with your actual settings page
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsPage()));
             },
           ),
         ],
@@ -39,22 +46,66 @@ class _ProfilePageState extends State<ProfilePage> {
               const CircleAvatar(
                 radius: 80,
                 backgroundImage: AssetImage(
-                    'path_to_profile_picture'), // Replace with actual path or use a placeholder image
+                    '/Users/amandademoura/Documents/GitHub/OMNISTUDYIN2/omnistudin_flutter/assets/images/logo_picture.png'), // Replace with actual path or use a placeholder image
               ),
               const SizedBox(height: 20),
               Text(
                 profileName,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              Text(
-                email,
-                style: const TextStyle(fontSize: 18),
-              ),
               const SizedBox(height: 10),
-              Text(
-                major,
-                style: const TextStyle(fontSize: 18),
+              Container(
+                width: MediaQuery.of(context).size.width *
+                    0.9, // 90% of screen width
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          widget.registrationData['uni_name'] ?? '',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          widget.registrationData['semester'] ?? '',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          widget.registrationData['degree'] ?? '',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: MediaQuery.of(context).size.width *
+                    0.9, // 90% of screen width
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          widget.registrationData['email'] ?? '',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          widget.registrationData['dob'] ?? '',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          widget.registrationData['bio'] ?? '',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
