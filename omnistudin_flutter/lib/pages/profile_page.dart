@@ -1,25 +1,56 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import 'package:omnistudin_flutter/pages/profilesettings_page.dart';
 import 'package:omnistudin_flutter/main.dart';
 import 'package:omnistudin_flutter/register/registration.dart';
+import 'package:provider/provider.dart';
+
+Future<void> _register() async {
+  Map<String, dynamic> registerData = getMockRegistrationData();
+  print('registerData: $registerData'); // Debugging purposes
+  try {
+    await FrontendToBackendConnection.register(
+        "register/", registerData); // Await the register method
+  } catch (e) {
+    print('Error while trying to register: $e');
+  }
+}
 
 class ProfilePage extends StatefulWidget {
-  final Map<String, dynamic> registrationData;
-
-  const ProfilePage({Key? key, required this.registrationData})
-      : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic> registrationData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    registrationData =
+        Provider.of<RegistrationData>(context as BuildContext, listen: false)
+            .data;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    registrationData =
+        Provider.of<RegistrationData>(context, listen: false).data;
+    print('didChangeDependencies: $registrationData'); // Debugging purposes
+  }
+
   String get profileName {
-    return '${widget.registrationData['forename']} ${widget.registrationData['surname'] ?? ''}';
+    return '${registrationData['forename']} ${registrationData['surname'] ?? ''}';
   }
 
   @override
   Widget build(BuildContext context) {
+    print(registrationData); // Debugging purposes
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -28,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
             icon: const Icon(Icons.settings),
             onPressed: () {
               // Navigate to the settings page
-              // Replace 'SettingsPage()' with your actual settings page
+
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -65,21 +96,27 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         Text(
-                          widget.registrationData['uni_name'] ?? '',
+                          registrationData['uni_name'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          widget.registrationData['semester'] ?? '',
+                          registrationData['semester'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          widget.registrationData['degree'] ?? '',
+                          registrationData['degree'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ],
                     ),
                   ),
                 ),
+              ),
+              CupertinoButton.filled(
+                child: const Text('Test Register'),
+                onPressed: () async {
+                  await _register(); // Call the _register method
+                },
               ),
               const SizedBox(height: 20),
               Container(
@@ -91,15 +128,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         Text(
-                          widget.registrationData['email'] ?? '',
+                          registrationData['email'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          widget.registrationData['dob'] ?? '',
+                          registrationData['dob'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          widget.registrationData['bio'] ?? '',
+                          registrationData['bio'] ?? '',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ],

@@ -16,13 +16,42 @@ import 'Logic/chat_message_service/message_persistence_isolate.dart';
 import 'Logic/chat_message_service/message.dart';
 import 'package:intl/intl.dart';
 
+// Define a RegistrationData class
+class RegistrationData extends ChangeNotifier {
+  Map<String, dynamic> _data = {};
+
+  Map<String, dynamic> get data => _data;
+
+  void setData(Map<String, dynamic> newData) {
+    _data = newData;
+    notifyListeners();
+  }
+}
+
+Map<String, dynamic> getMockRegistrationData() {
+  return {
+    'email': 'test@example.com',
+    'password': 'Test1234',
+    'forename': 'Test',
+    'surname': 'User',
+    'dob': '01-01-2000',
+    'bio': 'This is a test user.',
+    'uni_name': 'Test University',
+    'degree': 'Test Degree',
+    'semester': '1',
+    'profile_picture':
+        'test_image', // Replace this with a valid base64 image string
+  };
+}
+
 void main() async {
   // runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  runApp(
-    LandingPage(),
-  );
+  runApp(ChangeNotifierProvider(
+    create: (context) => RegistrationData(),
+    child: LandingPage(),
+  ));
 
   /************************
   // CHAT MESSAGING SERVICES
@@ -91,9 +120,7 @@ class _LandingPageState extends State<LandingPage> {
     // List of pages
     const HomePage(),
     const FriendsPage(),
-    const ProfilePage(
-      registrationData: {},
-    )
+    const ProfilePage()
   ];
 
   @override
@@ -126,9 +153,7 @@ class _LandingPageState extends State<LandingPage> {
         // Set the routes
         '/home': (context) => const HomePage(),
         '/friends': (context) => const FriendsPage(),
-        '/profile': (context) => const ProfilePage(
-              registrationData: {},
-            ),
+        '/profile': (context) => const ProfilePage(),
       },
       home: FutureBuilder(
         future: FrontendToBackendConnection.getToken(), // Get the token

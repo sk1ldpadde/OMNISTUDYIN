@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:omnistudin_flutter/main.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
+import 'package:provider/provider.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 
 bool isPasswordStrong(String password) {
@@ -141,10 +143,12 @@ class _DataEntryPageState extends State<DataEntryPage> {
     };
   }
 
-  void _register() {
-    Map<String, dynamic> registerData = getRegistrationData();
+  Future<void> _register() async {
+    Map<String, dynamic> registerData = getMockRegistrationData();
+    print('registerData: $registerData'); // Debugging purposes
     try {
-      FrontendToBackendConnection.register("register/", registerData);
+      await FrontendToBackendConnection.register(
+          "register/", registerData); // Await the register method
     } catch (e) {
       print('Error while trying to register: $e');
     }
@@ -333,13 +337,15 @@ class _DataEntryPageState extends State<DataEntryPage> {
               const SizedBox(height: 24.0),
               CupertinoButton.filled(
                 child: const Text('Registrieren'),
-                onPressed: () {
+                onPressed: () async {
                   if (_firstPassword.text == _secondPassword.text) {
                     if (isPasswordStrong(_firstPassword.text)) {
-                      _register();
-                      // Create an instance of ProfilePage with the registration data
-                      ProfilePage profilePage =
-                          ProfilePage(registrationData: getRegistrationData());
+                      await _register(); // Wait for _register to complete
+                      var registrationData = getRegistrationData();
+                      Provider.of<RegistrationData>(context, listen: false)
+                          .setData(registrationData);
+                      print(registrationData); //Debugging purposes
+
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
