@@ -5,7 +5,12 @@ import 'package:omnistudin_flutter/pages/profilesettings_page.dart';
 import 'package:omnistudin_flutter/main.dart';
 import 'package:omnistudin_flutter/register/registration.dart';
 import 'package:provider/provider.dart';
+
 import 'package:intl/intl.dart';
+
+import 'dart:convert';
+import 'dart:io';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -34,21 +39,12 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    print('didChangeDependencies: $studentData'); // Debugging purposes
-  }
-
   String get profileName {
     return '${studentData['forename']} ${studentData['surname'] ?? ''}';
   }
 
   @override
   Widget build(BuildContext context) {
-    print(studentData); // Debugging purposes
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -56,8 +52,6 @@ class _ProfilePageState extends State<ProfilePage> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Navigate to the settings page
-
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -72,10 +66,10 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 80,
-                backgroundImage: AssetImage(
-                    '/Users/amandademoura/Documents/GitHub/OMNISTUDYIN2/omnistudin_flutter/assets/images/logo_picture.png'), // Replace with actual path or use a placeholder image
+                backgroundImage: MemoryImage(
+                    base64Decode(studentData['profile_picture'] ?? '')),
               ),
               const SizedBox(height: 20),
               Text(
@@ -84,6 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
+
               const SizedBox(height: 10),
               Container(
                 width: MediaQuery.of(context).size.width *
@@ -210,6 +205,37 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
+
+              buildInfoCard('uni_name', 'semester', 'degree'),
+              const SizedBox(height: 20),
+              buildInfoCard('email', 'dob', 'bio'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildInfoCard(String field1, String field2, String field3) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                '$field1: ${studentData[field1] ?? ''}',
+                style: const TextStyle(fontSize: 16),
+              ),
+              Text(
+                '$field2: ${studentData[field2]?.toString() ?? ''}',
+                style: const TextStyle(fontSize: 16),
+              ),
+              Text(
+                '$field3: ${studentData[field3] ?? ''}',
+                style: const TextStyle(fontSize: 16),
+
               ),
             ],
           ),

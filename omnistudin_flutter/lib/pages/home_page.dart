@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
+import 'package:omnistudin_flutter/pages/searchView.dart';
 import '../register/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -244,6 +245,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ));
+
             if (action != null) {
               // Check if an action was returned from the dialog
               if (action == 'Ad') {
@@ -273,6 +275,20 @@ class _HomePageState extends State<HomePage> {
             setState(() {});
           },
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // show searchView.dart
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchView(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       // The body of the Scaffold, using a FutureBuilder to handle asynchronous data
       body: FutureBuilder(
