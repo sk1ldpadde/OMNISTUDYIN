@@ -91,7 +91,9 @@ class _LandingPageState extends State<LandingPage> {
     // List of pages
     const HomePage(),
     const FriendsPage(),
-    const ProfilePage(),
+    const ProfilePage(
+      registrationData: {},
+    )
   ];
 
   @override
@@ -124,7 +126,9 @@ class _LandingPageState extends State<LandingPage> {
         // Set the routes
         '/home': (context) => const HomePage(),
         '/friends': (context) => const FriendsPage(),
-        '/profile': (context) => const ProfilePage(),
+        '/profile': (context) => const ProfilePage(
+              registrationData: {},
+            ),
       },
       home: FutureBuilder(
         future: FrontendToBackendConnection.getToken(), // Get the token
