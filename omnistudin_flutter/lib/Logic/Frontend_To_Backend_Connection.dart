@@ -296,6 +296,87 @@ class FrontendToBackendConnection with ChangeNotifier {
     print('Storage cleared');
   }
 
+  // Method to get session student
+  static Future<dynamic> getSessionStudent({client = "default"}) async {
+    var token = await getToken();
+    try {
+      if (client == "default") {
+        client = http.Client();
+      }
+      String fullUrl = baseURL + "get_session_student";
+      final response = await client.get(
+        Uri.parse(fullUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': '$token',
+        },
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to get session student');
+      }
+    } catch (e) {
+      throw Exception('Network error while trying to get session student: $e');
+    }
+  }
+
+  // Method to update session student
+  static Future<dynamic> updateSessionStudent(
+      String sessionId, Map<String, dynamic> data,
+      {client = "default"}) async {
+    var token = await getToken();
+    try {
+      if (client == "default") {
+        client = http.Client();
+      }
+      String fullUrl = baseURL + "change_session_student/$sessionId";
+      final response = await client.put(
+        Uri.parse(fullUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(data),
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to update session student');
+      }
+    } catch (e) {
+      throw Exception(
+          'Network error while trying to update session student: $e');
+    }
+  }
+
+  // Method to delete session student
+  static Future<dynamic> deleteSessionStudent(String sessionId,
+      {client = "default"}) async {
+    var token = await getToken();
+    try {
+      if (client == "default") {
+        client = http.Client();
+      }
+      String fullUrl = baseURL + "delete_session_student/$sessionId";
+      final response = await client.delete(
+        Uri.parse(fullUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to delete session student');
+      }
+    } catch (e) {
+      throw Exception(
+          'Network error while trying to delete session student: $e');
+    }
+  }
+
   //Ads
 
   static Future<void> addNewAdsInGroup(
