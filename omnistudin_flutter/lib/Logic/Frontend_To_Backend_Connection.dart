@@ -91,7 +91,7 @@ class AdGroupProvider with ChangeNotifier {
 //Class that connects the frontend to the backend
 class FrontendToBackendConnection with ChangeNotifier {
   // baseURL for the backend server running on the PC!
-  static const String baseURL = "http://10.0.2.2:8000/";
+  static const String baseURL = "http://localhost:8000/";
 
   // method to get data from the server
   // urlPattern is the backend endpoint url pattern
@@ -607,6 +607,9 @@ class FrontendToBackendConnection with ChangeNotifier {
         client = http.Client();
       }
       String fullUrl = baseURL + url;
+      print(
+          'Sending register request to $fullUrl with data $data'); // Debugging purposes
+
       final response = await client.post(
         Uri.parse(fullUrl),
         headers: <String, String>{
@@ -614,6 +617,10 @@ class FrontendToBackendConnection with ChangeNotifier {
         },
         body: json.encode(data),
       );
+
+      print('Response status: ${response.statusCode}'); // Debugging purposes
+      print('Response body: ${response.body}'); // Debugging purposes
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
