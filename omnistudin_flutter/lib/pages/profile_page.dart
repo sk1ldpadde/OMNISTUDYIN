@@ -5,6 +5,7 @@ import 'package:omnistudin_flutter/pages/profilesettings_page.dart';
 import 'package:omnistudin_flutter/main.dart';
 import 'package:omnistudin_flutter/register/registration.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -92,49 +93,118 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        Text(
-                          studentData['uni_name'] ?? '',
-                          style: const TextStyle(fontSize: 16),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'University: ',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        studentData['uni_name'] ?? '',
+                                        style: const TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Semester: ',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        studentData['semester']?.toString() ??
+                                            '',
+                                        style: const TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Degree: ',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        studentData['degree'] ?? '',
+                                        style: const TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        Text(
-                          studentData['semester'].toString() ?? '',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          studentData['degree'] ?? '',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              // CupertinoButton.filled(
-              //   child: const Text('Test Register'),
-              //   onPressed: () async {
-              //     await _register(); // Call the _register method
-              //   },
-              // ),
-              const SizedBox(height: 20),
-              Container(
-                width: MediaQuery.of(context).size.width *
-                    0.9, // 90% of screen width
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          studentData['email'] ?? '',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          studentData['dob'] ?? '',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          studentData['bio'] ?? '',
-                          style: const TextStyle(fontSize: 16),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'E-mail: ',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        studentData['email'] ?? '',
+                                        style: const TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Date of Birth: ',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        studentData['dob'] != null
+                                            ? DateFormat('dd.MM.yyyy').format(
+                                                DateTime.parse(
+                                                    studentData['dob']))
+                                            : '',
+                                        style: const TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Bio: ',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        studentData['bio'] ?? '',
+                                        style: const TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
