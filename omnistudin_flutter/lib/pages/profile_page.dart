@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
 
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -78,134 +77,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-
-              const SizedBox(height: 10),
-              Container(
-                width: MediaQuery.of(context).size.width *
-                    0.9, // 90% of screen width
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'University: ',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        studentData['uni_name'] ?? '',
-                                        style: const TextStyle(fontSize: 16),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Semester: ',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        studentData['semester']?.toString() ??
-                                            '',
-                                        style: const TextStyle(fontSize: 16),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Degree: ',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        studentData['degree'] ?? '',
-                                        style: const TextStyle(fontSize: 16),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'E-mail: ',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        studentData['email'] ?? '',
-                                        style: const TextStyle(fontSize: 16),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Date of Birth: ',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        studentData['dob'] != null
-                                            ? DateFormat('dd.MM.yyyy').format(
-                                                DateTime.parse(
-                                                    studentData['dob']))
-                                            : '',
-                                        style: const TextStyle(fontSize: 16),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Bio: ',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        studentData['bio'] ?? '',
-                                        style: const TextStyle(fontSize: 16),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
               buildInfoCard('uni_name', 'semester', 'degree'),
               const SizedBox(height: 20),
               buildInfoCard('email', 'dob', 'bio'),
@@ -235,7 +106,6 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 '$field3: ${studentData[field3] ?? ''}',
                 style: const TextStyle(fontSize: 16),
-
               ),
             ],
           ),
