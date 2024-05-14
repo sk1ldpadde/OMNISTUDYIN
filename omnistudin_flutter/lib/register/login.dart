@@ -5,7 +5,6 @@ import '../Logic/Frontend_To_Backend_Connection.dart';
 import '../main.dart';
 
 class LoginPage extends StatelessWidget {
-
   final VoidCallback? onLoginSuccess;
 
   LoginPage({super.key, this.onLoginSuccess});
@@ -15,14 +14,15 @@ class LoginPage extends StatelessWidget {
 
   void _login(String email, String password, BuildContext context) async {
     try {
-      var response = await FrontendToBackendConnection.loginStudent(email, password);
+      var response =
+          await FrontendToBackendConnection.loginStudent(email, password);
       print('Login successful');
       if (response.statusCode == 200) {
         onLoginSuccess?.call();
         const LandingPage().createState().checkLoginStatus();
-        Navigator.pushReplacement(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(builder: (context) => const LandingPage()),
+          '/',
         );
       }
     } catch (e) {
@@ -35,7 +35,9 @@ class LoginPage extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return CupertinoPageScaffold(
-        navigationBar: const CupertinoNavigationBar(middle: Text('Login'),),
+        navigationBar: const CupertinoNavigationBar(
+          middle: Text('Login'),
+        ),
         child: Scaffold(
           body: Center(
             child: Padding(
@@ -47,14 +49,16 @@ class LoginPage extends StatelessWidget {
                     height: screenHeight * 0.1, // 10% der Bildschirmlänge
                     child: Image.asset(
                       'assets/images/line.png',
-                      fit: BoxFit.scaleDown, // behält das Seitenverhältnis des Bildes bei
+                      fit: BoxFit
+                          .scaleDown, // behält das Seitenverhältnis des Bildes bei
                     ),
                   ),
                   const SizedBox(height: 20.0), // 20 Pixel Abstand
                   CupertinoTextField(
                     controller: _email,
                     placeholder: 'E-Mail',
-                    padding: const EdgeInsets.all(12.0),),
+                    padding: const EdgeInsets.all(12.0),
+                  ),
                   const SizedBox(height: 16.0),
                   CupertinoTextField(
                     controller: _password,
@@ -66,7 +70,10 @@ class LoginPage extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       // Hier navigieren Sie zur Registrierungsseite
-                      Navigator.push(context, CupertinoPageRoute(builder: (context) => const RegistrationPage()));
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => const RegistrationPage()));
                     },
                     child: const Text(
                       'Noch kein Konto?  Hier kannst du dich registrieren',
@@ -88,7 +95,6 @@ class LoginPage extends StatelessWidget {
               ),
             ),
           ),
-        )
-    );
+        ));
   }
 }

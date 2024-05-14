@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:omnistudin_flutter/main.dart';
+import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/register/login.dart';
+import 'package:provider/provider.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 
 bool isPasswordStrong(String password) {
@@ -138,15 +141,6 @@ class _DataEntryPageState extends State<DataEntryPage> {
       'semester': _semester.text.isNotEmpty ? _semester.text : '-1',
       'profile_picture': base64Image, // Pfad zur Bilddatei
     };
-  }
-
-  void _register() {
-    Map<String, dynamic> registerData = getRegistrationData();
-    try {
-      FrontendToBackendConnection.register("register/", registerData);
-    } catch (e) {
-      print('Error while trying to register: $e');
-    }
   }
 
   Future getImage() async {
@@ -332,10 +326,13 @@ class _DataEntryPageState extends State<DataEntryPage> {
               const SizedBox(height: 24.0),
               CupertinoButton.filled(
                 child: const Text('Registrieren'),
-                onPressed: () {
+                onPressed: () async {
                   if (_firstPassword.text == _secondPassword.text) {
                     if (isPasswordStrong(_firstPassword.text)) {
-                      _register();
+                      var registrationData = getRegistrationData();
+
+                      print(registrationData); //Debugging purposes
+
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
