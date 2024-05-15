@@ -8,6 +8,7 @@ import 'package:omnistudin_flutter/app.dart';
 import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
+import 'package:omnistudin_flutter/chatpages/chatOverview.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import 'package:provider/provider.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
@@ -67,7 +68,7 @@ void main() async {
     // Now send a message to the database isolate asking for data.
     dbIsolatePort.send(["g"]);
     await Future.delayed(Duration(seconds: 5));
-    print(MessageList);
+    //print(MessageList);
   }
 }
 
@@ -91,7 +92,9 @@ class _LandingPageState extends State<LandingPage> {
     // List of pages
     const HomePage(),
     const FriendsPage(),
-    const ProfilePage()
+    const ProfilePage(),
+    ChatOverviewPage(),
+
   ];
 
   @override
@@ -125,6 +128,7 @@ class _LandingPageState extends State<LandingPage> {
         '/home': (context) => const HomePage(),
         '/friends': (context) => const FriendsPage(),
         '/profile': (context) => const ProfilePage(),
+        '/chat': (context) => ChatOverviewPage(),
       },
       home: FutureBuilder(
         future: FrontendToBackendConnection.getToken(), // Get the token
@@ -161,6 +165,10 @@ class _LandingPageState extends State<LandingPage> {
                         BottomNavigationBarItem(
                           icon: Icon(Icons.person),
                           label: 'Profile',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.chat),
+                          label: 'Chat',
                         ),
                       ],
                       selectedItemColor: const Color(0xFFf46139),

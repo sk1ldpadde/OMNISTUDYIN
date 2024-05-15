@@ -8,14 +8,11 @@ import 'package:omnistudin_flutter/Logic/chat_message_service/message.dart';
 
 void startMessagePollingService(SendPort dbIsolatePort, String email) async {
   // create a new isolate
+  print(email);
   await Isolate.spawn(
     messagePollingService,
     {'sendPort': dbIsolatePort, 'email': email},
   );
-}
-
-void spawnMessagePollingService(SendPort sendPort) {
-  messagePollingService({'sendPort': sendPort});
 }
 
 void messagePollingService(Map initialData) async {
@@ -48,6 +45,8 @@ void messagePollingService(Map initialData) async {
         ownMsg: data['own_msg'] == 1,
       );
       print(msg.toString());
+      print('Message received');
+      print(msg.content);
       // Insert the message into the database
       sendPort.send(['i', msg]);
     }

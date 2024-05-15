@@ -16,12 +16,15 @@ import 'dart:async';
 import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/Logic/chat_message_service/message.dart';
+import 'package:omnistudin_flutter/Logic/chat_message_service/message_persistence_isolate.dart'; // Stellen Sie sicher, dass spawnMessagePollingService hier definiert ist
 import 'package:omnistudin_flutter/Logic/chat_message_service/message_polling_isolate.dart'; // Stellen Sie sicher, dass spawnMessagePollingService hier definiert ist
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class ChatPage extends StatefulWidget {
-  final String chatId; // Hinzufügen einer neuen Eigenschaft für den Chat-ID-Parameter
+  final String email; // Ändern Sie chatId in email
 
-  const ChatPage({Key? key, required this.chatId}) : super(key: key);
+  const ChatPage({Key? key, required this.email}) : super(key: key);
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -29,31 +32,56 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   late final SendPort _pollingServicePort;
-  List<Message> _messages = [];
+  List<types.Message> messageList = [];
+  types.User _user = types.User(id: 'user-id', firstName: 'User', lastName: 'Name'); // Hier definieren und initialisieren wir _user
+
+
+
 
   @override
   void initState() {
     super.initState();
+    messageList = [];
+    _loadMessages();
     init();
   }
 
+
   Future<void> init() async {
-    final mainReceivePort = ReceivePort();
-    await Isolate.spawn(spawnMessagePollingService, mainReceivePort.sendPort); // Änderung hier
-    _pollingServicePort = await mainReceivePort.first;
-    Timer.periodic(const Duration(seconds: 2), (Timer t) async {
-      final pollingResponsePort = ReceivePort();
-      _pollingServicePort.send(['w', pollingResponsePort.sendPort, ['inf21113@gmail.com']]);
-      final response = await pollingResponsePort.first;
-      setState(() {
-        _messages = response as List<Message>;
-      });
+    ReceivePort pageReceivePort = ReceivePort();
+
+    // Start the message database service as an isolate
+    startMessagePersistenceService(pageReceivePort);
+
+    // Get the send port of the message persistence service
+    SendPort dbIsolatePort = await pageReceivePort.first;
+    _pollingServicePort = dbIsolatePort;
+    // Start the message polling service as an isolate
+    startMessagePollingService(dbIsolatePort, widget.email);
+    ReceivePort responsePort = ReceivePort();
+    responsePort.listen((message) {
+      // Ensure that UI updates happen on the main isolate
+      if (message is types.Message) {
+        setState(() {
+          messageList.add(message);
+        });
+      }
     });
+
+    // Inform the database isolate about where to send responses.
+    // Assuming the database service is expecting a "setupResponsePort" message with a SendPort.
+    dbIsolatePort.send(["setupResponsePort", responsePort.sendPort]);
+
+    // Now send a message to the database isolate asking for data.
+    dbIsolatePort.send(["g"]);
+
+    _loadMessages();
   }
+
 
   void _addMessage(types.Message message) {
     setState(() {
-      _messages.insert(0, message);
+      messageList.insert(0, message);
     });
   }
 
@@ -153,14 +181,14 @@ class _ChatPageState extends State<ChatPage> {
       if (message.uri.startsWith('http')) {
         try {
           final index =
-          _messages.indexWhere((element) => element.id == message.id);
+          messageList.indexWhere((element) => element.id == message.id);
           final updatedMessage =
-          (_messages[index] as types.FileMessage).copyWith(
+          (messageList[index] as types.FileMessage).copyWith(
             isLoading: true,
           );
 
           setState(() {
-            _messages[index] = updatedMessage;
+            messageList[index] = updatedMessage;
           });
 
           final client = http.Client();
@@ -175,14 +203,14 @@ class _ChatPageState extends State<ChatPage> {
           }
         } finally {
           final index =
-          _messages.indexWhere((element) => element.id == message.id);
+          messageList.indexWhere((element) => element.id == message.id);
           final updatedMessage =
-          (_messages[index] as types.FileMessage).copyWith(
+          (messageList[index] as types.FileMessage).copyWith(
             isLoading: null,
           );
 
           setState(() {
-            _messages[index] = updatedMessage;
+            messageList[index] = updatedMessage;
           });
         }
       }
@@ -195,17 +223,18 @@ class _ChatPageState extends State<ChatPage> {
       types.TextMessage message,
       types.PreviewData previewData,
       ) {
-    final index = _messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
+    final index = messageList.indexWhere((element) => element.id == message.id);
+    final updatedMessage = (messageList[index] as types.TextMessage).copyWith(
       previewData: previewData,
     );
 
     setState(() {
-      _messages[index] = updatedMessage;
+      messageList[index] = updatedMessage;
     });
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  void _handleSendPressed(types.PartialText message) async {
+    ReceivePort responsePort = ReceivePort();
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -213,49 +242,115 @@ class _ChatPageState extends State<ChatPage> {
       text: message.text,
     );
 
+
+    // Senden Sie die Nachricht an das Backend über den `sendPort`
+    _pollingServicePort.send(['s', responsePort.sendPort, [_user, widget.email, textMessage]]);
+    // Fügen Sie die Nachricht sofort der Liste `_messages` hinzu
     _addMessage(textMessage);
   }
 
-  void _loadMessages() async {
-    // Hier könnten Sie den Chat-ID-Parameter verwenden, um die entsprechenden Nachrichten zu laden
-    // Zum Beispiel, indem Sie eine API-Anfrage an Ihren Server senden
-    // In diesem Beispiel laden wir stattdessen Nachrichten aus einer lokalen JSON-Datei
-    final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
 
-    setState(() {
-      _messages = messages;
+
+  void _loadMessages() async {
+    /*
+      final mainReceivePort = ReceivePort();
+      await Isolate.spawn((args) {
+        final sendPort = args[0] as SendPort;
+        final email = args[1] as String;
+        startMessagePollingService([sendPort, email]);
+      }, [mainReceivePort.sendPort, widget.email]);
+      _pollingServicePort = await mainReceivePort.first;
+
+    // Hier können Sie auch eine Ladeanimation anzeigen, während Nachrichten geladen werden
+    // Zum Beispiel: setState(() { _isLoadingMessages = true; });
+
+    Timer.periodic(const Duration(seconds: 2), (Timer t) async {
+      final pollingResponsePort = ReceivePort();
+      _pollingServicePort.send(['w', pollingResponsePort.sendPort, widget.email]); // Verwenden Sie widget.email
+      final response = await pollingResponsePort.first;
+      List<types.Message> messages = response as List<types.Message>;
+
+      // Konvertieren Sie die abgerufenen Nachrichten in das Chat-Format und fügen Sie sie der _messages-Liste hinzu
+      List<types.Message> chatMessages = messages.map((msg) {
+        if (msg is types.TextMessage) {
+          return types.TextMessage(
+            author: _user,
+            createdAt: msg.createdAt, // Verwenden Sie createdAt anstelle von timestamp
+            id: msg.id,
+            text: msg.text, // Verwenden Sie text anstelle von content
+          );
+        }
+      }).where((msg) => msg != null).toList().cast<types.Message>();
+
+      // Aktualisieren Sie den Zustand, um die geladenen Nachrichten im Chat anzuzeigen
+      setState(() {
+        _messages = chatMessages;
+        // Hier können Sie auch die Ladeanimation ausblenden, wenn die Nachrichten geladen sind
+        // Zum Beispiel: _isLoadingMessages = false;
+      });
+      print('Messages');
+      print(_messages);
+    });*/
+
+    // Periodically print messages with "inf21113@gmail.com"
+    Timer.periodic(const Duration(seconds: 2), (Timer t) async {
+      // Create new port for responses from polling Isolate
+      ReceivePort pollingResponsePort = ReceivePort();
+
+      // Get all messages
+      _pollingServicePort.send(['w', pollingResponsePort.sendPort, widget.email]);
+
+      // Listen for response
+      final pollingServiceResponse = await pollingResponsePort.first;
+
+      // Print message for debug
+      final List<types.Message> messages = await pollingServiceResponse;
+
+      for (var message in messages) {
+        print(message);
+      }
+
     });
   }
 
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: Text('Chat Page'),
-    ),
-    body: Chat(
-      messages: _messages,
-      onAttachmentPressed: _handleAttachmentPressed,
-      onMessageTap: _handleMessageTap,
-      onPreviewDataFetched: _handlePreviewDataFetched,
-      onSendPressed: _handleSendPressed,
-      showUserAvatars: true,
-      showUserNames: true,
-      user: _user,
-      theme: const DefaultChatTheme(
-        seenIcon: Text(
-          'read',
-          style: TextStyle(
-            fontSize: 10.0,
-          ),
-        ),
-      ),
-    ),
-  );
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: init(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text('Chat Page'),
+            ),
+            body: Chat(
+              messages: messageList,
+              onAttachmentPressed: _handleAttachmentPressed,
+              onMessageTap: _handleMessageTap,
+              onPreviewDataFetched: _handlePreviewDataFetched,
+              onSendPressed: _handleSendPressed,
+              showUserAvatars: true,
+              showUserNames: true,
+              user: _user,
+              theme: const DefaultChatTheme(
+                seenIcon: Text(
+                  'read',
+                  style: TextStyle(
+                    fontSize: 10.0,
+                  ),
+                ),
+              ),
+            ),
+          );
+        } else {
+          return CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während init() ausgeführt wird
+        }
+      },
+    );
+  }
 }
