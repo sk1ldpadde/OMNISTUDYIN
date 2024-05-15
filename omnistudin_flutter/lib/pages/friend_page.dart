@@ -17,8 +17,8 @@ class FriendsPage extends StatefulWidget {
 // friend_page.dart
 class FriendsPageState extends _FriendsPageState {
   // Hier können Sie öffentliche Methoden und Eigenschaften definieren, die von anderen Dateien aufgerufen werden können
-  List<String> getFriendEmailsPublic() {
-    return getFriendEmails();
+  Future<List<String>> getFriendEmailsPublic() async {
+    return await getFriendEmails();
   }
 }
 
@@ -27,10 +27,28 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
 
-  List<String> getFriendEmails() {
+
+  Future<List<String>> getFriendEmailsPublic() {
+    return getFriendEmails();
+  }
+
+  Future<List<String>> getFriendEmails() async {
     List<String> friendEmails = [];
+    await FrontendToBackendConnection.getData("get_friends/").then((data) {
+      if (data is http.Response) {
+        if (data.statusCode == 200) {
+          friendsList = json.decode(data.body);
+        } else {
+          print('Failed to load friends');
+        }
+      } else if (data is List<dynamic>) {
+        friendsList = data;
+      }
+      print(friendsList);
+    });
     for (var friend in friendsList) {
       friendEmails.add(friend['email']);
+      print(friend['email']);
     }
     return friendEmails;
   }
@@ -39,6 +57,7 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    //addTestFriend();
     fetchFriends();
   }
 
@@ -56,13 +75,28 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  void addTestFriend() {
+    setState(() {
+      friendsList.add({
+        'email': 'testfriend@example.com',
+        'forename': 'Test',
+        'surname': 'Friend',
+        'bio': 'This is a test friend for testing the chat function.',
+        'uni_name': 'Test University',
+        'degree': 'Test Degree',
+        'semester': 'Test Semester',
+        'profile_picture': null, // Sie können hier ein Bild hinzufügen, wenn Sie möchten
+        'friendship_status': 'accepted',
+      });
+    });
+  }
+
   Future<void> fetchFriends() async {
     FrontendToBackendConnection.getData("get_friends/").then((data) {
       if (data is http.Response) {
         if (data.statusCode == 200) {
           setState(() {
             friendsList = json.decode(data.body);
-            print(friendsList);
           });
         } else {
           print('Failed to load friends');
@@ -70,9 +104,9 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
       } else if (data is List<dynamic>) {
         setState(() {
           friendsList = data;
-          print(friendsList);
         });
       }
+      print(friendsList);
     });
   }
 
@@ -106,7 +140,6 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
   }
 
   Future<void> addFriend(String email) async {
-    print(email);
     await FrontendToBackendConnection.postData(
         "send_friend_request/", {"friend_email": email}).then((response) {
       var responseData = response;
@@ -134,15 +167,6 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> startChat(String friendEmail) async {
-    // Hier können Sie die Logik implementieren, um die Chat-Seite zu öffnen und die Freundes-E-Mail zu übergeben
-    print(friendEmail);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ChatPage(email: friendEmail)), // Ersetzen Sie ChatPage durch den tatsächlichen Namen Ihrer Chat-Seite
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,10 +250,6 @@ class _FriendsPageState extends State<FriendsPage> with WidgetsBindingObserver {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.chat),
-                            onPressed: () => startChat(friendsList[index]['email']),
-                          ),
                           friendsList[index]['friendship_status'] == "pending"
                               ? GestureDetector(
                             onTap: () {
