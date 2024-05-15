@@ -1,19 +1,20 @@
 import 'dart:isolate';
+import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/app.dart';
+import 'package:path_provider/path_provider.dart';
+import 'Logic/chat_message_service/message.dart';
 import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
-import 'package:omnistudin_flutter/chatpages/chatOverview.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import 'package:provider/provider.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
-import 'Logic/chat_message_service/message_persistence_isolate.dart';
 import 'Logic/chat_message_service/message.dart';
 import 'package:intl/intl.dart';
 
@@ -28,48 +29,37 @@ void main() async {
   /************************
   // CHAT MESSAGING SERVICES
   *************************/
-  List MessageList = [];
   ReceivePort mainReceivePort = ReceivePort();
 
-  // Start the message database service as an isolate
-  startMessagePersistenceService(mainReceivePort);
-
-  // Get the send port of the message persistence service
-  SendPort dbIsolatePort = await mainReceivePort.first;
-
   // Start the message polling service as an isolate
-  startMessagePollingService(dbIsolatePort, 'ma@gmail.com');
+  startMessagePollingService(mainReceivePort.sendPort, 'inf21111@gmail.com',
+      await getApplicationDocumentsDirectory());
 
-  // Create a response port and immediately set up a listener.
-  ReceivePort responsePort = ReceivePort();
-  responsePort.listen((message) {
-    MessageList.add(message);
-    // Log or process the answer received from the isolate
+  // Receive send port of polling Isolate
+  SendPort pollingServicePort = await mainReceivePort.first;
+
+  // Periodically print ALL stored messages
+  Timer.periodic(const Duration(seconds: 2), (Timer t) async {
+    // Create new port for responses from polling Isolate
+    ReceivePort pollingResponsePort = ReceivePort();
+
+    // Get all messages
+    pollingServicePort.send([
+      'w',
+      pollingResponsePort.sendPort,
+      ['inf21113@gmail.com']
+    ]);
+
+    // Listen for response
+    final pollingServiceResponse = await pollingResponsePort.first;
+
+    // Print message for debug
+    final List<Message> messages = await pollingServiceResponse;
+
+    for (var message in messages) {
+      print(message);
+    }
   });
-
-  // Inform the database isolate about where to send responses.
-  // Assuming the database service is expecting a "setupResponsePort" message with a SendPort.
-  dbIsolatePort.send(["setupResponsePort", responsePort.sendPort]);
-
-  // Now send a message to the database isolate asking for data.
-  dbIsolatePort.send(["g"]);
-
-  Message msg = Message(
-      fromStudent: "ma@gmail.com",
-      content: "Hello",
-      timestamp: DateTime.now(),
-      isRead: false,
-      ownMsg: true);
-  Map<String, dynamic> msgMap = msg.toMap();
-  msgMap["to"] = "ma@gmail.com";
-  msgMap["timestamp"] = DateFormat('dd-MM-yyyy HH:mm:ss').format(msg.timestamp);
-  FrontendToBackendConnection.postData("send_chat_msg/", msgMap);
-  while (true) {
-    // Now send a message to the database isolate asking for data.
-    dbIsolatePort.send(["g"]);
-    await Future.delayed(Duration(seconds: 5));
-    //print(MessageList);
-  }
 }
 
 // Method for Landing Page
@@ -92,9 +82,7 @@ class _LandingPageState extends State<LandingPage> {
     // List of pages
     const HomePage(),
     const FriendsPage(),
-    const ProfilePage(),
-    ChatOverviewPage(),
-
+    const ProfilePage()
   ];
 
   @override
@@ -128,7 +116,6 @@ class _LandingPageState extends State<LandingPage> {
         '/home': (context) => const HomePage(),
         '/friends': (context) => const FriendsPage(),
         '/profile': (context) => const ProfilePage(),
-        '/chat': (context) => ChatOverviewPage(),
       },
       home: FutureBuilder(
         future: FrontendToBackendConnection.getToken(), // Get the token
@@ -165,10 +152,6 @@ class _LandingPageState extends State<LandingPage> {
                         BottomNavigationBarItem(
                           icon: Icon(Icons.person),
                           label: 'Profile',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.chat),
-                          label: 'Chat',
                         ),
                       ],
                       selectedItemColor: const Color(0xFFf46139),

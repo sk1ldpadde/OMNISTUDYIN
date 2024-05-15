@@ -17,12 +17,22 @@ class Message {
   // columns in the database.
   Map<String, Object?> toMap() {
     return {
-      'fromStudent': fromStudent,
+      'from': fromStudent,
       'content': content,
       'timestamp': timestamp.toIso8601String(),
       'isRead': isRead,
-      'own_msg': ownMsg,
+      'self': ownMsg,
     };
+  }
+
+  // Convert a map to a Message object
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(fromStudent: json['from'],
+                   content: json['content'],
+                   timestamp: DateTime.parse(json['timestamp']),
+                   isRead: json['isRead'] ? true : false,
+                   ownMsg: json['self'] ? true : false
+    );
   }
 
   // Implement toString to make it easier to see information about
