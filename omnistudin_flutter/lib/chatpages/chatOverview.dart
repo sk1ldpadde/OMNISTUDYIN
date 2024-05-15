@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/chatpages/chatPage.dart';
 import 'package:omnistudin_flutter/Logic/chat_message_service/message.dart';
-import 'package:omnistudin_flutter/Logic/chat_message_service/message_polling_isolate.dart'; // Stellen Sie sicher, dass spawnMessagePollingService hier definiert ist
+import 'package:omnistudin_flutter/Logic/chat_message_service/message_polling_isolate.dart';
 
 class ChatOverviewPage extends StatefulWidget {
   @override
@@ -13,8 +13,8 @@ class ChatOverviewPage extends StatefulWidget {
 }
 
 class _ChatOverviewPageState extends State<ChatOverviewPage> {
-  late final Map<String, SendPort> _pollingServicePorts = {}; // Map von Freund-Emails zu SendPorts
-  List<String> _chats = []; // Liste der Chats
+  late final Map<String, SendPort> _pollingServicePorts = {};
+  List<String> _chats = [];
 
   @override
   void initState() {
@@ -23,38 +23,26 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
   }
 
   Future<void> init() async {
-    // Start the message database service as an isolate
-    ReceivePort mainReceivePort = ReceivePort();
-    // Start the message polling service as an isolate
     await _fetchChats();
-
-    }
-
+  }
 
   Future<List<String>> getFriends() async {
-    FriendsPageState friendsPageState = FriendsPageState(); // Erstellen Sie eine Instanz von FriendsPageState
-    List<String> friendEmails = await friendsPageState.getFriendEmailsPublic(); // Rufen Sie die getFriendEmailsPublic Methode auf
-    print(friendEmails);
-    print("gerfriends");
-    return friendEmails;
+    FriendsPageState friendsPageState = FriendsPageState();
+    return await friendsPageState.getFriendEmailsPublic();
   }
 
-
-  Future <void> _fetchChats() async {
-    await createChatsForFriends(); // Erstellen Sie Chats für Freunde
-    setState(() {}); // Aktualisieren Sie die Ansicht, um die Chats anzuzeigen
+  Future<void> _fetchChats() async {
+    await createChatsForFriends();
+    setState(() {});
   }
 
-  Future <void> createChatsForFriends() async {
-    List<String> friends = await getFriends(); // Rufen Sie die Freunde ab
-    print(friends); // Debug-Ausgabe (optional)
-    for (String friend in friends) { // Durchlaufen Sie die Liste der Freunde
-      _chats.add(friend); // Fügen Sie jeden Freund zur _chats-Liste hinzu
- // Erstellen Sie einen neuen ReceivePort für diesen Freund
+  Future<void> createChatsForFriends() async {
+    List<String> friends = await getFriends();
+    for (String friend in friends) {
+      _chats.add(friend);
       ReceivePort friendReceivePort = ReceivePort();
-      // Starten Sie den MessagePollingService für diesen Freund
-      startMessagePollingService(friendReceivePort.sendPort, friend, await getApplicationDocumentsDirectory());
-      // Speichern Sie den SendPort für diesen Freund
+      startMessagePollingService(
+          friendReceivePort.sendPort, friend, await getApplicationDocumentsDirectory());
       SendPort friendSendPort = await friendReceivePort.first;
       _pollingServicePorts[friend] = friendSendPort;
     }
@@ -64,40 +52,63 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Current chats'),
+        title: Text('Chats'),
       ),
       body: _chats.isEmpty
-          ? Center(
-        child: CircularProgressIndicator(),
-      )
+          ? Center(child: CircularProgressIndicator())
           : ListView.builder(
         itemCount: _chats.length,
         itemBuilder: (context, index) {
           final chat = _chats[index];
-          return Card( // Verwenden Sie ein Card Widget
-            child: ListTile(
-              leading: CircleAvatar( // Fügen Sie ein CircleAvatar Widget hinzu
-                child: Text(chat[0]), // Zeigen Sie den ersten Buchstaben des Chat-Namens an
-              ),
-              title: Text(chat),
-              onTap: () {
-                SendPort? sendPort = _pollingServicePorts[chat];
-                if (sendPort != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatPage(
-                        email: chat,
-                        sendPort: sendPort,
-                      ),
+          return InkWell(
+            onTap: () {
+              SendPort? sendPort = _pollingServicePorts[chat];
+              if (sendPort != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      email: chat,
+                      sendPort: sendPort,
                     ),
-                  );
-                } else {
-                  // Handle the case where sendPort is null
-                  // For example, show an error message
-                  print('Error: SendPort for $chat is null');
-                }
-              },
+                  ),
+                );
+              } else {
+                print('Error: SendPort for $chat is null');
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    child: Text(chat[0]),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          chat,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 6.0),
+                        Text(
+                          index == 0 ? 'Its 2!' : 'Thank you, for your help°-°', // Hier die Bedingung hinzufügen
+                          style: TextStyle(color: Colors.grey),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    index == 0 ? '09:42': '07:22', // Hier die Zeit der letzten Nachricht einfügen
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
           );
         },

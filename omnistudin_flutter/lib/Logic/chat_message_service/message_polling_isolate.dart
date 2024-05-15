@@ -17,6 +17,7 @@ void startMessagePollingService(SendPort mainIsolate, String email, Directory ap
     {'sendPort': mainIsolate, 'email': email, 'appDocDir': appDocDir.path},
   );
 }
+// In message_polling_isolate.dart
 
 void messagePollingService(Map initialData) async {
   // Get port and email from initial data map
@@ -38,7 +39,11 @@ void messagePollingService(Map initialData) async {
   if (!await file.exists()) {
     await file.create();
   }
-
+  Future<List<Message>> getMessages() async {
+    List<String> lines = await file.readAsLines();
+    List<Message> messages = lines.map((line) => Message.fromJson(jsonDecode(line))).toList();
+    return messages;
+  }
   // Define a function that inserts messages into the database
   Future<void> insertMessage(Message msg) async {
     // create a new line, if file contains other messages already
@@ -52,11 +57,7 @@ void messagePollingService(Map initialData) async {
   }
 
   // A method that retrieves all the messages from the messages table.
-  Future<List<Message>> getMessages() async {
-    List<String> lines = await file.readAsLines();
-    List<Message> messages = lines.map((line) => Message.fromJson(jsonDecode(line))).toList();
-    return messages;
-  }
+
 
   // A Method to retrieve all messages associated with one specific chat partner
   Future<List<Message>> getAllMessageWith(String withStudent) async {
@@ -91,6 +92,8 @@ void messagePollingService(Map initialData) async {
         isRead: true,
         ownMsg: true
     );
+
+
 
     insertMessage(ownMsg);
 

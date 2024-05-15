@@ -44,7 +44,65 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     messageList = [];
     _loadMessages();
+    _loadDemoMessages();
     init();
+  }
+
+
+
+  void _loadDemoMessages() {
+    types.User otherUser = types.User(id: 'other-user-id', firstName: 'Other', lastName: 'User');
+
+    DateTime specificDate = DateTime(2024, 05, 15, 08, 36, 00);
+    int timestamp = specificDate.millisecondsSinceEpoch;
+    types.TextMessage message3 = types.TextMessage(
+      author: _user,
+      createdAt: timestamp,
+      id: const Uuid().v4(),
+      text: 'What is 1 + 1?',
+    );
+
+    specificDate = DateTime(2024, 05, 15, 08, 17, 00);
+    timestamp = specificDate.millisecondsSinceEpoch;
+
+    types.TextMessage message2 = types.TextMessage(
+      author: otherUser,
+      createdAt: timestamp,
+      id: const Uuid().v4(),
+      text: 'Yes, sure. I can help you with that. What do you need help with?',
+    );
+
+    specificDate = DateTime(2024, 05, 15, 07, 28, 00);
+    timestamp = specificDate.millisecondsSinceEpoch;
+
+    types.TextMessage message1 = types.TextMessage(
+      author: _user,
+      createdAt: timestamp,
+      id: const Uuid().v4(),
+      text: 'Hey I have a question? Would you like to help me with it?',
+    );
+
+    specificDate = DateTime(2024, 05, 15, 09, 42, 00);
+    timestamp = specificDate.millisecondsSinceEpoch;
+
+    types.TextMessage message4 = types.TextMessage(
+      author: otherUser,
+      createdAt: timestamp,
+      id: const Uuid().v4(),
+      text: 'What a silly question! Are you serious?',
+    );
+
+
+    types.TextMessage message5 = types.TextMessage(
+      author: otherUser,
+      createdAt: timestamp,
+      id: const Uuid().v4(),
+      text: 'Its 2!',
+    );
+
+    setState(() {
+      messageList = [message5,message4,message3, message2, message1];
+    });
   }
 
   getStudentData() async {
@@ -252,6 +310,7 @@ class _ChatPageState extends State<ChatPage> {
     // Senden Sie die Nachricht an das Backend über den `sendPort`
     widget.sendPort.send(['s', responsePort.sendPort, [_userEmail, widget.email, message.text]]);
     // Fügen Sie die Nachricht sofort der Liste `_messages` hinzu
+
     _addMessage(textMessage);
   }
 
