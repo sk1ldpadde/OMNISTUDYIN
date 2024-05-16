@@ -53,7 +53,7 @@ def pull_new_chat_msg(request):
 
     messages_dict = [msg.to_dict() for msg in messages]
 
-    # delete messages from incoming_chat_messages
+    # Delete messages from incoming_chat_messages
     for msg in messages:
         student.incoming_chat_messages.disconnect(msg)
         msg.delete()

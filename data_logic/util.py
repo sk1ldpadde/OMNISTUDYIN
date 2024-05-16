@@ -11,11 +11,8 @@ import jwt
 
 from rest_framework.exceptions import AuthenticationFailed
 
-# TODO Find a way to store the secret key
-SECRET_KEY = "12345"
+from data_logic.secret import SECRET_KEY
 
-
-# TODO write tests to validate function
 
 def compute_current_age(student: Student):
     """
@@ -28,7 +25,8 @@ def compute_current_age(student: Student):
         int: The current age of the student.
     """
     today = date.today()
-    student_dob = datetime.strptime(student.dob.strftime('%d-%m-%Y'), "%d-%m-%Y")
+    student_dob = datetime.strptime(
+        student.dob.strftime('%d-%m-%Y'), "%d-%m-%Y")
 
     age = today.year - student_dob.year
 
@@ -93,7 +91,7 @@ def create_jwt(student: Student):
     }
     return jwt.encode(jwt_payload, SECRET_KEY, algorithm='HS256')
 
-# decode the jwt and return the student object
+# Decode the jwt and return the student object
 
 
 def decode_jwt(request):

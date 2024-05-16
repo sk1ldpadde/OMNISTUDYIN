@@ -1,7 +1,4 @@
-from collections.abc import MutableMapping
 from pytrie import StringTrie
-
-from data_logic.models import Ad, Ad_Group, Student
 
 
 class StudentPTrie:
@@ -61,7 +58,7 @@ class StudentPTrie:
         Returns:
         list: A list of students whose name matches the search string.
         """
-        # TODO: remove duplicates from result list
+        # Possible enhancement: Remove duplicates from result list
         return list(self.trie.values(prefix=string.lower()))[:10]
 
 

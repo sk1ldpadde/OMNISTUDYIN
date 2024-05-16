@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Ad_Group, Ad, Student
 
-# custom Serializers for the models
+# Custom Serializers for the models
 
 
 class AdGroupSerializer(serializers.Serializer):

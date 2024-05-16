@@ -62,7 +62,6 @@ class Student(StructuredNode):
     profile_picture = StringProperty()
 
     # Additional information
-    # TODO Use Google Geolocation API to get the location from the zip code
     zip_code = StringProperty()
 
     """
@@ -91,7 +90,6 @@ class Student(StructuredNode):
     incoming_chat_messages = RelationshipFrom(
         'Message', 'TO', cardinality=ZeroOrMore)
 
-    # TODO: please review if the following relationships are correct
     creator_of_ad_group = RelationshipTo(
         'Ad_Group', 'ADMIN', cardinality=ZeroOrMore)
 
@@ -115,13 +113,12 @@ class Ad_Group(StructuredNode):
     name = StringProperty()
     description = StringProperty()
 
-# TODO: please review if the following relationships are correct
     # Relationships
     # Ad group has many ads
     ads = RelationshipFrom('Ad', 'AD_IN', cardinality=ZeroOrMore)
 
     # Ad group is created by a student --> Admin of the ad group
-    # cardinality is ZeroOrMore because a student can create multiple ad groups,
+    # Cardinality is ZeroOrMore because a student can create multiple ad groups,
     # but we also want to have the possibility to have "standard groups" which are created by the system
     admin = RelationshipFrom('Student', 'ADMIN', cardinality=ZeroOrMore)
 
@@ -143,14 +140,12 @@ class Ad(StructuredNode):
     # Image is stored as a base64 string
     image = StringProperty()
 
-    # TODO: please review if the following relationships are correct
-
     # Relationships
     # Ad belongs to an ad group
     ad_group = RelationshipTo('Ad_Group', 'AD_IN', cardinality=One)
 
     # Ad is created by a student --> Admin of the ad
-    # cardinality is ZeroOrMore because of the possible implementation of "standard ads"
+    # Cardinality is ZeroOrMore because of the possible implementation of "standard ads"
     admin = RelationshipFrom('Student', 'ADMIN', cardinality=ZeroOrMore)
 
     def __str__(self):

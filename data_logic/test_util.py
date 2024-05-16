@@ -6,9 +6,9 @@ from data_logic.util import compute_current_age, check_credentials, check_profan
 
 from datetime import timedelta
 
-from data_logic.models import Student
-
 from argon2 import PasswordHasher
+
+from data_logic.models import Student
 
 
 class TestCurrentAgeCalculation(unittest.TestCase):
@@ -63,7 +63,6 @@ class TestProfanityCheck(unittest.TestCase):
         test_string_1 = "Hello World"
         test_string_2 = "Fuck the World"
 
-        test_None = check_profanity(None)
         check_string_1 = check_profanity(test_string_1)
         check_string_2 = check_profanity(test_string_2)
 
