@@ -1,19 +1,11 @@
-import 'dart:isolate';
-import 'dart:async';
-
-
+import 'package:omnistudin_flutter/chatpages/chatOverview.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'Logic/chat_message_service/message.dart';
 import 'package:omnistudin_flutter/pages/home_page.dart';
 import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
-import 'package:omnistudin_flutter/chatpages/chatOverview.dart';
 import 'package:omnistudin_flutter/register/login.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
-import 'Logic/chat_message_service/message_polling_isolate.dart';
-
 void main() async {
   // runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
@@ -22,40 +14,6 @@ void main() async {
     const LandingPage(),
   );
 
-  /************************
-  // CHAT MESSAGING SERVICES
-  *************************/
-  ReceivePort mainReceivePort = ReceivePort();
-
-  // Start the message polling service as an isolate
-  startMessagePollingService(mainReceivePort.sendPort, 'inf21111@gmail.com',
-      await getApplicationDocumentsDirectory());
-
-  // Receive send port of polling Isolate
-  SendPort pollingServicePort = await mainReceivePort.first;
-
-  // Periodically print ALL stored messages
-  Timer.periodic(const Duration(seconds: 2), (Timer t) async {
-    // Create new port for responses from polling Isolate
-    ReceivePort pollingResponsePort = ReceivePort();
-
-    // Get all messages
-    pollingServicePort.send([
-      'w',
-      pollingResponsePort.sendPort,
-      ['inf21113@gmail.com']
-    ]);
-
-    // Listen for response
-    final pollingServiceResponse = await pollingResponsePort.first;
-
-    // Print message for debug
-    final List<Message> messages = await pollingServiceResponse;
-
-    for (var message in messages) {
-      print(message);
-    }
-  });
 }
 
 // Method for Landing Page
@@ -82,7 +40,6 @@ class _LandingPageState extends State<LandingPage> {
     const ChatOverviewPage(),
 
   ];
-
 
   @override
   void initState() {
@@ -156,7 +113,7 @@ class _LandingPageState extends State<LandingPage> {
                         BottomNavigationBarItem(
                           icon: Icon(Icons.chat),
                           label: 'Chat',
-                        ),
+                        ), //Navigation bar item for chat
                       ],
                       selectedItemColor: const Color(0xFFf46139),
                       unselectedItemColor: const Color(0xFFf7b29f),

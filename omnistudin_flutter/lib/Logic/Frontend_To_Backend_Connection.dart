@@ -209,15 +209,17 @@ class FrontendToBackendConnection with ChangeNotifier {
   // Create a FlutterSecureStorage object
   static const storage = FlutterSecureStorage();
 
+
+  // Method to login a student
   static Future<http.Response> loginStudent(
       String email, String password) async {
     try {
-      String fullUrl = "${baseURL}login/";
+      String fullUrl = "${baseURL}login/"; //route to login
       var response = await http.post(
         Uri.parse(fullUrl),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-        },
+        }, //send the email and password in the body
         body: jsonEncode(<String, String>{
           'email': email,
           'password': password,
@@ -225,19 +227,6 @@ class FrontendToBackendConnection with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        var token = jsonDecode(response.body)['jwt'];
-        // Speichern Sie den Token mit FlutterSecureStorage
-        print('Tokennnnnn:');
-        print(token);
-        print('Info:');
-        print(jsonDecode(response.body)['info']);
-        await storage.write(key: 'token', value: token);
-
-        // Ausgabe des gespeicherten Tokens
-        String? savedToken = await storage.read(key: 'token');
-        print('Saved token:');
-        print(savedToken);
-
         return response;
       } else {
         return response;
@@ -247,29 +236,24 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
   }
 
+  //Method to get the token
   static Future<String?> getToken() async {
-    String? token = await storage.read(key: 'token');
+    String? token = await storage.read(key: 'token'); //get the token
 
-    print('Retrieved token:');
-    print(token);
-
-    if (token != null) {
+    if (token != null) { //if the token is not null save it
       await FlutterSessionJwt.saveToken(token);
     }
-    print(await FlutterSessionJwt.getPayload());
-    print(await FlutterSessionJwt.getExpirationDateTime());
-
-    if (await FlutterSessionJwt.isTokenExpired()) {
+    if (await FlutterSessionJwt.isTokenExpired()) { //if the token is expired update it
       token = await updateToken();
     }
 
     return token;
   }
 
+  //Method to register a student
   static Future<String?> updateToken() async {
-    print("Updating token");
     try {
-      String fullUrl = "${baseURL}update_jwt/";
+      String fullUrl = "${baseURL}update_jwt/"; //route to update token
       var response = await http.get(
         Uri.parse(fullUrl),
         headers: <String, String>{
@@ -277,10 +261,10 @@ class FrontendToBackendConnection with ChangeNotifier {
         },
       );
 
-      if (response.statusCode == 200) {
-        var token = jsonDecode(response.body)['jwt'];
-        await storage.write(key: 'token', value: token);
-        return token;
+      if (response.statusCode == 200) { //if the response is successful
+        var token = jsonDecode(response.body)['jwt']; //get the token
+        await storage.write(key: 'token', value: token); //save the token
+        return token; //return the token
       } else {
         developer.log(
             'Failed to update token: HTTP status ${response.statusCode}, ${response.body}');
@@ -291,9 +275,11 @@ class FrontendToBackendConnection with ChangeNotifier {
     return null;
   }
 
+
+  // Method to logout
+  // Logs out the user by deleting the token from the storage
   static Future<void> clearStorage() async {
     await storage.deleteAll();
-    print('Storage cleared');
   }
 
   // Method to get session student
@@ -303,7 +289,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (client == "default") {
         client = http.Client();
       }
-      String fullUrl = "${baseURL}get_session_student";
+      String fullUrl = baseURL + "get_session_student";
       final response = await client.get(
         Uri.parse(fullUrl),
         headers: {

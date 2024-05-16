@@ -1,4 +1,3 @@
-// ignore_for_file: must_be_immutable
 
 import 'dart:io';
 
@@ -14,24 +13,23 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'dart:isolate';
-// Stellen Sie sicher, dass spawnMessagePollingService hier definiert ist
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 
 class ChatPage extends StatefulWidget {
-  String email; // Ändern Sie chatId in email
-  final SendPort sendPort; // Use sendPort instead of SendPort
+  String email; // Variable to store the email
+  final SendPort sendPort; // Variable to store the sendPort
 
   ChatPage(
       {super.key,
       required this.email,
-      required this.sendPort}); // Use sendPort instead of SendPort
+      required this.sendPort});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  Map<String, dynamic> studentData = {};
+  Map<String, dynamic> studentData = {}; //Map to store student data
   late final _userEmail;
   List<types.Message> messageList = [];
   final types.User _user = const types.User(
@@ -43,11 +41,13 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     messageList = [];
-    _loadMessages();
-    _loadDemoMessages();
+    _loadMessages(); // load all messages from the database in the beginning
+    _loadDemoMessages(); // load demo messages
     init();
   }
 
+
+  // Method to load demo messages
   void _loadDemoMessages() {
     types.User otherUser = const types.User(
         id: 'other-user-id', firstName: 'Other', lastName: 'User');
@@ -103,12 +103,13 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  // Method to get student data from logged in student
   getStudentData() async {
     try {
       var data = await FrontendToBackendConnection.getSessionStudent();
       setState(() {
         studentData = data;
-        _userEmail = studentData['email'];
+        _userEmail = studentData['email']; // Set the email of the user
       });
     } catch (e) {
       print('Failed to load student data: $e');
@@ -117,7 +118,6 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> init() async {
     await getStudentData();
-
     // Start the message polling service as an isolate
     ReceivePort responsePort = ReceivePort();
     responsePort.listen((message) {
@@ -136,15 +136,17 @@ class _ChatPageState extends State<ChatPage> {
     // Now send a message to the database isolate asking for data.
     widget.sendPort.send(["g"]);
 
-    _loadMessages();
+    _loadMessages(); // load all messages from the database
   }
 
+  // Method to add a message to the message list
   void _addMessage(types.Message message) {
     setState(() {
       messageList.insert(0, message);
     });
   }
 
+  // Method to handle attachment pressed
   void _handleAttachmentPressed() {
     showModalBottomSheet<void>(
       context: context,
@@ -188,6 +190,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  // Method to handle file selection
   void _handleFileSelection() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
@@ -208,6 +211,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // Method to handle image selection
   void _handleImageSelection() async {
     final result = await ImagePicker().pickImage(
       imageQuality: 70,
@@ -234,6 +238,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // Method to handle message tap
   void _handleMessageTap(BuildContext _, types.Message message) async {
     if (message is types.FileMessage) {
       var localPath = message.uri;
@@ -279,6 +284,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // Method to handle preview data fetched
   void _handlePreviewDataFetched(
     types.TextMessage message,
     types.PreviewData previewData,
@@ -293,29 +299,29 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  // Method to handle send pressed
   void _handleSendPressed(types.PartialText message) async {
     ReceivePort responsePort = ReceivePort();
     final textMessage = types.TextMessage(
       author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
+      createdAt: DateTime.now().millisecondsSinceEpoch, // Set the time of the message
       id: const Uuid().v4(),
       text: message.text,
     );
 
-    // Senden Sie die Nachricht an das Backend über den `sendPort`
+
     widget.sendPort.send([
       's',
       responsePort.sendPort,
       [_userEmail, widget.email, message.text]
-    ]);
-    // Fügen Sie die Nachricht sofort der Liste `_messages` hinzu
-
-    _addMessage(textMessage);
+    ]); // Send the message to the database
+    _addMessage(textMessage); // Add the message to the message list
   }
 
+  // Method to load messages
   void _loadMessages() async {
     print("LOADING MESSAGES");
-    // Periodically print messages with "inf21113@gmail.com"
+    // Periodically print messages from the other user
     Timer.periodic(const Duration(seconds: 2), (Timer t) async {
       // Create new port for responses from polling Isolate
       ReceivePort pollingResponsePort = ReceivePort();
@@ -365,10 +371,10 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-            ),
+            ), // Display the chat
           );
         } else {
-          return const CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während init() ausgeführt wird
+          return const CircularProgressIndicator(); // Show the circular progress indicator if the connection state is waiting
         }
       },
     );
