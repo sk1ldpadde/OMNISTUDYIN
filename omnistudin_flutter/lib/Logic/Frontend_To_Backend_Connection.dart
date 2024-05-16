@@ -597,12 +597,6 @@ class FrontendToBackendConnection with ChangeNotifier {
           'name': name,
         }),
       );
-      List<dynamic> body =
-          jsonDecode(response.body); // Decode the JSON response
-      List<AdInGroup> adGroups = body
-          .map((dynamic item) => AdInGroup.fromJson(item))
-          .toList(); // Convert the JSON response to a list of AdInGroup objects
-
       if (response.statusCode == 200) {
         Provider.of<AdsInGroupProvider>(context, listen: false)
             .removeAdGroup(index);

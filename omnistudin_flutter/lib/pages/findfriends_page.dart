@@ -16,8 +16,6 @@ class FindFriendsPage extends StatefulWidget {
 
 class _FindFriendsPageState extends State<FindFriendsPage> {
   List<dynamic> friendsList = []; // List to hold friends data
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -159,7 +157,8 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
                               title: Center(
                                 child: Text(
                                   '${friendsList[index]['forename']} ${friendsList[index]['surname'] ?? ''}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                               content: SingleChildScrollView(

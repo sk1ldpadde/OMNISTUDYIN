@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -15,13 +17,14 @@ import 'dart:isolate';
 // Stellen Sie sicher, dass spawnMessagePollingService hier definiert ist
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 
-
 class ChatPage extends StatefulWidget {
   String email; // Ändern Sie chatId in email
   final SendPort sendPort; // Use sendPort instead of SendPort
 
-  ChatPage({super.key, required this.email, required this.sendPort}); // Use sendPort instead of SendPort
-
+  ChatPage(
+      {super.key,
+      required this.email,
+      required this.sendPort}); // Use sendPort instead of SendPort
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -31,8 +34,10 @@ class _ChatPageState extends State<ChatPage> {
   Map<String, dynamic> studentData = {};
   late final _userEmail;
   List<types.Message> messageList = [];
-  final types.User _user = const types.User(id: 'user-id', firstName: 'User', lastName: 'Name'); // Hier definieren und initialisieren wir _user
-
+  final types.User _user = const types.User(
+      id: 'user-id',
+      firstName: 'User',
+      lastName: 'Name'); // Hier definieren und initialisieren wir _user
 
   @override
   void initState() {
@@ -43,10 +48,9 @@ class _ChatPageState extends State<ChatPage> {
     init();
   }
 
-
-
   void _loadDemoMessages() {
-    types.User otherUser = const types.User(id: 'other-user-id', firstName: 'Other', lastName: 'User');
+    types.User otherUser = const types.User(
+        id: 'other-user-id', firstName: 'Other', lastName: 'User');
 
     DateTime specificDate = DateTime(2024, 05, 15, 08, 36, 00);
     int timestamp = specificDate.millisecondsSinceEpoch;
@@ -87,7 +91,6 @@ class _ChatPageState extends State<ChatPage> {
       text: 'What a silly question! Are you serious?',
     );
 
-
     types.TextMessage message5 = types.TextMessage(
       author: otherUser,
       createdAt: timestamp,
@@ -96,7 +99,7 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     setState(() {
-      messageList = [message5,message4,message3, message2, message1];
+      messageList = [message5, message4, message3, message2, message1];
     });
   }
 
@@ -110,7 +113,6 @@ class _ChatPageState extends State<ChatPage> {
     } catch (e) {
       print('Failed to load student data: $e');
     }
-
   }
 
   Future<void> init() async {
@@ -136,7 +138,6 @@ class _ChatPageState extends State<ChatPage> {
 
     _loadMessages();
   }
-
 
   void _addMessage(types.Message message) {
     setState(() {
@@ -240,9 +241,9 @@ class _ChatPageState extends State<ChatPage> {
       if (message.uri.startsWith('http')) {
         try {
           final index =
-          messageList.indexWhere((element) => element.id == message.id);
+              messageList.indexWhere((element) => element.id == message.id);
           final updatedMessage =
-          (messageList[index] as types.FileMessage).copyWith(
+              (messageList[index] as types.FileMessage).copyWith(
             isLoading: true,
           );
 
@@ -262,9 +263,9 @@ class _ChatPageState extends State<ChatPage> {
           }
         } finally {
           final index =
-          messageList.indexWhere((element) => element.id == message.id);
+              messageList.indexWhere((element) => element.id == message.id);
           final updatedMessage =
-          (messageList[index] as types.FileMessage).copyWith(
+              (messageList[index] as types.FileMessage).copyWith(
             isLoading: null,
           );
 
@@ -279,9 +280,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handlePreviewDataFetched(
-      types.TextMessage message,
-      types.PreviewData previewData,
-      ) {
+    types.TextMessage message,
+    types.PreviewData previewData,
+  ) {
     final index = messageList.indexWhere((element) => element.id == message.id);
     final updatedMessage = (messageList[index] as types.TextMessage).copyWith(
       previewData: previewData,
@@ -301,18 +302,19 @@ class _ChatPageState extends State<ChatPage> {
       text: message.text,
     );
 
-
     // Senden Sie die Nachricht an das Backend über den `sendPort`
-    widget.sendPort.send(['s', responsePort.sendPort, [_userEmail, widget.email, message.text]]);
+    widget.sendPort.send([
+      's',
+      responsePort.sendPort,
+      [_userEmail, widget.email, message.text]
+    ]);
     // Fügen Sie die Nachricht sofort der Liste `_messages` hinzu
 
     _addMessage(textMessage);
   }
 
-
-
   void _loadMessages() async {
- print("LOADING MESSAGES");
+    print("LOADING MESSAGES");
     // Periodically print messages with "inf21113@gmail.com"
     Timer.periodic(const Duration(seconds: 2), (Timer t) async {
       // Create new port for responses from polling Isolate
@@ -329,10 +331,8 @@ class _ChatPageState extends State<ChatPage> {
       for (var message in messages) {
         print(message);
       }
-
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

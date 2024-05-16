@@ -83,11 +83,6 @@ class _HomePageState extends State<HomePage> {
 
   // Method to delete an ad group
   void _deleteAdGroup(int index, String name) async {
-    // Creating a map with the name of the ad group to delete
-    Map<String, String> adgroup = {
-      'name': name,
-    };
-    var token = await FrontendToBackendConnection.getToken();
     try {
       await FrontendToBackendConnection.deleteAdGroup(context, index, name);
       await Future.delayed(const Duration(
@@ -106,7 +101,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {});
 
       print('Updated state with new ad groups');
-        } catch (e) {
+    } catch (e) {
       print('Error deleting AdGroup: $e');
       if (e is http.ClientException && e.message.contains('<!DOCTYPE html>')) {
         print('Server returned an HTML response: ${e.message}');
@@ -388,7 +383,9 @@ class _HomePageState extends State<HomePage> {
 class PostPage extends StatefulWidget {
   final Map adInGroup; // Declare a variable to hold the ad group data
 
-  const PostPage({super.key, required this.adInGroup}); // Define a constructor for the PostPage widget that requires adInGroup parameter and accepts an optional key
+  const PostPage(
+      {super.key,
+      required this.adInGroup}); // Define a constructor for the PostPage widget that requires adInGroup parameter and accepts an optional key
 
   @override // Create a fresh instance of _PostPageState each time Flutter needs to inflate the widget
   _PostPageState createState() => _PostPageState();
@@ -411,10 +408,6 @@ class _PostPageState extends State<PostPage> {
 
   // Method to delete an ad in a group
   void _deleteAdInGroup(String name) async {
-    Map<String, String> ad = {
-      // Map to hold the ad data
-      'name': name,
-    };
     var token = await FrontendToBackendConnection.getToken();
     try {
       // Try to delete the ad in the group
@@ -433,7 +426,7 @@ class _PostPageState extends State<PostPage> {
       setState(() {});
 
       print('Updated state with new ads'); //Debugging purposes
-        } catch (e) {
+    } catch (e) {
       print('Error deleting Ad: $e');
       if (e is http.ClientException && e.message.contains('<!DOCTYPE html>')) {
         // If the error is a ClientException and the message contains '<!DOCTYPE html>'
@@ -651,13 +644,7 @@ class AdGroupView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         // Floating action button to add a new ad group
-        onPressed: () async {
-          final newAdGroup = await showDialog<AdGroup>(
-            // Show a dialog to create a new ad group
-            context: context,
-            builder: (context) => const CreateAdGroupDialog(),
-          );
-        },
+        onPressed: () async {},
         child: const Icon(Icons.add),
       ),
     );
@@ -844,7 +831,8 @@ class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
 
 // Class to represent an ad group dialog
 class CreateAdGroupDialog extends StatefulWidget {
-  const CreateAdGroupDialog({super.key}); // Define a constructor for the CreateAdGroupDialog widget that accepts an optional key
+  const CreateAdGroupDialog(
+      {super.key}); // Define a constructor for the CreateAdGroupDialog widget that accepts an optional key
 
   @override
   _CreateAdGroupDialogState createState() =>
