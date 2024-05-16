@@ -1,3 +1,18 @@
+"""
+This module contains serializers for the models in the data_logic app.
+
+The serializers are used to convert complex data types, such as querysets and model instances, into native Python datatypes that can be easily rendered into JSON, XML, or other content types. They also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.
+
+The serializers in this module are:
+- AdGroupSerializer: Serializer for the Ad_Group model.
+- AdSerializer: Serializer for the Ad model.
+- StudentSerializer: Serializer for the Student model.
+- StudentFriendSerializer: Serializer for the StudentFriend model.
+
+Each serializer defines fields that should be serialized/deserialized and provides methods for creating and updating instances of the corresponding models.
+
+Note: The serializers assume that the corresponding models have methods to handle creation and updating of instances.
+"""
 from rest_framework import serializers
 from .models import Ad_Group, Ad, Student
 

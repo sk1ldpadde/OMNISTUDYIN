@@ -1,3 +1,40 @@
+"""
+This module contains the implementation of Patricia Trie structures for storing student and ad data.
+
+The module includes the following classes:
+- StudentPTrie: A Patricia Trie for storing student data.
+- AdsPTrie: A Patricia Trie for storing ad data.
+
+Each class provides methods for adding, removing, and searching data in the trie.
+
+Example usage:
+
+    # Create a StudentPTrie instance
+    student_ptrie = StudentPTrie()
+
+    # Add a student to the trie
+    student_ptrie.add_student(student)
+
+    # Remove a student from the trie
+    student_ptrie.remove_student(student)
+
+    # Search for students whose name matches the search string
+    result = student_ptrie.search("John")
+
+    # Create an AdsPTrie instance
+    ads_ptrie = AdsPTrie()
+
+    # Add an ad to the trie
+    ads_ptrie.add_ad(ad)
+
+    # Remove an ad from the trie
+    ads_ptrie.remove_ad(ad)
+
+    # Search for ads whose title matches the search string
+    result = ads_ptrie.search("car")
+
+"""
+
 from pytrie import StringTrie
 
 
@@ -136,11 +173,11 @@ class AdsPTrie:
         Returns:
         list: A list of ads or ad groups whose title matches the search string.
         """
-        
+
         result_list = list(self.trie.values(prefix=string.lower()))
-        
+
         print("--------- Test -----------------")
-        
+
         for ad in result_list:
             if type(ad) is Ad:
                 print(ad.title)
@@ -148,16 +185,15 @@ class AdsPTrie:
                 print(ad.ad_group.description)
             else:
                 print("Nix")
-                
+
         print("--------- End Test -----------------")
-        
-        
+
         if ad_group is not None:
             ad_group_node = Ad_Group.nodes.get(name=ad_group)
             if ad_group_node is None:
                 return []
             return list(ad for ad in result_list if type(ad) is Ad and ad.ad_group.name is ad_group)[:10]
-        else:   
+        else:
             return result_list[:10]
 
 

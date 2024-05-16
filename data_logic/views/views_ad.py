@@ -1,4 +1,29 @@
-# You need to create this serializer
+
+"""
+This module contains views for managing ad groups and ads.
+
+The views in this module handle various operations related to ad groups and ads, such as creating ad groups, retrieving ad groups, changing ad group attributes, deleting ad groups, and retrieving ads belonging to a specific ad group.
+
+The available views in this module are:
+- `test_relationship`: Test the relationship between an ad and its ad group.
+- `get_ad_groups`: Retrieve all ad groups.
+- `create_ad_group`: Create a new ad group.
+- `change_ad_group`: Change the attributes of an ad group.
+- `delete_ad_group`: Delete an ad group and all of its ads.
+- `get_ads_of_group`: Retrieve all ads belonging to a specific ad group.
+
+Note: This module requires the following imports:
+- `AdSerializer` from `data_logic.serializers`
+- `Ad` and `Ad_Group` from `data_logic.models`
+- `api_view`, `Response`, `status`, and `AuthenticationFailed` from `rest_framework.decorators` and `rest_framework.response`
+- `json` for JSON operations
+- `PasswordHasher` and `exceptions` from `argon2` for password hashing
+- `jwt` for JSON Web Token operations
+- `datetime` and `timedelta` for date and time operations
+- `StudentSerializer`, `AdGroupSerializer`, and `AdSerializer` from `data_logic.serializers`
+- `check_credentials` and `check_profanity` from `data_logic.util`
+- `student_ptrie` and `ads_ptrie` from `data_logic.ptrie_structures`
+"""
 from data_logic.serializers import AdSerializer
 from data_logic.models import Ad
 from rest_framework.decorators import api_view

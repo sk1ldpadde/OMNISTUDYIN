@@ -1,3 +1,19 @@
+"""
+This module contains the data models for the OMNISTUDYIN application.
+
+The models include:
+- FriendRel: Represents the friendship relationship between students.
+- Message: Represents a message sent between students.
+- Student: Represents a student in the application.
+- Ad_Group: Represents a group of ads.
+- Ad: Represents an advertisement.
+
+Each model has its own properties and relationships defined.
+
+Note: The module uses the neomodel library for object-graph mapping to Neo4j.
+"""
+
+from neomodel import *
 from neomodel import *
 
 

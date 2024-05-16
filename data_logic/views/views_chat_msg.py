@@ -1,3 +1,16 @@
+
+"""
+This module contains the views for sending and receiving chat messages.
+
+The views in this module handle the logic for sending and receiving chat messages
+between students. It includes functions for sending a chat message and pulling
+new chat messages for a specific student.
+
+Functions:
+- send_chat_msg: Sends a chat message from one student to another.
+- pull_new_chat_msg: Retrieves new chat messages for a specific student.
+
+"""
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,6 +24,18 @@ from data_logic.models import *
 
 @api_view(['POST'])
 def send_chat_msg(request):
+    """
+    Sends a chat message.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        A Response object with information about the success of sending the message.
+
+    Raises:
+        None.
+    """
     message = json.loads(request.body)
 
     # Check if payload is valid
@@ -41,6 +66,18 @@ def send_chat_msg(request):
 
 @api_view(['GET'])
 def pull_new_chat_msg(request):
+    """
+    Retrieves new chat messages for a given student.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        Response: The HTTP response object containing the retrieved chat messages.
+
+    Raises:
+        None
+    """
     # Get the student node who is requesting his messages
     student = Student.nodes.get(email=request.GET.get('email', None))
 

@@ -1,3 +1,23 @@
+"""
+This module contains unit tests for the functions in the `util` module of the `data_logic` package.
+
+The unit tests cover the following functions:
+- `compute_current_age`: Tests the calculation of the current age based on the date of birth.
+- `check_credentials`: Tests the validation of credentials.
+- `check_profanity`: Tests the detection of profanity in a string.
+
+Each unit test is implemented as a subclass of `unittest.TestCase` and contains one or more test methods.
+
+To run the unit tests, execute this module as the main script.
+"""
+
+import unittest
+from datetime import date, timedelta
+from argon2 import PasswordHasher
+from data_logic.models import Student
+from data_logic.util import compute_current_age, check_credentials, check_profanity
+
+# Rest of the code...
 import unittest
 
 from datetime import date

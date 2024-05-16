@@ -1,3 +1,20 @@
+
+
+"""
+This module contains views for handling student-related operations in the data logic application.
+
+The views in this module include:
+- `get_value`: Retrieves the value of a student's forename and semester based on the provided token.
+- `test`: Used to test the functionality of the API endpoint.
+- `update_jwt`: Updates the JSON Web Token (JWT) for the authenticated user.
+- `register_student`: Registers a new student.
+- `login_student`: Authenticates a student's login credentials and generates a JWT token if the credentials are correct.
+- `get_all_students`: Retrieves all students from the database and serializes them using the StudentSerializer.
+- `get_session_student`: Retrieves the session student based on the provided request.
+- `change_session_student`: Changes the session student's attributes based on the provided data.
+- `delete_session_student`: Deletes the session student.
+- `query_students`: Retrieves a list of students based on the provided query string.
+"""
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status

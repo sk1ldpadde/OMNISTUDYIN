@@ -1,3 +1,16 @@
+
+"""
+This module contains utility functions for data logic operations.
+
+Functions:
+- compute_current_age(student: Student) -> int: Computes the current age of a student based on their date of birth.
+- check_credentials(stored_pwd: str, request_pwd: str) -> bool: Checks if the provided password matches the stored password hash.
+- check_profanity(string: str) -> bool: Checks if a given string contains profanity.
+- create_jwt(student: Student) -> str: Creates a JSON Web Token (JWT) for the given student.
+- decode_jwt(request) -> Student: Decodes a JSON Web Token (JWT) from the request headers and returns the corresponding student object.
+"""
+
+
 from data_logic.models import *
 
 from datetime import date

@@ -1,3 +1,18 @@
+
+
+"""
+This module contains views for managing friends in a student management system.
+
+The views include:
+- `get_friends`: Retrieves the list of friends for a given student.
+- `send_friend_request`: Sends a friend request from the current student to another student.
+- `accept_friend_request`: Accepts a friend request from another student.
+- `delete_friend`: Deletes a friend from the student's friend list.
+- `find_friends`: Finds potential friends for a given student.
+
+The module also includes helper functions for embedding student attributes and performing similarity search using FAISS.
+
+"""
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -200,23 +215,22 @@ def find_friends(request):
 
     # Students do not want to be matched with themselves
     matching.remove(student)
-    
-    
+
     # Initialize FAISS index
-    dimension = word_vectors.vector_size # age and semester for now
-    index = faiss.IndexFlatL2(dimension)  # You can choose a different index type based on your requirements
+    dimension = word_vectors.vector_size  # age and semester for now
+    # You can choose a different index type based on your requirements
+    index = faiss.IndexFlatL2(dimension)
 
     # Add vectors to index
     for match_student in matching:
         index.add(np.expand_dims(embed_student(match_student), axis=0))
-    
-    
+
     ### ******************************* ###
     ### *** FAISS SIMILARITY SEARCH *** ###
     ### ******************************* ###
-    
+
     query_vector = np.expand_dims(embed_student(student), axis=0)
-    
+
     k = 5  # Number of nearest neighbors to retrieve
     distances, indices = index.search(query_vector, k)
 
@@ -229,18 +243,19 @@ def find_friends(request):
 
 def embed_student(student):
     # Create a list of strings for the student's attributes
-    attr = [student.uni_name, student.degree, student.semester, compute_current_age(student)]
-    
+    attr = [student.uni_name, student.degree,
+            student.semester, compute_current_age(student)]
+
     # attr.extend(student.bio.split())
     # TODO: concatenate the interest and goals strings
-    
+
     # TODO: Implement the embedding function
-    
+
     # Create a zero vector of the same dimension as the word vectors
     vector_sum = np.zeros(word_vectors.vector_size)
-    
+
     vectors = []
-    
+
     # Obtain vector representations for strings and average them
     for attr_value in attr:
         if attr_value in word_vectors:
@@ -249,5 +264,5 @@ def embed_student(student):
     # Average the vectors
     avg_vector = np.mean(vectors, axis=0)
     vector_sum += avg_vector
-    
+
     return vector_sum
