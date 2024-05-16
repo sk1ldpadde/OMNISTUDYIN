@@ -18,8 +18,9 @@ disable=
     missing-docstring,
     missing-module-docstring,
     missing-function-docstring,
-    ungrouped-imports.
+    ungrouped-imports,
     attribute-defined-outside-init,
     fixme,
     too-few-public-methods,
-    attribute-defined-outside-init
+    attribute-defined-outside-init,
+    missing-final-newline
