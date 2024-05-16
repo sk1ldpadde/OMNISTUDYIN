@@ -14,7 +14,6 @@ Note: The module uses the neomodel library for object-graph mapping to Neo4j.
 """
 
 from neomodel import *
-from neomodel import *
 
 
 # Create your models here.
