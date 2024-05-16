@@ -62,7 +62,6 @@ class Student(StructuredNode):
     profile_picture = StringProperty()
 
     # Additional information
-    # TODO Use Google Geolocation API to get the location from the zip code
     zip_code = StringProperty()
 
     """
