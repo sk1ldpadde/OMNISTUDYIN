@@ -1,8 +1,8 @@
 class Message {
-  final String fromStudent; // email from the student who sent the message
-  final String content; // message content
-  final DateTime timestamp; // time the message was sent
-  final bool isRead; // whether the message has been read or not
+  final String fromStudent; // Email from the student who sent the message
+  final String content; // Message content
+  final DateTime timestamp; // Time the message was sent
+  final bool isRead; // Whether the message has been read or not
   final bool ownMsg; // True if the message was sent by the current user
 
   const Message({

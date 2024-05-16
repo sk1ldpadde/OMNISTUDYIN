@@ -25,7 +25,7 @@ from data_logic.secret import SECRET_KEY
 
 # Create your views here.
 
-# easy test view for debugging
+# Easy test view for debugging
 
 # ------------------TEST------------------#
 
@@ -94,15 +94,16 @@ def update_jwt(request):
     - AuthenticationFailed: If the token is expired, invalid, or the email is invalid.
     """
 
-    # use given token to authorize the user
+    # Use given token to authorize the user
     token = request.headers.get('Authorization')
-    # which user to create the token for
+
+    # Which user to create the token for
     email = request.data.get('email')
 
     try:
         payload = jwt.decode(token, "12345", algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
-        # if the token is expired, the student needs to log in again
+        # If the token is expired, the student needs to log in again
         raise AuthenticationFailed('Token expired')
     except jwt.InvalidTokenError:
         raise AuthenticationFailed('Invalid token')
@@ -110,7 +111,7 @@ def update_jwt(request):
     if payload['sub'] != email or not Student.nodes.filter(email=email):
         raise AuthenticationFailed('Invalid token or email.')
 
-    # generate a new token
+    # Generate a new token
     jwt_token = create_jwt(Student.nodes.get(email=email))
 
     return Response({'jwt': jwt_token}, status=status.HTTP_200_OK)
@@ -189,8 +190,6 @@ def login_student(request):
     """
 
     login_data = json.loads(request.body)
-
-    # TODO: Check if payload is valid
 
     student_node = Student.nodes.get(email=login_data.get('email'))
 
@@ -340,9 +339,6 @@ def query_students(request):
     serializer = StudentSerializer(matching_students, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# TODO: define a view for session password or email changes
 
 
 # ------------------STUDENT-END------------------#

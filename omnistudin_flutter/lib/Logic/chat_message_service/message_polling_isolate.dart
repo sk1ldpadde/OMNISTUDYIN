@@ -66,8 +66,6 @@ void messagePollingService(Map initialData) async {
     // Filter the messages for all messages associated with the given student
     List<Message> filteredMessages = messages.where((message) => message.fromStudent == withStudent).toList();
 
-    // TODO set isRead to True and save persistent
-
     return filteredMessages;
   }
 
@@ -80,7 +78,7 @@ void messagePollingService(Map initialData) async {
     jsonPayload["timestamp"] = DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now());
 
     // Send message: for the receiving student, ownMsg = 0
-    var response = FrontendToBackendConnection.postData("send_chat_msg/", jsonPayload);
+    FrontendToBackendConnection.postData("send_chat_msg/", jsonPayload);
 
     // TODO error handling for response
 

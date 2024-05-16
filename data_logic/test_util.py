@@ -6,9 +6,9 @@ from data_logic.util import compute_current_age, check_credentials, check_profan
 
 from datetime import timedelta
 
-from data_logic.models import Student
-
 from argon2 import PasswordHasher
+
+from data_logic.models import Student
 
 
 class TestCurrentAgeCalculation(unittest.TestCase):
