@@ -194,27 +194,88 @@ Wir haben uns für die MIT-Lizenz entschieden, um die Nutzung und Weiterentwickl
 
 ## Overview
 
-- [Sonstiges](#sonstiges)
-  - [Retrospective](#retrospective)
-  - [Where to find what](#where-to-find-what)
-    - [Backend:](#backend)
-      - [Views](#views)
-      - [Backend-Algorithmen](#backend-algorithmen)
-      - [Django](#django)
-  - [Komplexere Algorithmen](#komplexere-algorithmen)
-    - [Chat-System](#chat-system)
-    -
+- [Overview](#overview)
+- [Retrospective](#retrospective)
+  - [Fazit](#fazit)
+- [Architektur](#architektur)
+- [Where to find what](#where-to-find-what)
+  - [Frontend:](#frontend)
+    - [Architektur](#architektur-1)
+    - [Design](#design)
+      - [Farbschema](#farbschema)
+      - [Schriftarten](#schriftarten)
+      - [Benutzeroberfläche](#benutzeroberfläche)
+      - [Responsivität](#responsivität)
+  - [Backend:](#backend)
+    - [Views](#views)
+    - [Backend-Algorithmen](#backend-algorithmen)
+    - [Django](#django)
+- [Komplexere Algorithmen](#komplexere-algorithmen)
+  - [➡️ Patricia-Trie zur Inhaltssuche](#️-patricia-trie-zur-inhaltssuche)
+    - [Mögliche Erweiterung bzgl. System Design](#mögliche-erweiterung-bzgl-system-design)
+  - [➡️ Chat-System](#️-chat-system)
+    - [Überblick: System Design des Chat-Systems](#überblick-system-design-des-chat-systems)
+    - [Mögliche Erweiterung bzgl. Security Aspekten](#mögliche-erweiterung-bzgl-security-aspekten)
+  - [➡️ Friend-Matching mit FAISS](#️-friend-matching-mit-faiss)
+  - [➡️ Passwort-Speicherung in der Datenbank](#️-passwort-speicherung-in-der-datenbank)
 
 ## Retrospective
 
 |                            ☀️                             |                            ☁️                            |           🔜            |
 | :-------------------------------------------------------: | :------------------------------------------------------: | :---------------------: |
 |      Implementierung von neo4j hat sehr gut geklappt      |           Frontend wurde zu langsam aufgebaut            | Mehr Frontend developer |
-| Flutter lässt sich mittels Copilot sehr schnell schreiben |           Flutter an sich ist unnötig komplex            |   Mehr Dokumentation         |
-|       Strukturierung des Teams verlief hervorragend       | Umstellung Linux/Mac für Backend Funktionalität stressig |           Mehr Code Kommentare            |
-|Docker Einrichtung verlief ebenso reibungslos|||
+| Flutter lässt sich mittels Copilot sehr schnell schreiben |           Flutter an sich ist unnötig komplex            |   Mehr Dokumentation    |
+|       Strukturierung des Teams verlief hervorragend       | Umstellung Linux/Mac für Backend Funktionalität stressig |  Mehr Code Kommentare   |
+|       Docker Einrichtung verlief ebenso reibungslos       |        Flutter Code wird schnell unübersichtlich         |                         |
+
+#### Fazit
+
+Insgesamt ist das Projekt ein Erfolg, jedoch zeigte sich, dass die Strukturierung in Backend/Frontend-Developer nicht immer sinnvoll ist. Während das Backend recht schnell aufgebaut wurde, hinkte das Frontend deutlich hinterher, da Schönheit doh ein zeitaufwendinger Faktor ist. Ebenso ist die Verknüpfung von Frontend und Backend ohne dauerhafte hevorragende Kommunikation eher schwierig.
+Es wäre also vielleicht besser gewesen einfach den Developern einzelne Features zuzuteilen, die sie dann im Frontend **UND** im Backend entwickeln. Dabei wären alle im kompletten Projekt vertreten und als Developer hat man einen besseren Überblick über seine und andere Features.
+
+## Architektur
+
+![Architecture Overview](./Docs/Images/image.png)
 
 ## Where to find what
+
+### Frontend:
+
+#### Architektur
+
+![OMNISTUDYIN Logo](./Docs/Images/component_diagramm_frontend.png)
+
+Wie die einzelnen Seiten miteinander interagieren können, ist in dem Bild dargestellt.
+
+#### Design
+
+Das Frontend wurde unter Verwendung des Cupertino-Designs entwickelt, das von Apple für seine iOS-Betriebssysteme eingeführt wurde.
+Das Cupertino-Design zeichnet sich durch seine klare, minimalistische Ästhetik und seine Fokussierung auf einfache Formen aus.
+Animationen aus.
+
+##### Farbschema
+
+Das Farbschema unseres Frontends entspricht den Standard des Cupertino-Designs. Die Farbpalette ist so gestaltet,
+dass die Farben nicht zu sehr von den Inhalten ablenkt. Die einzelnen Farbtöne sind aufeinander abgestimmt, sodass sie
+harmonisch aufeinander wirken.
+
+##### Schriftarten
+
+Für die Texte wird die standardmäßig im Cupertino-Design verwendete Schriftart genutzt. Sie weist eine klare
+Lesbarkeit auf verschiedenen Bildschirmgrößen und -auflösungen auf. Die Schriftgrößen und -gewichtungen wurden entsprechend
+angepasst, um eine optimale Benutzererfahrung zu gewährleisten.
+
+##### Benutzeroberfläche
+
+Die Benutzeroberfläche unseres Frontends folgt den Gestaltungsprinzipien des Cupertino-Designs,
+um eine intuitive und benutzerfreundliche Interaktion zu ermöglichen. Die Funktion von Symbole und Schaltflächen, sind eindeutig ersichtlich
+um dem Benutzer eine klare Orientierung zu bieten und die Navigation durch die Anwendung zu erleichtern.
+
+##### Responsivität
+
+Unser Frontend ist vollständig responsiv für mobile Geräte und passt sich automatisch an verschiedene Bildschirmgrößen und -auflösungen an,
+um eine konsistente Benutzererfahrung auf allen Geräten zu gewährleisten. Dabei werden die bewährten Praktiken des responsiven
+Webdesigns angewendet, um sicherzustellen, dass die Inhalte optimal dargestellt und bedient werden können.
 
 ### Backend:
 
@@ -250,17 +311,18 @@ Der Omnistudyin_Backend-Ordner besitzt prinzipiell nur django-spezifische Inhalt
 ## Komplexere Algorithmen
 
 ### ➡️ Patricia-Trie zur Inhaltssuche
+
 Eine einfache, aber effiziente Inhaltssuche nach anderen Studenten oder Beiträgen (beides jeweils über den Namen) wird
 mithilfe einer speziellen Indexstruktur umgesetzt.
 
 Der **Patricia-Trie** ist eine spezielle Datenstruktur, die als Erweiterung des Prefix-Tree oder einfach "Trie" mehrere
 Zeichen innerhalb eines Knotens zusammenfassen kann. Dies steigert die Effizienz enorm. Ein praktisches Anwendungsbeispiel,
-indem eine solche Datenstruktur verwendet wird, ist Ethereum. Dort wird der gesamte World State, also alle persistenten Daten zu jedem Account in einer sog. "Patricia Merkle Trie" Struktur gehalten. 
+indem eine solche Datenstruktur verwendet wird, ist Ethereum. Dort wird der gesamte World State, also alle persistenten Daten zu jedem Account in einer sog. "Patricia Merkle Trie" Struktur gehalten.
 
-In der folgenden Abbildung aus dem Wikipedia-Artikel zum Patricia-Trie, kann die Struktur und der Aufbau nachvollzogen werden. In dem Fall wurden sieben verschiedene Zeichenketten in die Struktur eingefügt. Gibt ein Nutzer beispielsweise folgende Suchanfrage ein "ro", so werden ihm umgehend die User "romane", "romanus" und "romulus" vorgeschlagen. 
+In der folgenden Abbildung aus dem Wikipedia-Artikel zum Patricia-Trie, kann die Struktur und der Aufbau nachvollzogen werden. In dem Fall wurden sieben verschiedene Zeichenketten in die Struktur eingefügt. Gibt ein Nutzer beispielsweise folgende Suchanfrage ein "ro", so werden ihm umgehend die User "romane", "romanus" und "romulus" vorgeschlagen.
 
 > [!TIP]
-> Die Suche kann dabei durch den Index in $O(n)$, wobei $n$ = Länge der Query (im Beispiel $n$ = 2) abgehandelt werden. 
+> Die Suche kann dabei durch den Index in $O(n)$, wobei $n$ = Länge der Query (im Beispiel $n$ = 2) abgehandelt werden.
 > Eine lineare Suche über alle registrierten Studenten würde sich nicht skalieren lassen, wenn die Plattform Millionen von Nutzer hat.
 
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Patricia_trie.svg/1920px-Patricia_trie.svg.png)
@@ -268,26 +330,29 @@ In der folgenden Abbildung aus dem Wikipedia-Artikel zum Patricia-Trie, kann die
 Neu registrierte User sowie neu erstelle Ads und Ad-Gruppen können dem Index leicht hinzugefügt und wieder entfernt werden. Zur Implementierung verwendet, wurde das Python-Modul `pytrie` und die darin enthaltene Klasse `StringTrie`. Definiert ist die Implementierung in `data_logic/ptrie_structures.py`. Es werden jeweils zwei Klassen und damit zwei Strukturen definiert: `StudentsPTrie` und `AdsPTrie`.
 
 #### Mögliche Erweiterung bzgl. System Design
-Das gesamte Patricia-Trie Modul in einen eigenständigen Service auslagern, der sich nur um Suchanfragen kümmert. Außerdem eine persistente Speicherung der Indexstrukturen in einer Datenbank (beispielsweise Cassandra), um den Index nicht dauerhaft erneut aufbauen zu müssen.  
+
+Das gesamte Patricia-Trie Modul in einen eigenständigen Service auslagern, der sich nur um Suchanfragen kümmert. Außerdem eine persistente Speicherung der Indexstrukturen in einer Datenbank (beispielsweise Cassandra), um den Index nicht dauerhaft erneut aufbauen zu müssen.
 
 ### ➡️ Chat-System
+
 Es soll eine direkte Kommunikation zwischen zwei Studenten ermöglicht werden. Die Architektur wurde an jener von WhatsApp orientiert. Hauptargument ist dabei die lokale Speicherung der gesamten Chat-Daten auf den Geräten der jeweiligen Endnutzer. Lediglich der Austausch neuer Nachrichten geschieht über den Server. Folgendes Rechenbeispiel soll diese System-Design-Entscheidung bestärken:
 
 > [!IMPORTANT]
-> Alle Studenten weltweit: 7 Mio.   
+> Alle Studenten weltweit: 7 Mio.  
 > Durchschnittliche verschiedene Chatpartner pro Student: 15  
 > Durchschnittliche Anzahl an Nachrichten pro Chat (nur Fotos und Videos): 50  
 > Durchschnittliche Anzahl Bytes pro Nachricht (Foto oder Video): 2MB  
 > Gesamtdatenmenge: 10 Pettabyte !!! (1 PB Storage bei Google Cloud kostet ca. 25k€/Monat)
 
-Ein neuer Hintergrund-Service (in Flutter: Isolate, vergleichbar mit einem Thread, aber eigener Heap) wird aufgesetzt, um alle zwei Sekunden Polling durchzuführen und nach neuen Nachrichten zu fragen. Auch eigene Nachrichten können gesendet werden. Gespeichert werden die Nachrichten auf dem Server in der Graph-Datenbank. Ein User kann somit die mit seinen User-Knoten verbundenen Message-Knoten erfragen und erhalten. Nach Erhalt werden die Daten vom Server gelöscht. Das persistieren liegt nun in der Verantwortung der lokalen Anwendung. WhatsApp verwendet eine Sqlite Datenbank. Aus Zeitgründen werden die Daten zunächst in einer Textdatei persistiert. Die Schnittstelle, die der `Message Polling Service` bereitstellt (unter `omnistudin_flutter/lib/Logic/chat_message_service`) besteht in seiner Grundfunktionalität aus drei Funktionen: 
+Ein neuer Hintergrund-Service (in Flutter: Isolate, vergleichbar mit einem Thread, aber eigener Heap) wird aufgesetzt, um alle zwei Sekunden Polling durchzuführen und nach neuen Nachrichten zu fragen. Auch eigene Nachrichten können gesendet werden. Gespeichert werden die Nachrichten auf dem Server in der Graph-Datenbank. Ein User kann somit die mit seinen User-Knoten verbundenen Message-Knoten erfragen und erhalten. Nach Erhalt werden die Daten vom Server gelöscht. Das persistieren liegt nun in der Verantwortung der lokalen Anwendung. WhatsApp verwendet eine Sqlite Datenbank. Aus Zeitgründen werden die Daten zunächst in einer Textdatei persistiert. Die Schnittstelle, die der `Message Polling Service` bereitstellt (unter `omnistudin_flutter/lib/Logic/chat_message_service`) besteht in seiner Grundfunktionalität aus drei Funktionen:
 
-+ Eigene Nachricht senden: `sendOwnMessage(...)`
-+ Alle lokal gespeicherten Nachrichten erhalten: `getMessages()`
-+ Alle paarweise verschiedenen Chatpartner erhalten (nützlich für die Startseite): `getDistinctChatPartners()`
-+ Alle Nachrichten bezüglich eines definierten Chatpartners erhalten: `getAllMessagesWith(...)`
+- Eigene Nachricht senden: `sendOwnMessage(...)`
+- Alle lokal gespeicherten Nachrichten erhalten: `getMessages()`
+- Alle paarweise verschiedenen Chatpartner erhalten (nützlich für die Startseite): `getDistinctChatPartners()`
+- Alle Nachrichten bezüglich eines definierten Chatpartners erhalten: `getAllMessagesWith(...)`
 
 #### Überblick: System Design des Chat-Systems
+
 ```mermaid
 C4Context
     title System Design Overview for OMNISTUDYIN Messaging Service
@@ -313,9 +378,11 @@ System_Boundary(c1, "OMNISTUDYIN") {
 ```
 
 #### Mögliche Erweiterung bzgl. Security Aspekten
-Um eine End-zu-End-Verschlüsselung, bei der die Nachricht lediglich von den beiden Gesprächspartnern gelesen werden kann, zu implementieren, ist eine PKI notwendig. Diese muss die öffentlichen Schlüssel der jeweiligen Teilnehmer speichern. Die jeweiligen Nachrichten können dann mit dem öffentlichen Schlüssel jener Person verschlüsselt werden, an die die Nachricht gerichtet ist. Diese kann die Nachricht anschließend mit ihrem geheimen, privaten Schlüssel entschlüsseln.  
+
+Um eine End-zu-End-Verschlüsselung, bei der die Nachricht lediglich von den beiden Gesprächspartnern gelesen werden kann, zu implementieren, ist eine PKI notwendig. Diese muss die öffentlichen Schlüssel der jeweiligen Teilnehmer speichern. Die jeweiligen Nachrichten können dann mit dem öffentlichen Schlüssel jener Person verschlüsselt werden, an die die Nachricht gerichtet ist. Diese kann die Nachricht anschließend mit ihrem geheimen, privaten Schlüssel entschlüsseln.
 
 ### ➡️ Friend-Matching mit FAISS
+
 Eine Hauptfunktionalität innerhalb der Anwendung ist das Vorschlagen von potenziellen Freunden auf Basis von ähnlichen Interessen der Studenten. FAISS (Facebook AI Similarity Search) bietet eine effiziente Möglichkeit die $n$ ähnlichsten Datenpunkte bzgl. eines gegebenen Datenpunkts zu erhalten (KNN). FAISS bietet dazu viele verschiedenen Indexstrukturen. Genutzt wird in diesem Projekt der `IndexFlatL2`. Dieser definiert eine exakte Brute-Force Suche basierend auf der euklidischen Norm (L2).
 
 > [!NOTE]
@@ -326,6 +393,7 @@ Der wichtigste Vorgang, der das Endergebnis der Similarity Search am meisten bee
 Die Implementierung findet in `data_logic/views/views_friends.py` statt. Die Funktionen `find_friends` (als API-Endpoint) sowie `embed_student` für die Berechnung einer Vektor-Repräsentation eines Studenten (Embedding) sind relevant.
 
 ### ➡️ Passwort-Speicherung in der Datenbank
-Unsere Passwort-Speicherung für die Studenten-Accounts basiert auf State-of-the-art Security-Standards. Die verwendete Hash-Funktion Argon2 ist eine sog. Slow-Hash-Funktion, deren Hashrate im Vergleich zu beispielsweise SHA sehr gering ist. In Kombination mit einem jeweils für jeden User zufällig neu generierten Salt, der dem Passwort hinzugefügt wird, sind Brute-Force-Attacken oder Rainbow-Table Neuberechnungen unattraktiv. 
+
+Unsere Passwort-Speicherung für die Studenten-Accounts basiert auf State-of-the-art Security-Standards. Die verwendete Hash-Funktion Argon2 ist eine sog. Slow-Hash-Funktion, deren Hashrate im Vergleich zu beispielsweise SHA sehr gering ist. In Kombination mit einem jeweils für jeden User zufällig neu generierten Salt, der dem Passwort hinzugefügt wird, sind Brute-Force-Attacken oder Rainbow-Table Neuberechnungen unattraktiv.
 
 [Reference](https://rohanhonwade.com/posts/argon-password-hashing/)
