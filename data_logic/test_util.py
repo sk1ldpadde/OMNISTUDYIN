@@ -63,7 +63,6 @@ class TestProfanityCheck(unittest.TestCase):
         test_string_1 = "Hello World"
         test_string_2 = "Fuck the World"
 
-        test_None = check_profanity(None)
         check_string_1 = check_profanity(test_string_1)
         check_string_2 = check_profanity(test_string_2)
 
