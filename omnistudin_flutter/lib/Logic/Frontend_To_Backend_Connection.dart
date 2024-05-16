@@ -89,12 +89,15 @@ class AdGroupProvider with ChangeNotifier {
 }
 
 //Class that connects the frontend to the backend
+// this is the MAIN Class
+// Normally you only need 7 Methods: getData, postData, putData, deleteData, getToken, register and login
 class FrontendToBackendConnection with ChangeNotifier {
   // baseURL for the backend server running on the PC!
   static const String baseURL = "http://10.0.2.2:8000/";
 
   // method to get data from the server
   // urlPattern is the backend endpoint url pattern
+  // client is just for testing purposes (for mocking the client)
   static Future<dynamic> getData(String urlPattern,
       {client = "default"}) async {
     var token = await getToken();
@@ -105,7 +108,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       String fullUrl = baseURL + urlPattern; // Construct the full URL
       final response =
           await client.get(Uri.parse(fullUrl), headers: <String, String>{
-        // Send a get request to the server
+        // Send a get request to the server & include token
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': '$token',
       });
@@ -245,10 +248,8 @@ class FrontendToBackendConnection with ChangeNotifier {
   }
 
   static Future<String?> getToken() async {
-    // Lesen Sie den Token mit FlutterSecureStorage
     String? token = await storage.read(key: 'token');
 
-    // Ausgabe des abgerufenen Tokens
     print('Retrieved token:');
     print(token);
 
@@ -257,7 +258,6 @@ class FrontendToBackendConnection with ChangeNotifier {
     }
     print(await FlutterSessionJwt.getPayload());
     print(await FlutterSessionJwt.getExpirationDateTime());
-    // Überprüfen Sie, ob der Token abgelaufen is
 
     if (await FlutterSessionJwt.isTokenExpired()) {
       token = await updateToken();
