@@ -386,7 +386,7 @@ Um eine End-zu-End-Verschlüsselung, bei der die Nachricht lediglich von den bei
 Eine Hauptfunktionalität innerhalb der Anwendung ist das Vorschlagen von potenziellen Freunden auf Basis von ähnlichen Interessen der Studenten. FAISS (Facebook AI Similarity Search) bietet eine effiziente Möglichkeit die $n$ ähnlichsten Datenpunkte bzgl. eines gegebenen Datenpunkts zu erhalten (KNN). FAISS bietet dazu viele verschiedenen Indexstrukturen. Genutzt wird in diesem Projekt der `IndexFlatL2`. Dieser definiert eine exakte Brute-Force Suche basierend auf der euklidischen Norm (L2).
 
 > [!NOTE]
-> Eine Auflistung aller FAISS-Indices findet sich hier: (https://github.com/facebookresearch/faiss/wiki/Faiss-indexes)
+> Eine Auflistung aller FAISS-Indexes findet sich hier: (https://github.com/facebookresearch/faiss/wiki/Faiss-indexes)
 
 Der wichtigste Vorgang, der das Endergebnis der Similarity Search am meisten beeinflusst, ist das Embedding. Die Datenpunkte (in unserem Fall die Studenten) müssen in einen hoch-dimensionalen Vektorraum eingebettet werden. Dabei soll die semantische Bedeutung der Daten erhalten bleiben. Wir verwenden `Word2Vec`, genauer gesagt ein Modell davon, welches mit Millionen von Google-Nachrichten trainiert wurde. Dabei werden jedoch lediglich einzelne Wörter definiert. Besser geeignet wäre eine Sentence-Library, beispielsweise `sentence-transformers`, die im Embedding alle Wörter und deren Beziehung zueinander berücksichtigt. Die Umstellung auf solch eine Sentence-Library wäre eine mögliche Optimierung, um beispielsweise auch die Bio eines Studenten berücksichtigen zu können.
 
