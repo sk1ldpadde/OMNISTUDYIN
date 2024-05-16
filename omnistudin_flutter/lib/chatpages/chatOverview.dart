@@ -4,17 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/chatpages/chatPage.dart';
-import 'package:omnistudin_flutter/Logic/chat_message_service/message.dart';
 import 'package:omnistudin_flutter/Logic/chat_message_service/message_polling_isolate.dart';
 
 class ChatOverviewPage extends StatefulWidget {
+  const ChatOverviewPage({super.key});
+
   @override
   _ChatOverviewPageState createState() => _ChatOverviewPageState();
 }
 
 class _ChatOverviewPageState extends State<ChatOverviewPage> {
   late final Map<String, SendPort> _pollingServicePorts = {};
-  List<String> _chats = [];
+  final List<String> _chats = [];
 
   @override
   void initState() {
@@ -52,10 +53,10 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chats'),
+        title: const Text('Chats'),
       ),
       body: _chats.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
         itemCount: _chats.length,
         itemBuilder: (context, index) {
@@ -78,26 +79,26 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
               }
             },
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     child: Text(chat[0]),
                   ),
-                  SizedBox(width: 16.0),
+                  const SizedBox(width: 16.0),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           chat,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 6.0),
+                        const SizedBox(height: 6.0),
                         Text(
                           index == 0 ? 'Its 2!' : 'Thank you, for your help°-°', // Hier die Bedingung hinzufügen
-                          style: TextStyle(color: Colors.grey),
+                          style: const TextStyle(color: Colors.grey),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
@@ -105,7 +106,7 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
                   ),
                   Text(
                     index == 0 ? '09:42': '07:22', // Hier die Zeit der letzten Nachricht einfügen
-                    style: TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ],
               ),

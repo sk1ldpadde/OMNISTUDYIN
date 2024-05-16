@@ -303,7 +303,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (client == "default") {
         client = http.Client();
       }
-      String fullUrl = baseURL + "get_session_student";
+      String fullUrl = "${baseURL}get_session_student";
       final response = await client.get(
         Uri.parse(fullUrl),
         headers: {
@@ -330,7 +330,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (client == "default") {
         client = http.Client();
       }
-      String fullUrl = baseURL + "change_session_student/$sessionId";
+      String fullUrl = "${baseURL}change_session_student/$sessionId";
       final response = await client.put(
         Uri.parse(fullUrl),
         headers: {
@@ -358,7 +358,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       if (client == "default") {
         client = http.Client();
       }
-      String fullUrl = baseURL + "delete_session_student/$sessionId";
+      String fullUrl = "${baseURL}delete_session_student/$sessionId";
       final response = await client.delete(
         Uri.parse(fullUrl),
         headers: {
@@ -439,11 +439,6 @@ class FrontendToBackendConnection with ChangeNotifier {
 
   // Method to fetch all the ads of a group
   static Future<List<AdInGroup>> getAdsOfGroup(String groupName) async {
-    if (groupName == null) {
-      // Check if the group name is null
-      throw Exception('groupName is null');
-    }
-
     var token = await getToken(); // Fetch the token
 
     if (token == null) {
@@ -455,7 +450,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       final response = await http.post(
         Uri.parse(fullUrl),
         headers: <String, String>{
-          'Authorization': '$token',
+          'Authorization': token,
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(
@@ -501,7 +496,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       }
     } catch (e) {
       print('Error updating Ad: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -532,7 +527,7 @@ class FrontendToBackendConnection with ChangeNotifier {
       }
     } catch (e) {
       print('Error updating AdGroup: $e');
-      throw e;
+      rethrow;
     }
   }
 

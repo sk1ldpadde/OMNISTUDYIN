@@ -1,18 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import 'package:omnistudin_flutter/pages/profilesettings_page.dart';
-import 'package:omnistudin_flutter/main.dart';
-import 'package:omnistudin_flutter/register/registration.dart';
-import 'package:provider/provider.dart';
 
-import 'package:intl/intl.dart';
 
 import 'dart:convert';
-import 'dart:io';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -88,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget buildInfoCard(String field1, String field2, String field3) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
       child: Card(
         child: Padding(

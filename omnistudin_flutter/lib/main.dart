@@ -1,11 +1,9 @@
 import 'dart:isolate';
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:omnistudin_flutter/app.dart';
 import 'package:path_provider/path_provider.dart';
 import 'Logic/chat_message_service/message.dart';
 import 'package:omnistudin_flutter/pages/home_page.dart';
@@ -13,18 +11,15 @@ import 'package:omnistudin_flutter/pages/profile_page.dart';
 import 'package:omnistudin_flutter/pages/friend_page.dart';
 import 'package:omnistudin_flutter/chatpages/chatOverview.dart';
 import 'package:omnistudin_flutter/register/login.dart';
-import 'package:provider/provider.dart';
 import '../Logic/Frontend_To_Backend_Connection.dart';
 import 'Logic/chat_message_service/message_polling_isolate.dart';
-import 'Logic/chat_message_service/message.dart';
-import 'package:intl/intl.dart';
 
 void main() async {
   // runApp(OmniStudyingApp());
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(
-    LandingPage(),
+    const LandingPage(),
   );
 
   /************************
@@ -84,7 +79,7 @@ class _LandingPageState extends State<LandingPage> {
     const HomePage(),
     const FriendsPage(),
     const ProfilePage(),
-    ChatOverviewPage(),
+    const ChatOverviewPage(),
 
   ];
 
@@ -120,7 +115,7 @@ class _LandingPageState extends State<LandingPage> {
         '/home': (context) => const HomePage(),
         '/friends': (context) => const FriendsPage(),
         '/profile': (context) => const ProfilePage(),
-        '/chat': (context) => ChatOverviewPage(),
+        '/chat': (context) => const ChatOverviewPage(),
       },
       home: FutureBuilder(
         future: FrontendToBackendConnection.getToken(), // Get the token

@@ -3,8 +3,6 @@ import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import 'package:omnistudin_flutter/pages/searchView.dart';
 import '../register/login.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 
 // HomePage widget which is a StatefulWidget, meaning it can maintain state during the lifetime of the widget
@@ -99,33 +97,28 @@ class _HomePageState extends State<HomePage> {
       // Sending a GET request to the server to get the updated list of ad groups
       List<dynamic> data =
           await FrontendToBackendConnection.getData('get_adgroups/');
-      if (data != null) {
-        // If the response is not null, converting the response to a list of AdGroup objects
-        List<AdGroup> adgroup =
-            data.map((item) => AdGroup.fromJson(item)).toList();
-        print('Fetched ad groups: $adgroup');
+      // If the response is not null, converting the response to a list of AdGroup objects
+      List<AdGroup> adgroup =
+          data.map((item) => AdGroup.fromJson(item)).toList();
+      print('Fetched ad groups: $adgroup');
 
-        // Updating the state with the new list of ad groups
-        setState(() {});
+      // Updating the state with the new list of ad groups
+      setState(() {});
 
-        print('Updated state with new ad groups');
-      } else {
-        // If the response is null, printing a message
-        print('No AdGroups found');
-      }
-    } catch (e) {
+      print('Updated state with new ad groups');
+        } catch (e) {
       print('Error deleting AdGroup: $e');
       if (e is http.ClientException && e.message.contains('<!DOCTYPE html>')) {
         print('Server returned an HTML response: ${e.message}');
       } else if (e is http.ClientException && e.message.contains('404')) {
         // Handle 403 error
-        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('You are not authorized to delete this ad group')),
         );
       } else {
         // Handle other errors
-        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to delete ad group')),
         );
       }
@@ -159,7 +152,7 @@ class _HomePageState extends State<HomePage> {
     await FrontendToBackendConnection.clearStorage();
     // Navigating to the LoginPage
     Navigator.pushReplacement(
-      context as BuildContext,
+      context,
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
@@ -192,7 +185,7 @@ class _HomePageState extends State<HomePage> {
 
       // Navigate to the PostPage and pass the ads to it
       Navigator.push(
-        context as BuildContext,
+        context,
         MaterialPageRoute(
           builder: (context) => PostPage(
             key: UniqueKey(),
@@ -283,7 +276,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SearchView(),
+                  builder: (context) => const SearchView(),
                 ),
               );
             },
@@ -310,7 +303,7 @@ class _HomePageState extends State<HomePage> {
               List adGroups =
                   snapshot.data; // Converting the data to a list of ad groups
               if (adGroups.isEmpty) {
-                return Center(
+                return const Center(
                     child: Text(
                         'No AdGroups found')); // If the list is empty, showing a message
               } else {
@@ -395,10 +388,7 @@ class _HomePageState extends State<HomePage> {
 class PostPage extends StatefulWidget {
   final Map adInGroup; // Declare a variable to hold the ad group data
 
-  PostPage({Key? key, required this.adInGroup})
-      : super(
-            key:
-                key); // Define a constructor for the PostPage widget that requires adInGroup parameter and accepts an optional key
+  const PostPage({super.key, required this.adInGroup}); // Define a constructor for the PostPage widget that requires adInGroup parameter and accepts an optional key
 
   @override // Create a fresh instance of _PostPageState each time Flutter needs to inflate the widget
   _PostPageState createState() => _PostPageState();
@@ -435,19 +425,15 @@ class _PostPageState extends State<PostPage> {
 
       List<dynamic> data = await FrontendToBackendConnection.getData(
           'get_adsofgroup/'); // Fetch the ads of the group from the server
-      if (data != null) {
-        List<AdInGroup> adInGroup = // Convert the data to a list of AdInGroup
-            data.map((item) => AdInGroup.fromJson(item)).toList();
-        print('Fetched ad groups: $adInGroup'); //Debugging purposes
+      List<AdInGroup> adInGroup = // Convert the data to a list of AdInGroup
+          data.map((item) => AdInGroup.fromJson(item)).toList();
+      print('Fetched ad groups: $adInGroup'); //Debugging purposes
 
-        // Update the state to reflect the changes
-        setState(() {});
+      // Update the state to reflect the changes
+      setState(() {});
 
-        print('Updated state with new ads'); //Debugging purposes
-      } else {
-        print('No Ads found'); //Debugging purposes
-      }
-    } catch (e) {
+      print('Updated state with new ads'); //Debugging purposes
+        } catch (e) {
       print('Error deleting Ad: $e');
       if (e is http.ClientException && e.message.contains('<!DOCTYPE html>')) {
         // If the error is a ClientException and the message contains '<!DOCTYPE html>'
@@ -455,13 +441,13 @@ class _PostPageState extends State<PostPage> {
             'Server returned an HTML response: ${e.message}'); //Debugging purposes
       } else if (e is http.ClientException && e.message.contains('404')) {
         // Handle 403 error
-        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('You are not authorized to delete this ad')),
         );
       } else {
         // Handle other errors
-        ScaffoldMessenger.of(context as BuildContext).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to delete ad')),
         );
       }
@@ -485,7 +471,7 @@ class _PostPageState extends State<PostPage> {
         }(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
@@ -521,11 +507,11 @@ class _PostPageState extends State<PostPage> {
                       },
                       itemBuilder: (context) => [
                         // Build the menu items
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'Edit',
                           child: Text('Edit'),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'Delete',
                           child: Text('Delete'),
                         ),
@@ -558,7 +544,7 @@ class AGPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons
+          icon: const Icon(Icons
               .arrow_back), // Leading widget (at the start of the AppBar), using an IconButton
           onPressed: () {
             Navigator.pop(
@@ -858,10 +844,7 @@ class _UpdateAdGroupDialogState extends State<UpdateAdGroupDialog> {
 
 // Class to represent an ad group dialog
 class CreateAdGroupDialog extends StatefulWidget {
-  const CreateAdGroupDialog({Key? key})
-      : super(
-            key:
-                key); // Define a constructor for the CreateAdGroupDialog widget that accepts an optional key
+  const CreateAdGroupDialog({super.key}); // Define a constructor for the CreateAdGroupDialog widget that accepts an optional key
 
   @override
   _CreateAdGroupDialogState createState() =>
@@ -954,7 +937,7 @@ class _CreateAdGroupDialogState extends State<CreateAdGroupDialog> {
               Navigator.of(context).pop(); // Pop the dialog
             }
           },
-          child: Text('Create'),
+          child: const Text('Create'),
         ),
       ],
     );

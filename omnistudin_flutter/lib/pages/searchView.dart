@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 
 class SearchView extends StatefulWidget {
+  const SearchView({super.key});
+
   @override
   _SearchViewState createState() => _SearchViewState();
 }
@@ -19,7 +20,7 @@ class _SearchViewState extends State<SearchView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: const Text('Search'),
       ),
       body: Column(
         children: [
@@ -140,12 +141,12 @@ class _SearchViewState extends State<SearchView> {
 class AdDetailView extends StatelessWidget {
   final Map<String, dynamic> ad;
 
-  AdDetailView({required this.ad});
+  const AdDetailView({super.key, required this.ad});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
+      navigationBar: const CupertinoNavigationBar(
         middle: Text('Ad Detail'),
       ),
       child: SafeArea(
@@ -156,14 +157,14 @@ class AdDetailView extends StatelessWidget {
               Card(
                   child: ad['image'] != ""
                       ? Image.network(ad['image'])
-                      : Icon(Icons.image)),
+                      : const Icon(Icons.image)),
               Card(
                   child: ListTile(
-                      title: Text('Title'),
+                      title: const Text('Title'),
                       subtitle: Text(ad['title'] ?? 'No title'))),
               Card(
                   child: ListTile(
-                      title: Text('Description'),
+                      title: const Text('Description'),
                       subtitle: Text(ad['description'] ?? 'No description'))),
             ],
           ),
@@ -176,12 +177,12 @@ class AdDetailView extends StatelessWidget {
 class AdGroupDetailView extends StatelessWidget {
   final Map<String, dynamic> adGroup;
 
-  AdGroupDetailView({required this.adGroup});
+  const AdGroupDetailView({super.key, required this.adGroup});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
+      navigationBar: const CupertinoNavigationBar(
         middle: Text('Ad Group Detail'),
       ),
       child: SafeArea(
@@ -191,11 +192,11 @@ class AdGroupDetailView extends StatelessWidget {
             children: <Widget>[
               Card(
                   child: ListTile(
-                      title: Text('Name'),
+                      title: const Text('Name'),
                       subtitle: Text(adGroup['name'] ?? 'No name'))),
               Card(
                   child: ListTile(
-                      title: Text('Description'),
+                      title: const Text('Description'),
                       subtitle:
                           Text(adGroup['description'] ?? 'No description'))),
             ],
@@ -209,12 +210,12 @@ class AdGroupDetailView extends StatelessWidget {
 class StudentDetailView extends StatelessWidget {
   final Map<String, dynamic> student;
 
-  StudentDetailView({required this.student});
+  const StudentDetailView({super.key, required this.student});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
+      navigationBar: const CupertinoNavigationBar(
         middle: Text('Student Detail'),
       ),
       child: SafeArea(
@@ -225,43 +226,43 @@ class StudentDetailView extends StatelessWidget {
               Card(
                   child: student['profile_picture'] != ""
                       ? Image.memory(base64Decode(student['profile_picture']))
-                      : Icon(Icons.account_circle)),
+                      : const Icon(Icons.account_circle)),
               Card(
                   child: ListTile(
-                      title: Text('Forename'),
+                      title: const Text('Forename'),
                       subtitle: Text(student['forename'] ?? 'No forename'))),
               Card(
                   child: ListTile(
-                      title: Text('Surname'),
+                      title: const Text('Surname'),
                       subtitle: Text(student['surname'] ?? 'No surname'))),
               Card(
                   child: ListTile(
-                      title: Text('Email'),
+                      title: const Text('Email'),
                       subtitle: Text(student['email'] ?? 'No email'))),
               Card(
                   child: ListTile(
-                      title: Text('DOB'),
+                      title: const Text('DOB'),
                       subtitle: Text(student['dob'] ?? 'No DOB'))),
               Card(
                   child: ListTile(
-                      title: Text('Bio'),
+                      title: const Text('Bio'),
                       subtitle: Text(student['bio'] ?? 'No bio'))),
               Card(
                   child: ListTile(
-                      title: Text('University Name'),
+                      title: const Text('University Name'),
                       subtitle:
                           Text(student['uni_name'] ?? 'No university name'))),
               Card(
                   child: ListTile(
-                      title: Text('Degree'),
+                      title: const Text('Degree'),
                       subtitle: Text(student['degree'] ?? 'No degree'))),
               Card(
                   child: ListTile(
-                      title: Text('Semester'),
+                      title: const Text('Semester'),
                       subtitle: Text(student['semester'] ?? 'No semester'))),
               Card(
                   child: ListTile(
-                      title: Text('Interests and Goals'),
+                      title: const Text('Interests and Goals'),
                       subtitle: Text(student['interests_and_goals'] ??
                           'No interests and goals'))),
             ],

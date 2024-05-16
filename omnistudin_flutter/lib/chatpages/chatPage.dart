@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:http/http.dart' as http;
@@ -14,10 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'dart:isolate';
-import 'package:flutter/material.dart';
-import 'package:omnistudin_flutter/Logic/chat_message_service/message.dart';
-import 'package:omnistudin_flutter/Logic/chat_message_service/message_polling_isolate.dart'; // Stellen Sie sicher, dass spawnMessagePollingService hier definiert ist
-import 'package:shared_preferences/shared_preferences.dart';
+// Stellen Sie sicher, dass spawnMessagePollingService hier definiert ist
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 
 
@@ -25,7 +20,7 @@ class ChatPage extends StatefulWidget {
   String email; // Ändern Sie chatId in email
   final SendPort sendPort; // Use sendPort instead of SendPort
 
-  ChatPage({required this.email, required this.sendPort}); // Use sendPort instead of SendPort
+  ChatPage({super.key, required this.email, required this.sendPort}); // Use sendPort instead of SendPort
 
 
   @override
@@ -36,7 +31,7 @@ class _ChatPageState extends State<ChatPage> {
   Map<String, dynamic> studentData = {};
   late final _userEmail;
   List<types.Message> messageList = [];
-  types.User _user = types.User(id: 'user-id', firstName: 'User', lastName: 'Name'); // Hier definieren und initialisieren wir _user
+  final types.User _user = const types.User(id: 'user-id', firstName: 'User', lastName: 'Name'); // Hier definieren und initialisieren wir _user
 
 
   @override
@@ -51,7 +46,7 @@ class _ChatPageState extends State<ChatPage> {
 
 
   void _loadDemoMessages() {
-    types.User otherUser = types.User(id: 'other-user-id', firstName: 'Other', lastName: 'User');
+    types.User otherUser = const types.User(id: 'other-user-id', firstName: 'Other', lastName: 'User');
 
     DateTime specificDate = DateTime(2024, 05, 15, 08, 36, 00);
     int timestamp = specificDate.millisecondsSinceEpoch;
@@ -348,10 +343,10 @@ class _ChatPageState extends State<ChatPage> {
           return Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.pop(context),
               ),
-              title: Text('Chat Page'),
+              title: const Text('Chat Page'),
             ),
             body: Chat(
               messages: messageList,
@@ -373,7 +368,7 @@ class _ChatPageState extends State<ChatPage> {
             ),
           );
         } else {
-          return CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während init() ausgeführt wird
+          return const CircularProgressIndicator(); // Zeigen Sie einen Ladeindikator an, während init() ausgeführt wird
         }
       },
     );

@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:omnistudin_flutter/Logic/Frontend_To_Backend_Connection.dart';
 import 'package:omnistudin_flutter/pages/findfriends_page.dart';
-import 'package:omnistudin_flutter/chatpages//chatPage.dart'; // Importieren Sie die Chat-Seite
+// Importieren Sie die Chat-Seite
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -17,6 +17,7 @@ class FriendsPage extends StatefulWidget {
 // friend_page.dart
 class FriendsPageState extends _FriendsPageState {
   // Hier können Sie öffentliche Methoden und Eigenschaften definieren, die von anderen Dateien aufgerufen werden können
+  @override
   Future<List<String>> getFriendEmailsPublic() async {
     return await getFriendEmails();
   }
