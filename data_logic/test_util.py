@@ -10,14 +10,6 @@ Each unit test is implemented as a subclass of `unittest.TestCase` and contains 
 
 To run the unit tests, execute this module as the main script.
 """
-
-import unittest
-from datetime import date, timedelta
-from argon2 import PasswordHasher
-from data_logic.models import Student
-from data_logic.util import compute_current_age, check_credentials, check_profanity
-
-# Rest of the code...
 import unittest
 
 from datetime import date
