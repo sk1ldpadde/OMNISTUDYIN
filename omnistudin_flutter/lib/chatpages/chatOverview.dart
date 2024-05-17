@@ -17,6 +17,7 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
   late final Map<String, SendPort> _pollingServicePorts = {};
   final List<String> _chats = [];
 
+  //Method to initialize the state
   @override
   void initState() {
     super.initState();
@@ -27,19 +28,22 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
     await _fetchChats();
   }
 
+  //Method to get friends
   Future<List<String>> getFriends() async {
     FriendsPageState friendsPageState = FriendsPageState();
     return await friendsPageState.getFriendEmailsPublic();
   }
 
+  //Method to fetch chats
   Future<void> _fetchChats() async {
     await createChatsForFriends();
     setState(() {});
   }
 
+  //Method to create chats for friends
   Future<void> createChatsForFriends() async {
-    List<String> friends = await getFriends();
-    for (String friend in friends) {
+    List<String> friends = await getFriends(); //List with all friends
+    for (String friend in friends) { //Iterate through all friends and add them to the chat list
       _chats.add(friend);
       ReceivePort friendReceivePort = ReceivePort();
       startMessagePollingService(
@@ -49,6 +53,7 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
     }
   }
 
+  //Method to build the widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +69,7 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
           return InkWell(
             onTap: () {
               SendPort? sendPort = _pollingServicePorts[chat];
-              if (sendPort != null) {
+              if (sendPort != null) { //If the sendPort is not null, navigate to the chat page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -100,12 +105,12 @@ class _ChatOverviewPageState extends State<ChatOverviewPage> {
                           index == 0 ? 'Its 2!' : 'Thank you, for your help°-°', // Hier die Bedingung hinzufügen
                           style: const TextStyle(color: Colors.grey),
                           overflow: TextOverflow.ellipsis,
-                        ),
+                        ), //Show the last message and the time
                       ],
                     ),
                   ),
                   Text(
-                    index == 0 ? '09:42': '07:22', // Hier die Zeit der letzten Nachricht einfügen
+                    index == 0 ? '09:42': '07:22',
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],

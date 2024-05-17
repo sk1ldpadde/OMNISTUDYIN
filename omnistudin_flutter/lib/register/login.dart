@@ -9,30 +9,34 @@ class LoginPage extends StatelessWidget {
 
   LoginPage({super.key, this.onLoginSuccess});
 
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
+  final TextEditingController _email = TextEditingController();  // TextController for email
+  final TextEditingController _password = TextEditingController(); // TextController for password
 
   void _login(String email, String password, BuildContext context) async {
-    try {
+    final localContext = context;
+    try { // Try to log in
       var response =
-          await FrontendToBackendConnection.loginStudent(email, password);
-      print('Login successful');
-      if (response.statusCode == 200) {
-        onLoginSuccess?.call();
-        const LandingPage().createState().checkLoginStatus();
+      await FrontendToBackendConnection.loginStudent(email, password); // Wait for the response
+      if (response.statusCode == 200) {  // If the response is successful, attempt to log in
+        onLoginSuccess?.call();   // Call onLoginSuccess
+        const LandingPage().createState().checkLoginStatus(); // Check login status
         Navigator.pushReplacementNamed(
-          context,
+          localContext,
           '/',
-        );
+        ); // Navigate to the home page
       }
     } catch (e) {
-      print('Error while trying to register: $e');
+      ScaffoldMessenger.of(localContext).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      ); // Display an error message
     }
   }
 
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+
+    // this is the login page
 
     return CupertinoPageScaffold(
         navigationBar: const CupertinoNavigationBar(
@@ -46,22 +50,22 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: screenHeight * 0.1, // 10% der Bildschirmlänge
+                    height: screenHeight * 0.1,
                     child: Image.asset(
-                      'assets/images/line.png',
+                      'assets/images/line.png', // image for login page
                       fit: BoxFit
-                          .scaleDown, // behält das Seitenverhältnis des Bildes bei
+                          .scaleDown,
                     ),
                   ),
-                  const SizedBox(height: 20.0), // 20 Pixel Abstand
-                  CupertinoTextField(
+                  const SizedBox(height: 20.0),
+                  CupertinoTextField( // input field for email
                     controller: _email,
                     placeholder: 'E-Mail',
                     padding: const EdgeInsets.all(12.0),
                   ),
                   const SizedBox(height: 16.0),
                   CupertinoTextField(
-                    controller: _password,
+                    controller: _password, // input field for password
                     placeholder: 'Passwort',
                     padding: const EdgeInsets.all(12.0),
                     obscureText: true,
@@ -69,12 +73,11 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 24.0),
                   GestureDetector(
                     onTap: () {
-                      // Hier navigieren Sie zur Registrierungsseite
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
                               builder: (context) => const RegistrationPage()));
-                    },
+                      }, //Navigation to Registration Page, if user wants to create an account and taps on the text
                     child: const Text(
                       'Noch kein Konto?  Hier kannst du dich registrieren',
                       style: TextStyle(color: CupertinoColors.activeBlue),
@@ -82,13 +85,15 @@ class LoginPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24.0),
                   CupertinoButton.filled(
-                    child: const Text('Anmelden'),
+                    child: const Text('Anmelden'), // Login Button
                     onPressed: () {
                       try {
-                        _login(_email.text, _password.text, context);
+                        _login(_email.text, _password.text, context); // try to login
                       } catch (e) {
-                        print('Error while trying to login: $e');
-                      }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Ein Fehler ist aufgetreten: $e')),
+                        ); // show error message
+                        }
                     },
                   ),
                 ],
